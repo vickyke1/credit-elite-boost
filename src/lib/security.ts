@@ -3,7 +3,6 @@ import DOMPurify from "dompurify";
 
 // Security configuration
 export const SECURITY_CONFIG = {
-  CRYPTO_ADDRESS: "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t", // Move to env in production
   MAX_INPUT_LENGTH: 1000,
   RATE_LIMIT_WINDOW: 60000, // 1 minute
   MAX_ATTEMPTS_PER_WINDOW: 10

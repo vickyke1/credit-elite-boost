@@ -31,7 +31,8 @@ type PaymentFormData = z.infer<typeof paymentFormSchema>;
 export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const cryptoAddress = SECURITY_CONFIG.CRYPTO_ADDRESS;
+  // This should be fetched from a secure backend endpoint in production
+  const cryptoAddress = "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t";
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PaymentFormData>({
     resolver: zodResolver(paymentFormSchema)
