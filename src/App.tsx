@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";
 import SSNValidatorPage from "./pages/SSNValidatorPage";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
             <Route path="/tradelines" element={<TradelineMarketplace />} />
             <Route path="/calculator" element={<TradelineCalculatorPage />} />
             <Route path="/ssn-validator" element={<SSNValidatorPage />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
