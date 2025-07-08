@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
+import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";
+import SSNValidatorPage from "./pages/SSNValidatorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +22,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/tradelines" element={<TradelineMarketplace />} />
+            <Route path="/calculator" element={<TradelineCalculatorPage />} />
+            <Route path="/ssn-validator" element={<SSNValidatorPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
