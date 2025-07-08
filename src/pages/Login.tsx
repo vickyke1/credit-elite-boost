@@ -2,33 +2,19 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
-import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Link, useNavigate } from 'react-router-dom';
-import { emailSchema, sanitizeInput, globalRateLimiter } from '@/lib/security';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-
-const loginSchema = z.object({
-  email: emailSchema,
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(128, 'Password too long'),
-  rememberMe: z.boolean().optional(),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
+import { Link } from 'react-router-dom';
+import { loginSchema, LoginForm } from '@/lib/auth/schemas';
+import { useLogin } from '@/hooks/useLogin';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { login, isLoading } = useLogin();
 
   const {
     register,
@@ -40,63 +26,11 @@ const Login = () => {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    // Rate limiting check
-    const clientId = 'login_attempt';
-    if (globalRateLimiter.isRateLimited(clientId)) {
+    const result = await login(data);
+    if (result.error) {
       setError('root', {
-        message: 'Too many login attempts. Please try again later.'
+        message: result.error
       });
-      return;
-    }
-
-    globalRateLimiter.recordAttempt(clientId);
-    setIsLoading(true);
-
-    try {
-      // Sanitize inputs
-      const sanitizedData = {
-        email: sanitizeInput(data.email),
-        password: data.password, // Don't sanitize password as it may contain special chars
-        rememberMe: data.rememberMe,
-      };
-
-      // Sign in with Supabase
-      const { error } = await supabase.auth.signInWithPassword({
-        email: sanitizedData.email,
-        password: sanitizedData.password,
-      });
-
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setError('root', {
-            message: 'Invalid email or password. Please check your credentials and try again.'
-          });
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('root', {
-            message: 'Please check your email and click the confirmation link before signing in.'
-          });
-        } else {
-          setError('root', {
-            message: error.message || 'Login failed. Please try again.'
-          });
-        }
-        return;
-      }
-      
-      toast({
-        title: 'Login Successful',
-        description: 'Welcome back to CPN Credit Boost!',
-      });
-
-      // Redirect to main page
-      navigate('/');
-      
-    } catch (error) {
-      setError('root', {
-        message: 'Invalid email or password. Please try again.'
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
