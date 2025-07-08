@@ -74,7 +74,7 @@ const BlogPost = () => {
 
           {/* Article Content */}
           <div className="prose prose-lg max-w-none">
-            <div className="text-xl text-muted-foreground mb-8 italic border-l-4 border-primary pl-6">
+            <div className="text-xl text-muted-foreground mb-8 italic border-l-4 border-muted pl-6">
               {post.excerpt}
             </div>
             
@@ -102,7 +102,7 @@ const BlogPost = () => {
                   key={tag}
                   to={`/blog?tag=${encodeURIComponent(tag)}`}
                 >
-                  <Badge variant="outline" className="hover:bg-primary hover:text-primary-foreground transition-colors">
+                  <Badge variant="outline" className="hover:bg-muted hover:text-foreground transition-colors">
                     {tag}
                   </Badge>
                 </Link>
@@ -138,7 +138,7 @@ const BlogPost = () => {
                   className="group"
                 >
                   <div className="bg-card rounded-lg p-6 border hover:shadow-lg transition-shadow">
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="font-semibold mb-2 group-hover:text-foreground transition-colors line-clamp-2">
                       {relatedPost.title}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">

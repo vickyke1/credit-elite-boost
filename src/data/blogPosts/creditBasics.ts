@@ -47,13 +47,13 @@ This section is often the most complex part of your credit report. Each account 
 
 There are two types of inquiries that appear on your credit report:
 
-**Hard inquiries**: These occur when you apply for credit and give a lender permission to check your credit report. Hard inquiries can temporarily lower your credit score by a few points and remain on your report for two years. Examples include:
+Hard inquiries: These occur when you apply for credit and give a lender permission to check your credit report. Hard inquiries can temporarily lower your credit score by a few points and remain on your report for two years. Examples include:
 - Credit card applications
 - Mortgage applications
 - Auto loan applications
 - Personal loan applications
 
-**Soft inquiries**: These don't affect your credit score and occur when you check your own credit or when companies pre-screen you for offers. Examples include:
+Soft inquiries: These don't affect your credit score and occur when you check your own credit or when companies pre-screen you for offers. Examples include:
 - Checking your own credit
 - Employer background checks
 - Insurance quote inquiries
