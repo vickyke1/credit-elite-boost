@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Cart } from "@/components/Cart";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,8 +40,8 @@ const Navigation = () => {
           {/* Cart and Login */}
           <div className="flex items-center gap-4">
             <Cart />
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              Client Login
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground" asChild>
+              <Link to="/login">Client Login</Link>
             </Button>
           </div>
         </div>
