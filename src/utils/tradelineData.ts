@@ -32,7 +32,7 @@ export const generateTradelines = (): Tradeline[] => {
 
   const tradelines = [];
   
-  for (let i = 0; i < 350; i++) {
+  for (let i = 0; i < 630; i++) {
     const bank = banks[Math.floor(Math.random() * banks.length)];
     const cardType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
     const creditLimit = [5000, 7500, 10000, 12500, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 75000, 100000][Math.floor(Math.random() * 13)];
