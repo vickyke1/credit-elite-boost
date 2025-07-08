@@ -61,7 +61,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom CPN Credit Boost Colors
+				'surface-elevated': 'hsl(var(--surface-elevated))',
+				'surface-hover': 'hsl(var(--surface-hover))',
+				'glow-primary': 'hsl(var(--glow-primary))',
+				'glow-accent': 'hsl(var(--glow-accent))'
+			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-cta': 'var(--gradient-cta)',
+				'gradient-primary': 'var(--gradient-primary)'
+			},
+			boxShadow: {
+				'glow-primary': 'var(--shadow-glow-primary)',
+				'glow-accent': 'var(--shadow-glow-accent)',
+				'elevated': 'var(--shadow-elevated)',
+				'floating': 'var(--shadow-floating)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
