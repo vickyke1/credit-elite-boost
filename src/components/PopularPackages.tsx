@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
 
 const PopularPackages = () => {
+  const { addToCart } = useCart();
   const packages = [
     {
       name: "Basic CPN Kit",
@@ -148,8 +151,23 @@ const PopularPackages = () => {
                     : 'bg-gradient-primary glow-primary'
                 }`}
                 size="lg"
+                onClick={() => {
+                  const packageItem = {
+                    id: `package-${index}`,
+                    type: 'package' as const,
+                    name: pkg.name,
+                    price: parseInt(pkg.price.replace('$', '').replace(',', '')),
+                    description: pkg.description,
+                    features: pkg.features
+                  };
+                  addToCart(packageItem);
+                  toast({
+                    title: "Added to Cart",
+                    description: `${pkg.name} has been added to your cart.`,
+                  });
+                }}
               >
-                Get Started
+                Add to Cart
               </Button>
             </div>
           ))}

@@ -38,10 +38,16 @@ export const Cart = () => {
                   <div key={item.id} className="surface-elevated rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">{item.bankName}</h4>
-                        <p className="text-sm text-muted-foreground">{item.cardId}</p>
-                        <p className="text-sm text-accent">${item.creditLimit.toLocaleString()} limit</p>
-                        <p className="text-xs text-muted-foreground">{item.age} old</p>
+                        <h4 className="font-semibold text-foreground">{item.name}</h4>
+                        {item.type === 'tradeline' ? (
+                          <>
+                            <p className="text-sm text-muted-foreground">{item.cardId}</p>
+                            <p className="text-sm text-accent">${item.creditLimit?.toLocaleString()} limit</p>
+                            <p className="text-xs text-muted-foreground">{item.age} old</p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">{item.description}</p>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-lg text-foreground">${item.price}</p>

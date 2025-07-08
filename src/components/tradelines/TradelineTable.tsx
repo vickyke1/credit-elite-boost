@@ -28,10 +28,12 @@ export const TradelineTable = ({ tradelines }: TradelineTableProps) => {
   const handleAddToCart = (tradeline: Tradeline) => {
     const cartItem = {
       id: tradeline.id,
+      type: 'tradeline' as const,
+      name: tradeline.bankName,
+      price: tradeline.price,
       bankName: tradeline.bankName,
       cardId: tradeline.cardId,
       creditLimit: tradeline.creditLimit,
-      price: tradeline.price,
       age: tradeline.age
     };
     

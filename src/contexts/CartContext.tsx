@@ -2,11 +2,17 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface CartItem {
   id: string;
-  bankName: string;
-  cardId: string;
-  creditLimit: number;
+  type: 'tradeline' | 'package';
+  name: string;
   price: number;
-  age: string;
+  // Tradeline specific fields
+  bankName?: string;
+  cardId?: string;
+  creditLimit?: number;
+  age?: string;
+  // Package specific fields
+  description?: string;
+  features?: string[];
 }
 
 interface CartContextType {
