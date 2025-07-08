@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getBlogPostBySlug, getAllBlogPosts } from "@/utils/blogData";
+import { getBlogPostBySlug, getAllBlogPosts } from "@/utils/blogHelpers";
 import { ChevronLeft } from "lucide-react";
 
 const BlogPost = () => {
