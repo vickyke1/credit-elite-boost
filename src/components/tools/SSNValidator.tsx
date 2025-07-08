@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, CheckCircle, XCircle, Info } from "lucide-react";
+import { Shield, CheckCircle, XCircle, Info, AlertTriangle } from "lucide-react";
+import { ssnSchema, sanitizeInput, globalRateLimiter } from "@/lib/security";
+import { useToast } from "@/hooks/use-toast";
 
 interface SSNValidationResult {
   isValid: boolean;
@@ -20,6 +22,7 @@ export const SSNValidator = () => {
   const [ssn, setSSN] = useState("");
   const [result, setResult] = useState<SSNValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const { toast } = useToast();
 
   const formatSSN = (value: string) => {
     // Remove all non-digits
@@ -36,12 +39,37 @@ export const SSNValidator = () => {
   };
 
   const handleSSNChange = (value: string) => {
-    const formatted = formatSSN(value);
+    const sanitized = sanitizeInput(value);
+    const formatted = formatSSN(sanitized);
     setSSN(formatted);
     setResult(null);
   };
 
   const validateSSN = () => {
+    // Rate limiting check
+    if (globalRateLimiter.isRateLimited('ssn-validation')) {
+      toast({
+        title: "Rate Limited",
+        description: "Too many validation attempts. Please wait before trying again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    globalRateLimiter.recordAttempt('ssn-validation');
+    
+    // Validate input format
+    try {
+      ssnSchema.parse(ssn);
+    } catch (error) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter a valid SSN format (XXX-XX-XXXX).",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsValidating(true);
     
     // Simulate validation delay
@@ -159,6 +187,14 @@ export const SSNValidator = () => {
           Verify if a Social Security Number is valid and whether it has been issued. 
           This tool uses SSA data to determine when and where an SSN was issued.
         </p>
+        
+        <Alert className="mt-4 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
+          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800 dark:text-orange-200">
+            <strong>Privacy Notice:</strong> This tool performs client-side validation only. 
+            No SSN data is transmitted to external servers. For educational purposes only.
+          </AlertDescription>
+        </Alert>
       </div>
 
       <Card className="mb-6">

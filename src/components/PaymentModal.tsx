@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { emailSchema, phoneSchema, nameSchema, transactionIdSchema, SECURITY_CONFIG } from "@/lib/security";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -13,10 +18,24 @@ interface PaymentModalProps {
   total: number;
 }
 
+const paymentFormSchema = z.object({
+  firstName: nameSchema,
+  lastName: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  transactionId: transactionIdSchema.optional()
+});
+
+type PaymentFormData = z.infer<typeof paymentFormSchema>;
+
 export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const cryptoAddress = "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t";
+  const cryptoAddress = SECURITY_CONFIG.CRYPTO_ADDRESS;
+  
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<PaymentFormData>({
+    resolver: zodResolver(paymentFormSchema)
+  });
 
   const copyToClipboard = async () => {
     try {
@@ -34,6 +53,15 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const onSubmit = (data: PaymentFormData) => {
+    toast({
+      title: "Order Submitted!",
+      description: "Your order has been submitted. We'll contact you shortly.",
+    });
+    reset();
+    onClose();
   };
 
   return (
@@ -87,20 +115,78 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                 </ul>
               </div>
 
-              <div className="space-y-3">
+              <Alert className="mb-4 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertDescription className="text-orange-800 dark:text-orange-200">
+                  <strong>Security Notice:</strong> Only provide personal information after completing your Bitcoin payment. 
+                  Never share sensitive financial information through unsecured channels.
+                </AlertDescription>
+              </Alert>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <Label>Customer Information</Label>
                 <div className="grid grid-cols-2 gap-3">
-                  <Input placeholder="First Name" />
-                  <Input placeholder="Last Name" />
+                  <div>
+                    <Input 
+                      {...register("firstName")}
+                      placeholder="First Name" 
+                      className={errors.firstName ? "border-red-500" : ""}
+                    />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input 
+                      {...register("lastName")}
+                      placeholder="Last Name" 
+                      className={errors.lastName ? "border-red-500" : ""}
+                    />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+                    )}
+                  </div>
                 </div>
-                <Input placeholder="Email Address" />
-                <Input placeholder="Phone Number" />
-                <Input placeholder="Bitcoin Transaction ID (after payment)" />
-              </div>
+                <div>
+                  <Input 
+                    {...register("email")}
+                    placeholder="Email Address" 
+                    type="email"
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Input 
+                    {...register("phone")}
+                    placeholder="Phone Number" 
+                    type="tel"
+                    className={errors.phone ? "border-red-500" : ""}
+                  />
+                  {errors.phone && (
+                    <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Input 
+                    {...register("transactionId")}
+                    placeholder="Bitcoin Transaction ID (after payment)" 
+                    className={errors.transactionId ? "border-red-500" : ""}
+                  />
+                  {errors.transactionId && (
+                    <p className="text-red-500 text-sm mt-1">{errors.transactionId.message}</p>
+                  )}
+                </div>
 
-              <Button className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent">
-                Confirm Order
-              </Button>
+                <Button 
+                  type="submit"
+                  className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent"
+                >
+                  Confirm Order
+                </Button>
+              </form>
             </div>
           </TabsContent>
 

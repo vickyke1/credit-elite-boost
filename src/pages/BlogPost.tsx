@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getBlogPostBySlug, getAllBlogPosts } from "@/utils/blogHelpers";
 import { ChevronLeft } from "lucide-react";
+import DOMPurify from "dompurify";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -81,14 +82,21 @@ const BlogPost = () => {
             <div 
               className="blog-content"
               dangerouslySetInnerHTML={{ 
-                __html: post.content.replace(/\n/g, '<br/>').replace(/#{1,6}\s/g, (match) => {
-                  const level = match.trim().length;
-                  return level === 1 ? '<h1 class="text-3xl font-bold mt-8 mb-4">' : 
-                         level === 2 ? '</h1><h2 class="text-2xl font-semibold mt-6 mb-3">' :
-                         level === 3 ? '</h2><h3 class="text-xl font-medium mt-4 mb-2">' :
-                         level === 4 ? '</h3><h4 class="text-lg font-medium mt-3 mb-2">' :
-                         '</h4><h5 class="font-medium mt-2 mb-1">';
-                })
+                __html: DOMPurify.sanitize(
+                  post.content.replace(/\n/g, '<br/>').replace(/#{1,6}\s/g, (match) => {
+                    const level = match.trim().length;
+                    return level === 1 ? '<h1 class="text-3xl font-bold mt-8 mb-4">' : 
+                           level === 2 ? '</h1><h2 class="text-2xl font-semibold mt-6 mb-3">' :
+                           level === 3 ? '</h2><h3 class="text-xl font-medium mt-4 mb-2">' :
+                           level === 4 ? '</h3><h4 class="text-lg font-medium mt-3 mb-2">' :
+                           '</h4><h5 class="font-medium mt-2 mb-1">';
+                  }),
+                  {
+                    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a'],
+                    ALLOWED_ATTR: ['href', 'class', 'id'],
+                    ALLOW_DATA_ATTR: false
+                  }
+                )
               }}
             />
           </div>
