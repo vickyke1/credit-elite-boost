@@ -34,13 +34,15 @@ const Hero = () => {
             >
               Get Started
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-lg px-8 py-6 h-auto font-semibold glow-primary"
-            >
-              View Tradelines
-            </Button>
+            <a href="/tradelines">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-lg px-8 py-6 h-auto font-semibold glow-primary"
+              >
+                View Tradelines
+              </Button>
+            </a>
             <Button 
               variant="secondary" 
               size="lg"
