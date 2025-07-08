@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, ArrowUpDown } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 // Generate realistic tradeline data
 const generateTradelines = () => {
@@ -71,6 +73,8 @@ const ExtensiveTradelineMarketplace = () => {
   const [filterBy, setFilterBy] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const allTradelines = useMemo(() => generateTradelines(), []);
 
@@ -125,6 +129,23 @@ const ExtensiveTradelineMarketplace = () => {
       default:
         return null;
     }
+  };
+
+  const handleAddToCart = (tradeline: any) => {
+    const cartItem = {
+      id: tradeline.id,
+      bankName: tradeline.bankName,
+      cardId: tradeline.cardId,
+      creditLimit: tradeline.creditLimit,
+      price: tradeline.price,
+      age: tradeline.age
+    };
+    
+    addToCart(cartItem);
+    toast({
+      title: "Added to Cart!",
+      description: `${tradeline.bankName} tradeline added to your cart`,
+    });
   };
 
   return (
@@ -238,13 +259,14 @@ const ExtensiveTradelineMarketplace = () => {
                       <Button 
                         size="sm"
                         disabled={tradeline.status === 'sold-out'}
+                        onClick={() => handleAddToCart(tradeline)}
                         className={`${
                           tradeline.status === 'sold-out' 
                             ? 'opacity-50 cursor-not-allowed' 
                             : 'bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent'
                         }`}
                       >
-                        {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add to Cart'}
+                        {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add Individual to Cart'}
                       </Button>
                     </td>
                   </tr>

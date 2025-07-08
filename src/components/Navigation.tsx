@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Cart } from "@/components/Cart";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,10 +33,13 @@ const Navigation = () => {
             <a href="#contact" className="text-foreground hover:text-primary transition-colors animated-underline">Contact</a>
           </div>
           
-          {/* Login Button */}
-          <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            Client Login
-          </Button>
+          {/* Cart and Login */}
+          <div className="flex items-center gap-4">
+            <Cart />
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              Client Login
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
