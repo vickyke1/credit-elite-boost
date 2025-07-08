@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { emailSchema, phoneSchema, nameSchema, sanitizeInput, globalRateLimiter } from '@/lib/security';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const registerSchema = z.object({
   firstName: nameSchema,
@@ -40,6 +41,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -100,23 +102,42 @@ const Register = () => {
         acceptMarketing: data.acceptMarketing,
       };
 
-      // TODO: Implement actual registration logic here
-      console.log('Registration attempt:', {
-        firstName: sanitizedData.firstName,
-        lastName: sanitizedData.lastName,
-        email: sanitizedData.email,
-        phone: sanitizedData.phone,
-      });
+      // Sign up with Supabase
+      const redirectUrl = `${window.location.origin}/`;
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { error } = await supabase.auth.signUp({
+        email: sanitizedData.email,
+        password: sanitizedData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            first_name: sanitizedData.firstName,
+            last_name: sanitizedData.lastName,
+            phone: sanitizedData.phone,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes('already been registered')) {
+          setError('email', {
+            message: 'An account with this email already exists. Please sign in instead.'
+          });
+        } else {
+          setError('root', {
+            message: error.message || 'Registration failed. Please try again.'
+          });
+        }
+        return;
+      }
       
       toast({
         title: 'Registration Successful!',
         description: 'Welcome to CPN Credit Boost! Please check your email to verify your account.',
       });
 
-      // TODO: Redirect to email verification page or login
+      // Redirect to login page
+      navigate('/login');
       
     } catch (error) {
       setError('root', {

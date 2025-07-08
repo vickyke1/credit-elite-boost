@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { emailSchema, sanitizeInput, globalRateLimiter } from '@/lib/security';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -27,6 +28,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -58,19 +60,36 @@ const Login = () => {
         rememberMe: data.rememberMe,
       };
 
-      // TODO: Implement actual authentication logic here
-      // This would typically involve calling your authentication API
-      console.log('Login attempt:', { email: sanitizedData.email });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Sign in with Supabase
+      const { error } = await supabase.auth.signInWithPassword({
+        email: sanitizedData.email,
+        password: sanitizedData.password,
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setError('root', {
+            message: 'Invalid email or password. Please check your credentials and try again.'
+          });
+        } else if (error.message.includes('Email not confirmed')) {
+          setError('root', {
+            message: 'Please check your email and click the confirmation link before signing in.'
+          });
+        } else {
+          setError('root', {
+            message: error.message || 'Login failed. Please try again.'
+          });
+        }
+        return;
+      }
       
       toast({
         title: 'Login Successful',
         description: 'Welcome back to CPN Credit Boost!',
       });
 
-      // TODO: Redirect to dashboard or previous page
+      // Redirect to main page
+      navigate('/');
       
     } catch (error) {
       setError('root', {
