@@ -117,12 +117,12 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
             <div>
               <h4 className="font-semibold text-foreground mb-2">📞 Phone Support</h4>
-              <p className="text-muted-foreground">1-800-CPN-BOOST</p>
+              <p className="text-muted-foreground">+1 (754) 328-7704</p>
               <p className="text-sm text-muted-foreground">24/7 Available</p>
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-2">✉️ Email Support</h4>
-              <p className="text-muted-foreground">support@cpncreditboost.com</p>
+              <p className="text-muted-foreground">admin@cpncreditboost.com</p>
               <p className="text-sm text-muted-foreground">Response within 2 hours</p>
             </div>
             <div>
