@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Check, AlertTriangle } from "lucide-react";
+import { Copy, Check, AlertTriangle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { emailSchema, phoneSchema, nameSchema, transactionIdSchema, SECURITY_CONFIG } from "@/lib/security";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -30,13 +31,44 @@ type PaymentFormData = z.infer<typeof paymentFormSchema>;
 
 export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   const [copied, setCopied] = useState(false);
+  const [cryptoAddress, setCryptoAddress] = useState<string>("");
+  const [loadingAddress, setLoadingAddress] = useState(false);
   const { toast } = useToast();
-  // This should be fetched from a secure backend endpoint in production
-  const cryptoAddress = "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t";
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PaymentFormData>({
     resolver: zodResolver(paymentFormSchema)
   });
+
+  // Fetch Bitcoin address securely from backend when modal opens
+  useEffect(() => {
+    const fetchPaymentAddress = async () => {
+      if (!isOpen || cryptoAddress) return;
+      
+      setLoadingAddress(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('get-payment-address');
+        
+        if (error) throw error;
+        
+        if (data?.address) {
+          setCryptoAddress(data.address);
+        } else {
+          throw new Error('No address received');
+        }
+      } catch (err) {
+        console.error('Failed to fetch payment address:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load payment address. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingAddress(false);
+      }
+    };
+
+    fetchPaymentAddress();
+  }, [isOpen, cryptoAddress, toast]);
 
   const copyToClipboard = async () => {
     try {
@@ -90,19 +122,32 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               <div className="surface-elevated rounded-lg p-4">
                 <Label className="text-sm font-medium">Bitcoin Address:</Label>
                 <div className="flex items-center gap-2 mt-2">
-                  <Input 
-                    value={cryptoAddress}
-                    readOnly
-                    className="font-mono text-sm"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={copyToClipboard}
-                    className="shrink-0"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </Button>
+                  {loadingAddress ? (
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-sm text-muted-foreground">Loading secure address...</span>
+                    </div>
+                  ) : cryptoAddress ? (
+                    <>
+                      <Input 
+                        value={cryptoAddress}
+                        readOnly
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyToClipboard}
+                        className="shrink-0"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="p-3 text-sm text-destructive bg-destructive/10 rounded">
+                      Failed to load payment address. Please refresh the page.
+                    </div>
+                  )}
                 </div>
               </div>
 
