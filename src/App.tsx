@@ -28,11 +28,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/tradelines" element={
-                <ProtectedRoute>
-                  <TradelineMarketplace />
-                </ProtectedRoute>
-              } />
+              <Route path="/tradelines" element={<TradelineMarketplace />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />
               <Route path="/ssn-validator" element={<SSNValidatorPage />} />
               <Route path="/blog" element={<Blog />} />

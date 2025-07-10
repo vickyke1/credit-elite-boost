@@ -11,12 +11,10 @@ serve(async (req) => {
   }
 
   try {
-    // Get the Bitcoin address from Supabase secrets
-    const bitcoinAddress = Deno.env.get('BITCOIN_ADDRESS');
+    // Return the specific Bitcoin wallet address
+    const bitcoinAddress = "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t";
     
-    if (!bitcoinAddress) {
-      throw new Error('Bitcoin address not configured');
-    }
+    console.log('Returning Bitcoin address:', bitcoinAddress);
 
     return new Response(
       JSON.stringify({ address: bitcoinAddress }),

@@ -113,51 +113,75 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
           <TabsContent value="crypto" className="space-y-6">
             <div className="space-y-4">
               <div>
-                <Label className="text-lg font-semibold text-accent">Bitcoin (BTC) Payment</Label>
+                <Label className="text-lg font-semibold text-accent">Cryptocurrency Payment Options</Label>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Send exactly ${total} worth of Bitcoin to the address below
+                  Choose your preferred crypto payment method
                 </p>
               </div>
 
+              {/* Cashaap Payment */}
               <div className="surface-elevated rounded-lg p-4">
-                <Label className="text-sm font-medium">Bitcoin Address:</Label>
+                <h3 className="font-semibold text-accent mb-3">Option 1: Pay with Cashaap (Recommended)</h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Quick and secure crypto payment through Cashaap platform
+                </p>
+                <Button
+                  onClick={() => window.open(`https://cashaap.com/pay?address=18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t&amount=${total}&currency=USD`, '_blank')}
+                  className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent mb-2"
+                >
+                  Pay ${total} with Cashaap
+                </Button>
+              </div>
+
+              {/* Direct Bitcoin Payment */}
+              <div className="surface-elevated rounded-lg p-4">
+                <h3 className="font-semibold text-accent mb-3">Option 2: Direct Bitcoin Payment</h3>
+                <Label className="text-sm font-medium">Our Bitcoin Address:</Label>
                 <div className="flex items-center gap-2 mt-2">
-                  {loadingAddress ? (
-                    <div className="flex items-center gap-2 p-3 bg-muted rounded">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-sm text-muted-foreground">Loading secure address...</span>
-                    </div>
-                  ) : cryptoAddress ? (
-                    <>
-                      <Input 
-                        value={cryptoAddress}
-                        readOnly
-                        className="font-mono text-sm"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={copyToClipboard}
-                        className="shrink-0"
-                      >
-                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="p-3 text-sm text-destructive bg-destructive/10 rounded">
-                      Failed to load payment address. Please refresh the page.
-                    </div>
-                  )}
+                  <Input 
+                    value="18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t"
+                    readOnly
+                    className="font-mono text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText("18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t");
+                      setCopied(true);
+                      toast({
+                        title: "Address Copied!",
+                        description: "Bitcoin address copied to clipboard",
+                      });
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="shrink-0"
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
                 </div>
               </div>
 
+              {/* Alternative Payment Methods */}
+              <div className="surface-elevated rounded-lg p-4">
+                <h3 className="font-semibold text-accent mb-3">Alternative Payment Methods</h3>
+                <p className="text-sm text-muted-foreground mb-2">
+                  We also accept payments via:
+                </p>
+                <ul className="text-sm space-y-1 text-muted-foreground">
+                  <li>• <strong>Zelle:</strong> Contact us at Admin@cpncreditboost.com</li>
+                  <li>• <strong>Venmo:</strong> Contact us at Admin@cpncreditboost.com</li>
+                </ul>
+              </div>
+
               <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4">
-                <h4 className="font-semibold text-orange-400 mb-2">Important Instructions:</h4>
+                <h4 className="font-semibold text-orange-400 mb-2">Payment Instructions:</h4>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Send exactly ${total} worth of Bitcoin</li>
-                  <li>• Use CashApp or your preferred Bitcoin wallet</li>
-                  <li>• Allow 1-3 confirmations for processing</li>
-                  <li>• Contact support with transaction ID after payment</li>
+                  <li>• Use Cashaap for fastest processing</li>
+                  <li>• For Zelle/Venmo, email Admin@cpncreditboost.com first</li>
+                  <li>• Allow 1-3 confirmations for crypto payments</li>
+                  <li>• Save transaction ID for your records</li>
                 </ul>
               </div>
 
@@ -248,8 +272,8 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               <iframe
                 width="100%"
                 height="315"
-                src="https://www.youtube.com/embed/Ba-LJhEd2Ko?si=cfU_hWvDwXsMS5X5"
-                title="How to Make Bitcoin Deposits"
+                src="https://www.youtube.com/embed/fDjDH_WAvYI?si=cfU_hWvDwXsMS5X5&t=4s"
+                title="How to Make Bitcoin Payments"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -258,15 +282,34 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
             </div>
 
             <div className="surface-elevated rounded-lg p-4">
-              <h4 className="font-semibold text-accent mb-2">Quick Steps:</h4>
-              <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside">
-                <li>Open your CashApp or Bitcoin wallet</li>
-                <li>Select "Send" or "Transfer"</li>
-                <li>Enter the Bitcoin address provided</li>
-                <li>Enter the exact USD amount: ${total}</li>
-                <li>Review and confirm the transaction</li>
-                <li>Save the transaction ID for your records</li>
-              </ol>
+              <h4 className="font-semibold text-accent mb-2">Payment Methods:</h4>
+              <div className="space-y-4">
+                <div>
+                  <h5 className="font-medium text-accent mb-2">1. Cashaap (Fastest)</h5>
+                  <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside ml-4">
+                    <li>Click the "Pay with Cashaap" button above</li>
+                    <li>Complete payment on Cashaap platform</li>
+                    <li>Return here to submit your information</li>
+                  </ol>
+                </div>
+                <div>
+                  <h5 className="font-medium text-accent mb-2">2. Direct Bitcoin</h5>
+                  <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside ml-4">
+                    <li>Copy our Bitcoin address: 18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t</li>
+                    <li>Open your Bitcoin wallet (CashApp, etc.)</li>
+                    <li>Send exactly ${total} worth of Bitcoin</li>
+                    <li>Save the transaction ID</li>
+                  </ol>
+                </div>
+                <div>
+                  <h5 className="font-medium text-accent mb-2">3. Zelle/Venmo</h5>
+                  <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside ml-4">
+                    <li>Email Admin@cpncreditboost.com</li>
+                    <li>Request payment instructions</li>
+                    <li>Complete payment via your preferred method</li>
+                  </ol>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
