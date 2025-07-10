@@ -1,28 +1,92 @@
 const Footer = () => {
   const footerLinks = {
     company: [
-      { name: "About Us", href: "#about" },
-      { name: "Our Team", href: "#team" },
-      { name: "Careers", href: "#careers" },
-      { name: "Press", href: "#press" }
+      { 
+        name: "About Us", 
+        href: "/about", 
+        description: "Learn about our mission to help clients achieve financial freedom through expert credit enhancement services and ethical business practices."
+      },
+      { 
+        name: "Our Team", 
+        href: "/team", 
+        description: "Meet our certified credit professionals and financial experts dedicated to your success with years of industry experience."
+      },
+      { 
+        name: "Careers", 
+        href: "/careers", 
+        description: "Join our growing team of credit specialists and help others achieve their financial goals while building your career in the credit industry."
+      },
+      { 
+        name: "Press", 
+        href: "/press", 
+        description: "Latest news, media coverage, and press releases about CPN Credit Boost's achievements and industry recognition."
+      }
     ],
     services: [
-      { name: "Buy Tradelines", href: "#tradelines" },
-      { name: "CPN Packages", href: "#packages" },
-      { name: "Business Credit", href: "#business" },
-      { name: "Credit Repair", href: "#repair" }
+      { 
+        name: "Buy Tradelines", 
+        href: "/tradelines", 
+        description: "Browse our extensive marketplace of aged tradelines from trusted banks to boost your credit profile and improve your creditworthiness."
+      },
+      { 
+        name: "CPN Packages", 
+        href: "/#packages", 
+        description: "Complete CPN packages with aged tradelines, credit monitoring, and step-by-step guidance for building strong credit profiles."
+      },
+      { 
+        name: "Business Credit", 
+        href: "/business-credit", 
+        description: "Establish and build business credit lines separate from personal credit to grow your company and protect your personal assets."
+      },
+      { 
+        name: "Credit Repair", 
+        href: "/credit-repair", 
+        description: "Professional credit repair services to dispute inaccuracies, remove negative items, and optimize your credit reports across all bureaus."
+      }
     ],
     support: [
-      { name: "FAQ", href: "#faq" },
-      { name: "Contact", href: "#contact" },
-      { name: "Live Chat", href: "#chat" },
-      { name: "Client Portal", href: "#portal" }
+      { 
+        name: "FAQ", 
+        href: "/#faq", 
+        description: "Find answers to common questions about tradelines, CPNs, credit building, and our services with detailed explanations."
+      },
+      { 
+        name: "Contact", 
+        href: "/contact", 
+        description: "Get in touch with our support team through multiple channels for personalized assistance with your credit enhancement journey."
+      },
+      { 
+        name: "Live Chat", 
+        href: "#chat", 
+        description: "Instant support through our live chat system for quick answers to your questions and real-time assistance."
+      },
+      { 
+        name: "Client Portal", 
+        href: "/login", 
+        description: "Access your secure client dashboard to track tradeline status, view credit reports, and manage your account information."
+      }
     ],
     legal: [
-      { name: "Privacy Policy", href: "#privacy" },
-      { name: "Terms of Service", href: "#terms" },
-      { name: "Disclaimer", href: "#disclaimer" },
-      { name: "Compliance", href: "#compliance" }
+      { 
+        name: "Privacy Policy", 
+        href: "/privacy", 
+        description: "Comprehensive privacy policy detailing how we protect, collect, and use your personal information in compliance with federal regulations."
+      },
+      { 
+        name: "Terms of Service", 
+        href: "/terms", 
+        description: "Complete terms and conditions governing the use of our services, client responsibilities, and service agreements."
+      },
+      { 
+        name: "Disclaimer", 
+        href: "/disclaimer", 
+        description: "Important legal disclaimers about credit enhancement services, results expectations, and regulatory compliance information."
+      },
+      { 
+        name: "Compliance", 
+        href: "/compliance", 
+        description: "Our commitment to legal compliance with FCRA, state regulations, and industry standards for credit enhancement services."
+      }
     ]
   };
 
@@ -112,44 +176,38 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Contact Information */}
+        {/* Detailed Explanations Section */}
         <div className="border-t border-border pt-8 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div>
-              <h4 className="font-semibold text-foreground mb-2">📞 Phone Support</h4>
-              <p className="text-muted-foreground">+1 (754) 328-7704</p>
-              <p className="text-sm text-muted-foreground">24/7 Available</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-2">✉️ Email Support</h4>
-              <p className="text-muted-foreground">admin@cpncreditboost.com</p>
-              <p className="text-sm text-muted-foreground">Response within 2 hours</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-2">💬 Live Chat</h4>
-              <p className="text-muted-foreground">Available on website</p>
-              <p className="text-sm text-muted-foreground">Instant responses</p>
-            </div>
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-semibold text-foreground mb-4">What We Offer</h3>
+            <p className="text-muted-foreground max-w-3xl mx-auto">
+              Comprehensive credit enhancement services designed to help you achieve your financial goals through ethical and legal methods.
+            </p>
           </div>
-        </div>
-        
-        {/* Social Links */}
-        <div className="border-t border-border pt-8 mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              Follow us for credit tips and updates:
-            </div>
-            <div className="flex gap-4">
-              {['Facebook', 'Twitter', 'LinkedIn', 'Instagram', 'YouTube'].map((social, index) => (
-                <a 
-                  key={index}
-                  href={`#${social.toLowerCase()}`} 
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {social}
-                </a>
-              ))}
-            </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Object.entries(footerLinks).map(([category, links]) => (
+              <div key={category} className="bg-surface-elevated p-6 rounded-lg">
+                <h4 className="font-semibold text-foreground mb-4 capitalize text-lg">
+                  {category}
+                </h4>
+                <div className="space-y-4">
+                  {links.map((link, index) => (
+                    <div key={index} className="group">
+                      <a 
+                        href={link.href} 
+                        className="block text-primary hover:text-primary-glow transition-colors font-medium"
+                      >
+                        {link.name}
+                      </a>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        {link.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         
