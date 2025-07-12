@@ -22,6 +22,7 @@ const RATE_LIMITS: Record<string, RateLimitConfig> = {
   register: { maxAttempts: 3, windowMs: 60 * 60 * 1000, blockDurationMs: 60 * 60 * 1000 }, // 3 attempts per hour, block for 1hour
   'ssn-validation': { maxAttempts: 10, windowMs: 60 * 60 * 1000, blockDurationMs: 60 * 60 * 1000 }, // 10 attempts per hour
   'password-reset': { maxAttempts: 3, windowMs: 60 * 60 * 1000, blockDurationMs: 60 * 60 * 1000 }, // 3 attempts per hour
+  'payment': { maxAttempts: 10, windowMs: 60 * 60 * 1000, blockDurationMs: 30 * 60 * 1000 }, // 10 payment attempts per hour
 };
 
 serve(async (req) => {
@@ -45,6 +46,13 @@ serve(async (req) => {
       );
     }
 
+    // Get client IP for additional tracking
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    
+    // Enhanced identifier that includes IP for better tracking
+    const enhancedKey = `${action}:${identifier}:${clientIP}`;
+
     const config = RATE_LIMITS[action];
     if (!config) {
       return new Response(
@@ -55,7 +63,7 @@ serve(async (req) => {
 
     const now = Date.now();
     const windowStart = now - config.windowMs;
-    const key = `${action}:${identifier}`;
+    const key = enhancedKey;
 
     // Get recent attempts from a hypothetical rate_limits table
     // For now, we'll use a simple in-memory approach with KV storage
@@ -93,13 +101,15 @@ serve(async (req) => {
       }
     }
 
-    // Record this attempt
+    // Record this attempt with enhanced metadata
     const { error: insertError } = await supabase
       .from('rate_limits')
       .insert({ 
         key, 
         action, 
         identifier, 
+        ip_address: clientIP,
+        user_agent: userAgent,
         created_at: new Date().toISOString() 
       });
 

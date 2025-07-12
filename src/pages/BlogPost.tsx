@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getBlogPostBySlug, getAllBlogPosts } from "@/utils/blogHelpers";
 import { ChevronLeft } from "lucide-react";
-import { renderSecureContent } from "@/utils/secureContent";
+import { SecureContent } from "@/components/SecureContent";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -79,11 +79,9 @@ const BlogPost = () => {
               {post.excerpt}
             </div>
             
-            <div 
+            <SecureContent 
+              content={post.content}
               className="blog-content"
-              dangerouslySetInnerHTML={{ 
-                __html: renderSecureContent(post.content)
-              }}
             />
           </div>
 
