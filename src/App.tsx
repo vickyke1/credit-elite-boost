@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import { useCSRF } from "@/hooks/useCSRF";
+import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
@@ -21,8 +22,9 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Initialize CSRF protection
+  // Initialize security systems
   useCSRF();
+  useSecurityMonitor();
   
   return (
     <QueryClientProvider client={queryClient}>
