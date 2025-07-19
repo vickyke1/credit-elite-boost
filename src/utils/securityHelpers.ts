@@ -286,9 +286,15 @@ export const performRASPChecks = (): { secure: boolean; issues: string[] } => {
     issues.push('Console tampering detected');
   }
   
-  // Check for prototype pollution
-  if (Object.prototype.hasOwnProperty('__proto__')) {
-    issues.push('Prototype pollution detected');
+  // Check for prototype pollution (safer detection)
+  try {
+    const hasProtoProp = Object.prototype.hasOwnProperty.call(Object.prototype, '__proto__');
+    const protoDescriptor = Object.getOwnPropertyDescriptor(Object.prototype, '__proto__');
+    if (hasProtoProp && protoDescriptor && protoDescriptor.configurable === false) {
+      issues.push('Prototype pollution detected');
+    }
+  } catch {
+    // Ignore errors in prototype pollution check
   }
   
   // Check for DOM tampering

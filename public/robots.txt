@@ -1,14 +1,21 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /tradelines
+Allow: /calculator
+Allow: /ssn-validator
+
+# Sitemap
+Sitemap: https://cpncreditboost.com/sitemap.xml
+
+# Crawl-delay for search engines
+Crawl-delay: 1
+
+# Block access to admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+
+# Block access to temporary files
+Disallow: /*.tmp$
+Disallow: /*.temp$

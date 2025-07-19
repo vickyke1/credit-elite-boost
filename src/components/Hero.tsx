@@ -15,7 +15,7 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto">
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Unlock the Power of{" "}
+            Boost Your Credit Score with{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent pulse-glow">
               Elite Credit Profiles
             </span>
@@ -23,7 +23,7 @@ const Hero = () => {
           
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            Aged Tradelines, Clean CPNs & Turnkey Credit Boosting Kits Delivered Fast.
+            Premium Aged Tradelines, Clean CPN Numbers & Credit Repair Kits. Fast 24-48 Hour Delivery with Money-Back Guarantee.
           </p>
           
           {/* CTA Buttons */}
