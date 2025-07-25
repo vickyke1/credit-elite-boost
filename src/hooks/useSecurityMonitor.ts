@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { logSecurityEvent, performRASPChecks, createAuditTrail } from '@/utils/securityHelpers';
+import { useSecurityHealthCheck } from './useSecurityHealthCheck';
 
 interface SecurityStatus {
   isSecure: boolean;
@@ -18,6 +19,8 @@ export const useSecurityMonitor = () => {
     lastCheck: new Date().toISOString(),
     riskLevel: 'low'
   });
+
+  const { healthStatus, performHealthCheck } = useSecurityHealthCheck();
 
   useEffect(() => {
     // Initialize security monitoring
@@ -70,6 +73,14 @@ export const useSecurityMonitor = () => {
         riskLevel = 'medium';
       }
 
+      // Include health check results
+      if (!healthStatus.isSecure) {
+        threats.push(...healthStatus.issues);
+        if (healthStatus.riskLevel === 'critical') riskLevel = 'critical';
+        else if (healthStatus.riskLevel === 'high' && riskLevel !== 'critical') riskLevel = 'high';
+        else if (healthStatus.riskLevel === 'medium' && riskLevel === 'low') riskLevel = 'medium';
+      }
+
       // Update security status
       setSecurityStatus({
         isSecure: threats.length === 0,
@@ -100,6 +111,7 @@ export const useSecurityMonitor = () => {
       if (document.visibilityState === 'visible') {
         createAuditTrail('page_focus', 'application');
         performSecurityChecks();
+        performHealthCheck(); // Re-run health check when user returns
       } else {
         createAuditTrail('page_blur', 'application');
       }
@@ -168,6 +180,7 @@ export const useSecurityMonitor = () => {
 
   return {
     securityStatus,
+    healthStatus,
     reportSecurityIncident,
     clearSecurityLogs,
     getSecurityReport
