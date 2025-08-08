@@ -10,11 +10,27 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only allow GET
+  if (req.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ error: 'Method Not Allowed' }),
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
-    // Return the specific Bitcoin wallet address
-    const bitcoinAddress = "18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t";
-    
-    console.log('Returning Bitcoin address:', bitcoinAddress);
+    // Fetch address from secure environment variable
+    const bitcoinAddress = Deno.env.get('BITCOIN_ADDRESS');
+    if (!bitcoinAddress) {
+      console.error('BITCOIN_ADDRESS not configured');
+      return new Response(
+        JSON.stringify({ error: 'Service unavailable' }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Avoid logging sensitive values
+    console.log('Returning Bitcoin address');
 
     return new Response(
       JSON.stringify({ address: bitcoinAddress }),
