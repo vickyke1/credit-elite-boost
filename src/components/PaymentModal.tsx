@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { emailSchema, phoneSchema, nameSchema, transactionIdSchema, SECURITY_CONFIG } from "@/lib/security";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
+// import removed: supabase client not needed for GET call
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -43,13 +43,19 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   useEffect(() => {
     const fetchPaymentAddress = async () => {
       if (!isOpen || cryptoAddress) return;
-      
       setLoadingAddress(true);
       try {
-        const { data, error } = await supabase.functions.invoke('get-payment-address');
-        
-        if (error) throw error;
-        
+        const resp = await fetch(
+          'https://jpmjsbonkbiapbxzwqyp.supabase.co/functions/v1/get-payment-address',
+          {
+            method: 'GET',
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwbWpzYm9ua2JpYXBieHp3cXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5NTg0MjMsImV4cCI6MjA2NzUzNDQyM30.5XC42MmWrUF2oMkfkIXPOzwa0z0Qmw00qFzO2FHHytE'
+            }
+          }
+        );
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
         if (data?.address) {
           setCryptoAddress(data.address);
         } else {
@@ -102,6 +108,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Complete Your Purchase - ${total}</DialogTitle>
+          <DialogDescription>Secure checkout via crypto. Your payment address is generated server-side.</DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="crypto" className="w-full">
@@ -126,10 +133,15 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                   Quick and secure crypto payment through Cashaap platform
                 </p>
                 <Button
-                  onClick={() => window.open(`https://cashaap.com/pay?address=18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t&amount=${total}&currency=USD`, '_blank')}
+                  onClick={() => cryptoAddress && window.open(`https://cashaap.com/pay?address=${cryptoAddress}&amount=${total}&currency=USD`, '_blank')}
                   className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent mb-2"
+                  disabled={!cryptoAddress || loadingAddress}
                 >
-                  Pay ${total} with Cashaap
+                  {loadingAddress ? (
+                    <span className="inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Preparing payment…</span>
+                  ) : (
+                    <>Pay ${total} with Cashaap</>
+                  )}
                 </Button>
               </div>
 
@@ -139,23 +151,17 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                 <Label className="text-sm font-medium">Our Bitcoin Address:</Label>
                 <div className="flex items-center gap-2 mt-2">
                   <Input 
-                    value="18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t"
+                    value={cryptoAddress}
                     readOnly
+                    placeholder={loadingAddress ? 'Loading address…' : 'Bitcoin address will appear here'}
                     className="font-mono text-sm"
                   />
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText("18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t");
-                      setCopied(true);
-                      toast({
-                        title: "Address Copied!",
-                        description: "Bitcoin address copied to clipboard",
-                      });
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
+                    onClick={copyToClipboard}
                     className="shrink-0"
+                    disabled={!cryptoAddress}
                   >
                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
@@ -295,7 +301,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                 <div>
                   <h5 className="font-medium text-accent mb-2">2. Direct Bitcoin</h5>
                   <ol className="text-sm space-y-1 text-muted-foreground list-decimal list-inside ml-4">
-                    <li>Copy our Bitcoin address: 18zzeUz9UXTZ58W6TxdKCh94un8JK7Jc3t</li>
+                    <li>Copy our Bitcoin address: {cryptoAddress || 'loading…'}</li>
                     <li>Open your Bitcoin wallet (CashApp, etc.)</li>
                     <li>Send exactly ${total} worth of Bitcoin</li>
                     <li>Save the transaction ID</li>

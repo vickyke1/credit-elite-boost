@@ -112,13 +112,8 @@ export class SecurityAudit {
    * Get client IP address
    */
   private async getClientIP(): Promise<string> {
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip;
-    } catch {
-      return 'unknown';
-    }
+    // Avoid third-party IP lookups from the client for privacy
+    return 'redacted';
   }
 
   /**
