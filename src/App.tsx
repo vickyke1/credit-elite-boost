@@ -18,6 +18,19 @@ import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import About from "./pages/About";
+import Team from "./pages/Team";
+import Careers from "./pages/Careers";
+import Press from "./pages/Press";
+import CPNPackages from "./pages/CPNPackages";
+import BusinessCredit from "./pages/BusinessCredit";
+import CreditRepair from "./pages/CreditRepair";
+import Contact from "./pages/Contact";
+import LiveChat from "./pages/LiveChat";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Disclaimer from "./pages/Disclaimer";
+import Compliance from "./pages/Compliance";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +57,28 @@ const App = () => {
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              
+              {/* Company Pages */}
+              <Route path="/about" element={<About />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/press" element={<Press />} />
+              
+              {/* Service Pages */}
+              <Route path="/cpn-packages" element={<CPNPackages />} />
+              <Route path="/business-credit" element={<BusinessCredit />} />
+              <Route path="/credit-repair" element={<CreditRepair />} />
+              
+              {/* Support Pages */}
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/live-chat" element={<LiveChat />} />
+              
+              {/* Legal Pages */}
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/disclaimer" element={<Disclaimer />} />
+              <Route path="/compliance" element={<Compliance />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
