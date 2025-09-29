@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   const footerLinks = {
     company: [
@@ -128,9 +130,9 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                  <Link to={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -141,9 +143,15 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
-                    {link.name}
-                  </a>
+                  {link.href.startsWith('/') && !link.href.includes('#') ? (
+                    <Link to={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -154,9 +162,15 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.support.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
-                    {link.name}
-                  </a>
+                  {link.href.startsWith('/') && !link.href.includes('#') ? (
+                    <Link to={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -167,9 +181,9 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link, index) => (
                 <li key={index}>
-                  <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
+                  <Link to={link.href} className="text-muted-foreground hover:text-primary transition-colors animated-underline">
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -194,12 +208,21 @@ const Footer = () => {
                 <div className="space-y-4">
                   {links.map((link, index) => (
                     <div key={index} className="group">
-                      <a 
-                        href={link.href} 
-                        className="block text-primary hover:text-primary-glow transition-colors font-medium"
-                      >
-                        {link.name}
-                      </a>
+                      {link.href.startsWith('/') && !link.href.includes('#') ? (
+                        <Link 
+                          to={link.href} 
+                          className="block text-primary hover:text-primary-glow transition-colors font-medium"
+                        >
+                          {link.name}
+                        </Link>
+                      ) : (
+                        <a 
+                          href={link.href} 
+                          className="block text-primary hover:text-primary-glow transition-colors font-medium"
+                        >
+                          {link.name}
+                        </a>
+                      )}
                       <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                         {link.description}
                       </p>

@@ -48,13 +48,13 @@ const Navigation = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-foreground hover:text-primary transition-colors animated-underline">Home</a>
-            <a href="/tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Buy Tradelines</a>
-            <a href="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</a>
-            <a href="/ssn-validator" className="text-foreground hover:text-primary transition-colors animated-underline">SSN Validator</a>
-            <a href="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</a>
-            <a href="/#packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</a>
-            <a href="/#faq" className="text-foreground hover:text-primary transition-colors animated-underline">FAQ</a>
+            <Link to="/" className="text-foreground hover:text-primary transition-colors animated-underline">Home</Link>
+            <Link to="/tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Buy Tradelines</Link>
+            <Link to="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</Link>
+            <Link to="/ssn-validator" className="text-foreground hover:text-primary transition-colors animated-underline">SSN Validator</Link>
+            <Link to="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</Link>
+            <a href="#packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</a>
+            <a href="#faq" className="text-foreground hover:text-primary transition-colors animated-underline">FAQ</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors animated-underline">Contact</a>
           </div>
           
