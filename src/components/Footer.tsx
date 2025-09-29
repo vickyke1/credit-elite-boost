@@ -190,49 +190,6 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Detailed Explanations Section */}
-        <div className="border-t border-border pt-8 mb-8">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-semibold text-foreground mb-4">What We Offer</h3>
-            <p className="text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive credit enhancement services designed to help you achieve your financial goals through ethical and legal methods.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Object.entries(footerLinks).map(([category, links]) => (
-              <div key={category} className="bg-surface-elevated p-6 rounded-lg">
-                <h4 className="font-semibold text-foreground mb-4 capitalize text-lg">
-                  {category}
-                </h4>
-                <div className="space-y-4">
-                  {links.map((link, index) => (
-                    <div key={index} className="group">
-                      {link.href.startsWith('/') && !link.href.includes('#') ? (
-                        <Link 
-                          to={link.href} 
-                          className="block text-primary hover:text-primary-glow transition-colors font-medium"
-                        >
-                          {link.name}
-                        </Link>
-                      ) : (
-                        <a 
-                          href={link.href} 
-                          className="block text-primary hover:text-primary-glow transition-colors font-medium"
-                        >
-                          {link.name}
-                        </a>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        {link.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
         
         {/* Copyright */}
         <div className="border-t border-border pt-8 text-center">
