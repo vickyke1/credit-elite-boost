@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { emailSchema, phoneSchema, nameSchema, transactionIdSchema, SECURITY_CONFIG } from "@/lib/security";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-// import removed: supabase client not needed for GET call
+import { supabase } from "@/integrations/supabase/client";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -45,17 +45,10 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
       if (!isOpen || cryptoAddress) return;
       setLoadingAddress(true);
       try {
-        const resp = await fetch(
-          'https://jpmjsbonkbiapbxzwqyp.supabase.co/functions/v1/get-payment-address',
-          {
-            method: 'GET',
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwbWpzYm9ua2JpYXBieHp3cXlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5NTg0MjMsImV4cCI6MjA2NzUzNDQyM30.5XC42MmWrUF2oMkfkIXPOzwa0z0Qmw00qFzO2FHHytE'
-            }
-          }
-        );
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json();
+        const { data, error } = await supabase.functions.invoke('get-payment-address');
+        
+        if (error) throw error;
+        
         if (data?.address) {
           setCryptoAddress(data.address);
         } else {
