@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Check, AlertTriangle, Loader2 } from "lucide-react";
+import { Copy, Check, AlertTriangle, Loader2, QrCode } from "lucide-react";
+import bitcoinQR from "@/assets/bitcoin-qr.jpg";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -141,23 +142,44 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               {/* Direct Bitcoin Payment */}
               <div className="surface-elevated rounded-lg p-4">
                 <h3 className="font-semibold text-accent mb-3">Option 2: Direct Bitcoin Payment</h3>
-                <Label className="text-sm font-medium">Our Bitcoin Address:</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <Input 
-                    value={cryptoAddress}
-                    readOnly
-                    placeholder={loadingAddress ? 'Loading address…' : 'Bitcoin address will appear here'}
-                    className="font-mono text-sm"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={copyToClipboard}
-                    className="shrink-0"
-                    disabled={!cryptoAddress}
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </Button>
+                
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  {/* QR Code Section */}
+                  <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-muted rounded-lg">
+                    <QrCode className="w-5 h-5 text-accent mb-2" />
+                    <p className="text-sm font-medium text-accent mb-3">Scan with CashApp or Phone</p>
+                    <img 
+                      src={bitcoinQR} 
+                      alt="Bitcoin Payment QR Code" 
+                      className="w-48 h-48 rounded-lg border-2 border-accent/20"
+                    />
+                    <p className="text-xs text-muted-foreground mt-2 text-center">Scan to pay instantly</p>
+                  </div>
+
+                  {/* Address Section */}
+                  <div className="flex flex-col justify-center">
+                    <Label className="text-sm font-medium mb-2">Or Copy Bitcoin Address:</Label>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        value={cryptoAddress}
+                        readOnly
+                        placeholder={loadingAddress ? 'Loading address…' : 'Bitcoin address will appear here'}
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyToClipboard}
+                        className="shrink-0"
+                        disabled={!cryptoAddress}
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Send exactly ${total} worth of Bitcoin
+                    </p>
+                  </div>
                 </div>
               </div>
 

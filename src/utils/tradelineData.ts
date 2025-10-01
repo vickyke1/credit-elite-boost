@@ -19,7 +19,11 @@ export const generateTradelines = (): Tradeline[] => {
     "Discover", "Barclays", "U.S. Bank", "PNC", "TD Bank", "Regions", "SunTrust", 
     "Fifth Third", "KeyBank", "Huntington", "Synchrony", "Navy Federal", "USAA", 
     "First National", "Citizens Bank", "BB&T", "Union Bank", "HSBC", "Goldman Sachs",
-    "Morgan Stanley", "Charles Schwab", "Fidelity", "Vanguard", "Ally Bank"
+    "Morgan Stanley", "Charles Schwab", "Fidelity", "Vanguard", "Ally Bank",
+    "Marcus", "Truist", "BMO Harris", "M&T Bank", "Santander", "Citizens", "Regions",
+    "First Citizens", "Comerica", "Zions", "Webster Bank", "BOK Financial", "Synovus",
+    "Valley National", "Old National", "First Horizon", "Umpqua", "BancorpSouth", "Arvest",
+    "Frost Bank", "Associated Bank", "Commerce Bank", "Pinnacle", "Texas Capital", "CIT Bank"
   ];
 
   const cardTypes = [
@@ -32,7 +36,7 @@ export const generateTradelines = (): Tradeline[] => {
 
   const tradelines = [];
   
-  for (let i = 0; i < 630; i++) {
+  for (let i = 0; i < 1500; i++) {
     const bank = banks[Math.floor(Math.random() * banks.length)];
     const cardType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
     const creditLimit = [5000, 7500, 10000, 12500, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 75000, 100000][Math.floor(Math.random() * 13)];
