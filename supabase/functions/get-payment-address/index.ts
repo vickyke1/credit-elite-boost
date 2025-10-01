@@ -10,8 +10,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Only allow GET
-  if (req.method !== 'GET') {
+  // Only allow POST
+  if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({ error: 'Method Not Allowed' }),
       { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
