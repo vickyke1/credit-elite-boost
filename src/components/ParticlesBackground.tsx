@@ -5,18 +5,6 @@ import { loadSlim } from "@tsparticles/slim";
 const ParticlesBackground = () => {
   const [init, setInit] = useState(false);
 
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => {
-      setInit(true);
-    });
-  }, []);
-
-  if (!init) {
-    return null;
-  }
-
   const options = useMemo(
     () => ({
       background: {
@@ -83,6 +71,18 @@ const ParticlesBackground = () => {
     } as const),
     [],
   );
+
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
+
+  if (!init) {
+    return null;
+  }
 
   return (
     <Particles
