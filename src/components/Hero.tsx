@@ -4,7 +4,11 @@ import heroBackground from "@/assets/hero-background.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center hero-bg cyber-grid overflow-hidden">
+    <section 
+      id="hero" 
+      className="relative min-h-screen flex items-center justify-center hero-bg cyber-grid overflow-hidden"
+      aria-labelledby="hero-heading"
+    >
       {/* Background Image Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
@@ -12,10 +16,13 @@ const Hero = () => {
       />
       
       {/* Content */}
-      <div className="relative z-10 container px-6 text-center">
+      <div className="relative z-10 container px-4 sm:px-6 text-center">
         <div className="max-w-4xl mx-auto">
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 
+            id="hero-heading" 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
+          >
             Boost Your Credit Score with{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent pulse-glow">
               Elite Credit Profiles
@@ -23,23 +30,25 @@ const Hero = () => {
           </h1>
           
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
             Premium Aged Tradelines, Clean CPN Numbers & Credit Repair Kits. Fast 24-48 Hour Delivery with Money-Back Guarantee.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-8 sm:mb-12 px-4">
             <Button 
               size="lg" 
-              className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-lg px-8 py-6 h-auto font-semibold"
+              className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full sm:w-auto"
+              aria-label="Get started with credit boost services"
             >
               Get Started
             </Button>
-            <Link to="/tradelines">
+            <Link to="/tradelines" className="w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-lg px-8 py-6 h-auto font-semibold glow-primary"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold glow-primary min-h-[56px] w-full"
+                aria-label="Browse available tradelines"
               >
                 View Tradelines
               </Button>
@@ -47,25 +56,30 @@ const Hero = () => {
             <Button 
               variant="secondary" 
               size="lg"
-              className="hover:scale-105 transition-transform duration-300 text-lg px-8 py-6 h-auto font-semibold"
+              className="hover:scale-105 transition-transform duration-300 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full sm:w-auto"
+              aria-label="Learn about CPN numbers"
             >
               Learn About CPNs
             </Button>
           </div>
           
           {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
-              SSL Secured
+          <div 
+            className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground px-4"
+            role="list"
+            aria-label="Trust indicators"
+          >
+            <div className="flex items-center gap-2" role="listitem">
+              <div className="w-3 h-3 bg-accent rounded-full animate-pulse" aria-hidden="true"></div>
+              <span>SSL Secured</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-              24/7 Support
+            <div className="flex items-center gap-2" role="listitem">
+              <div className="w-3 h-3 bg-primary rounded-full animate-pulse" aria-hidden="true"></div>
+              <span>24/7 Support</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
-              Money-Back Guarantee
+            <div className="flex items-center gap-2" role="listitem">
+              <div className="w-3 h-3 bg-accent rounded-full animate-pulse" aria-hidden="true"></div>
+              <span>Money-Back Guarantee</span>
             </div>
           </div>
         </div>
