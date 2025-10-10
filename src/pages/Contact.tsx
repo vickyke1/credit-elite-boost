@@ -4,8 +4,51 @@ import FloatingChat from "@/components/FloatingChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useContactForm } from "@/hooks/useContactForm";
+import { useState } from "react";
 
 const Contact = () => {
+  const { submitForm, isSubmitting } = useContactForm();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const result = await submitForm({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      subject: formData.subject,
+      message: formData.message
+    });
+
+    if (result.success) {
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
   const contactMethods = [
     {
       title: "Phone Support",
@@ -113,15 +156,20 @@ const Contact = () => {
                 Send Us a Message
               </h2>
               
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       First Name *
                     </label>
                     <Input 
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
                       placeholder="Enter your first name" 
                       className="w-full"
+                      required
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div>
@@ -129,8 +177,13 @@ const Contact = () => {
                       Last Name *
                     </label>
                     <Input 
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
                       placeholder="Enter your last name" 
                       className="w-full"
+                      required
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
@@ -141,8 +194,13 @@ const Contact = () => {
                   </label>
                   <Input 
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="your.email@example.com" 
                     className="w-full"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
                 
@@ -152,8 +210,12 @@ const Contact = () => {
                   </label>
                   <Input 
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="(555) 123-4567" 
                     className="w-full"
+                    disabled={isSubmitting}
                   />
                 </div>
                 
@@ -162,8 +224,13 @@ const Contact = () => {
                     Subject *
                   </label>
                   <Input 
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
                     placeholder="What can we help you with?" 
                     className="w-full"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
                 
@@ -172,15 +239,20 @@ const Contact = () => {
                     Message *
                   </label>
                   <Textarea 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     placeholder="Please describe your question or concern in detail..."
                     rows={5}
                     className="w-full"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
                 
                 <div className="text-center">
-                  <Button size="lg" className="px-8 py-3">
-                    Send Message
+                  <Button type="submit" size="lg" className="px-8 py-3" disabled={isSubmitting}>
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </div>
               </form>
