@@ -31,6 +31,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Disclaimer from "./pages/Disclaimer";
 import Compliance from "./pages/Compliance";
+import TypesOfTradelines from "./pages/TypesOfTradelines";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/cpn-packages" element={<CPNPackages />} />
               <Route path="/business-credit" element={<BusinessCredit />} />
               <Route path="/credit-repair" element={<CreditRepair />} />
+              <Route path="/types-of-tradelines" element={<TypesOfTradelines />} />
               
               {/* Support Pages */}
               <Route path="/contact" element={<Contact />} />

@@ -59,6 +59,7 @@ const Navigation = () => {
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             <Link to="/" className="text-foreground hover:text-primary transition-colors animated-underline">Home</Link>
             <Link to="/tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Buy Tradelines</Link>
+            <Link to="/types-of-tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Tradeline Types</Link>
             <Link to="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</Link>
             <Link to="/ssn-validator" className="text-foreground hover:text-primary transition-colors animated-underline">SSN Validator</Link>
             <Link to="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</Link>
@@ -133,7 +134,14 @@ const Navigation = () => {
                     Buy Tradelines
                   </Link>
                   <Link 
-                    to="/calculator" 
+                    to="/types-of-tradelines" 
+                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tradeline Types
+                  </Link>
+                  <Link 
+                    to="/calculator"
                     className="text-lg text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
