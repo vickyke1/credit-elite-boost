@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAllBlogPosts, getFeaturedPosts, getPostsByTag } from "@/utils/blogHelpers";
+import SEOHead from "@/components/SEOHead";
+import EmailSignup from "@/components/EmailSignup";
 
 const Blog = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -21,9 +23,16 @@ const Blog = () => {
   ).sort();
 
   return (
-    <div className="min-h-screen bg-background relative">
-      <ParticlesBackground />
-      <Navigation />
+    <>
+      <SEOHead
+        title="Credit & Finance Blog - Expert Credit Tips | CPN Credit Boost"
+        description="Expert insights, tips, and strategies to help you master your credit and achieve financial success. Learn about CPNs, tradelines, and credit building."
+        keywords="credit tips, credit building, CPN guide, tradeline education, credit repair advice, financial success, credit score tips"
+        canonicalUrl="https://cpncreditboost.com/blog"
+      />
+      <div className="min-h-screen bg-background relative">
+        <ParticlesBackground />
+        <Navigation />
       
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-6">
@@ -173,8 +182,16 @@ const Blog = () => {
         </div>
       </section>
 
+      {/* Email Signup */}
+      <section className="pb-16 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <EmailSignup />
+        </div>
+      </section>
+
       <Footer />
     </div>
+    </>
   );
 };
 
