@@ -181,7 +181,7 @@ const LiveChat = () => {
               <div className="mt-8 bg-surface-elevated border border-border p-4 rounded-lg">
                 <h4 className="font-semibold text-foreground mb-3">Other Ways to Contact Us</h4>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <div>📞 Phone: (555) 123-CREDIT</div>
+                  <div>📞 Phone: +1 (904) 243-5425</div>
                   <div>✉️ Email: support@cpncreditboost.com</div>
                   <div>🕒 Hours: Mon-Fri 9AM-6PM EST</div>
                 </div>

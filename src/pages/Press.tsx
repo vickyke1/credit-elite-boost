@@ -86,7 +86,7 @@ const Press = () => {
               </p>
               <div className="space-y-2 text-muted-foreground">
                 <p><strong>Email:</strong> press@cpncreditboost.com</p>
-                <p><strong>Phone:</strong> (555) 123-PRESS</p>
+                <p><strong>Phone:</strong> +1 (904) 243-5425</p>
                 <p><strong>Response Time:</strong> Within 24 hours</p>
               </div>
             </div>

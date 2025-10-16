@@ -11,7 +11,7 @@ export const organizationSchema = {
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer service",
-    "telephone": "+1-800-CPN-BOOST",
+    "telephone": "+1 (904) 243-5425",
     "email": "support@cpncreditboost.com",
     "availableLanguage": "English",
     "areaServed": "US"

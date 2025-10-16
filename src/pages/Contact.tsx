@@ -84,19 +84,19 @@ const Contact = () => {
     {
       title: "Corporate Headquarters",
       address: "123 Financial District Blvd\nSuite 500\nNew York, NY 10005",
-      phone: "(555) 123-0001",
+      phone: "+1 (904) 243-5425",
       email: "corporate@cpncreditboost.com"
     },
     {
       title: "West Coast Office",
       address: "456 Innovation Drive\nSuite 200\nLos Angeles, CA 90210", 
-      phone: "(555) 123-0002",
+      phone: "+1 (904) 243-5425",
       email: "westcoast@cpncreditboost.com"
     },
     {
       title: "Customer Service Center",
       address: "789 Support Center Way\nFloor 3\nAtlanta, GA 30309",
-      phone: "(555) 123-HELP",
+      phone: "+1 (904) 243-5425",
       email: "support@cpncreditboost.com"
     }
   ];

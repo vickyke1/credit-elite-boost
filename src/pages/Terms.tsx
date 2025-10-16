@@ -248,7 +248,7 @@ const Terms = () => {
                     <div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">Legal Department</h3>
                       <p>Email: legal@cpncreditboost.com<br/>
-                      Phone: (555) 123-LEGAL<br/>
+                      Phone: +1 (904) 243-5425<br/>
                       Response Time: 2-3 business days</p>
                     </div>
                     

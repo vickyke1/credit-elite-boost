@@ -235,14 +235,14 @@ const Disclaimer = () => {
                     <div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">Legal Department</h3>
                       <p>Email: legal@cpncreditboost.com<br/>
-                      Phone: (555) 123-LEGAL<br/>
+                      Phone: +1 (904) 243-5425<br/>
                       Business Hours: Mon-Fri 9AM-5PM EST</p>
                     </div>
                     
                     <div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">Compliance Officer</h3>
                       <p>Email: compliance@cpncreditboost.com<br/>
-                      Phone: (555) 123-COMPLY<br/>
+                      Phone: +1 (904) 243-5425<br/>
                       Response Time: 2-3 business days</p>
                     </div>
                   </div>
