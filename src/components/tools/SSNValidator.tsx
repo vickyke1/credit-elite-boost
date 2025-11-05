@@ -102,7 +102,7 @@ export const SSNValidator = () => {
         groupNumber !== "00" &&
         serialNumber !== "0000";
 
-      // Mock validation result
+      // Format validation result (NOT authoritative verification)
       const mockResult: SSNValidationResult = {
         isValid: isValidFormat,
         areaNumber,
@@ -111,8 +111,8 @@ export const SSNValidator = () => {
         state: isValidFormat ? getStateFromArea(areaNumber) : "",
         yearsIssued: isValidFormat ? getYearsFromArea(areaNumber) : "",
         notes: isValidFormat 
-          ? "This SSN format appears to be valid and may have been issued."
-          : "This SSN format is invalid or follows a pattern that was never issued."
+          ? "⚠️ FORMAT ONLY: This SSN follows valid formatting rules, but this does NOT verify it is actually issued or authentic. State and year estimates are based on historical patterns (pre-2011) and may be inaccurate."
+          : "This SSN format does not follow valid formatting rules (contains invalid area, group, or serial number patterns)."
       };
 
       setResult(mockResult);
@@ -181,18 +181,29 @@ export const SSNValidator = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4 flex items-center gap-2">
           <Shield className="h-8 w-8 text-primary" />
-          Social Security Number Verification
+          SSN Format Validator
         </h1>
         <p className="text-muted-foreground">
-          Verify if a Social Security Number is valid and whether it has been issued. 
-          This tool uses SSA data to determine when and where an SSN was issued.
+          Check if a Social Security Number follows the correct format pattern. 
+          This tool validates format only and cannot verify if an SSN is actually issued or authentic.
         </p>
         
-        <Alert className="mt-4 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
-          <AlertTriangle className="h-4 w-4 text-orange-600" />
-          <AlertDescription className="text-orange-800 dark:text-orange-200">
-            <strong>Privacy Notice:</strong> This tool performs client-side validation only. 
-            No SSN data is transmitted to external servers. For educational purposes only.
+        <Alert className="mt-4 border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+          <AlertTriangle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800 dark:text-red-200">
+            <strong className="block mb-2">⚠️ IMPORTANT DISCLAIMER:</strong>
+            This tool performs FORMAT VALIDATION ONLY. It cannot verify if an SSN is actually issued, valid, or belongs to a real person. 
+            The state and year information shown are historical estimates based on old SSA allocation patterns (pre-2011 randomization) and should NOT be considered authoritative.
+            <br/><br/>
+            <strong>This tool does NOT:</strong>
+            <ul className="list-disc ml-5 mt-1">
+              <li>Verify SSN authenticity or issuance</li>
+              <li>Check against any government database</li>
+              <li>Confirm SSN ownership or validity</li>
+              <li>Provide legally binding verification</li>
+            </ul>
+            <br/>
+            For educational and format-checking purposes only. Do not rely on this tool for any official verification.
           </AlertDescription>
         </Alert>
       </div>
@@ -200,10 +211,10 @@ export const SSNValidator = () => {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            🇺🇸 Verify Social Security Number
+            🔍 Check SSN Format
           </CardTitle>
           <CardDescription>
-            Enter a 9-digit Social Security Number to verify its validity
+            Enter a 9-digit Social Security Number to check its format (NOT authoritative verification)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -225,7 +236,7 @@ export const SSNValidator = () => {
             disabled={ssn.replace(/\D/g, '').length !== 9 || isValidating}
             className="w-full bg-accent hover:bg-accent/90"
           >
-            {isValidating ? "Verifying..." : "Verify SSN"}
+            {isValidating ? "Checking Format..." : "Check Format"}
           </Button>
         </CardContent>
       </Card>
@@ -239,7 +250,7 @@ export const SSNValidator = () => {
               ) : (
                 <XCircle className="h-5 w-5 text-red-500" />
               )}
-              Validation Result
+              Format Check Result
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -269,13 +280,17 @@ export const SSNValidator = () => {
                   </div>
                   
                   <div>
-                    <Label>Likely State of Issue:</Label>
-                    <div>{result.state}</div>
+                    <Label>Historical State Pattern (Pre-2011):</Label>
+                    <div className="text-muted-foreground text-sm">
+                      {result.state} <span className="italic">(estimate only - not authoritative)</span>
+                    </div>
                   </div>
                   
                   <div>
-                    <Label>Estimated Years Issued:</Label>
-                    <div>{result.yearsIssued}</div>
+                    <Label>Historical Year Range (Pre-2011):</Label>
+                    <div className="text-muted-foreground text-sm">
+                      {result.yearsIssued} <span className="italic">(estimate only - not authoritative)</span>
+                    </div>
                   </div>
                 </>
               )}
@@ -291,15 +306,24 @@ export const SSNValidator = () => {
         </Card>
       )}
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Important Disclaimers:</strong>
-          <br />
-          • This tool is for informational purposes only and is not intended for FCRA regulated purposes
-          • Data was collected from SSA's Highest Issued Group data and was last updated until Social Security Randomization took effect in June 2011
-          • This tool cannot be used to validate employee and non-employee Social Security Numbers
-          • We make no warranties as to the accuracy of this data. Use at your own risk.
+      <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-900 dark:text-amber-100">
+          <strong className="block mb-2">⚠️ Critical Legal & Accuracy Disclaimers:</strong>
+          
+          <div className="space-y-2 text-sm">
+            <p>• <strong>FORMAT VALIDATION ONLY:</strong> This tool checks SSN format patterns. It does NOT verify if an SSN is actually issued, valid, authentic, or belongs to any person.</p>
+            
+            <p>• <strong>NOT AUTHORITATIVE:</strong> State and year information are historical estimates based on pre-2011 SSA allocation patterns. Since June 2011, SSNs are randomly assigned and these estimates are unreliable.</p>
+            
+            <p>• <strong>NO DATABASE ACCESS:</strong> This tool does NOT access any government database, SSA records, or authoritative verification system.</p>
+            
+            <p>• <strong>NOT FOR FCRA PURPOSES:</strong> This tool is for educational/informational purposes only and is NOT intended for FCRA regulated purposes, employment verification, identity verification, or any official use.</p>
+            
+            <p>• <strong>NO WARRANTIES:</strong> We make no warranties as to accuracy, completeness, or reliability. Use entirely at your own risk.</p>
+            
+            <p>• <strong>LEGAL COMPLIANCE:</strong> Users are responsible for ensuring their use of this tool complies with all applicable laws. Misuse of SSN information may violate federal and state laws.</p>
+          </div>
         </AlertDescription>
       </Alert>
     </div>
