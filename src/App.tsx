@@ -12,7 +12,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";
-import SSNValidatorPage from "./pages/SSNValidatorPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
@@ -53,7 +52,6 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />
-              <Route path="/ssn-validator" element={<SSNValidatorPage />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/login" element={<Login />} />

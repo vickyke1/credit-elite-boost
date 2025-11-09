@@ -61,7 +61,6 @@ const Navigation = () => {
             <Link to="/tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Buy Tradelines</Link>
             <Link to="/types-of-tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Tradeline Types</Link>
             <Link to="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</Link>
-            <Link to="/ssn-validator" className="text-foreground hover:text-primary transition-colors animated-underline">SSN Validator</Link>
             <Link to="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</Link>
             <a href="#packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</a>
             <a href="#faq" className="text-foreground hover:text-primary transition-colors animated-underline">FAQ</a>
@@ -148,14 +147,7 @@ const Navigation = () => {
                     Calculator
                   </Link>
                   <Link 
-                    to="/ssn-validator" 
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    SSN Validator
-                  </Link>
-                  <Link 
-                    to="/blog" 
+                    to="/blog"
                     className="text-lg text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
