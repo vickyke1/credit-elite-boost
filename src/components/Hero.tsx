@@ -36,13 +36,15 @@ const Hero = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-8 sm:mb-12 px-4">
-            <Button 
-              size="lg" 
-              className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full sm:w-auto"
-              aria-label="Get started with credit boost services"
-            >
-              Get Started
-            </Button>
+            <Link to="/tradelines" className="w-full sm:w-auto">
+              <Button 
+                size="lg" 
+                className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full"
+                aria-label="Get started with credit boost services"
+              >
+                Get Started
+              </Button>
+            </Link>
             <Link to="/tradelines" className="w-full sm:w-auto">
               <Button 
                 variant="outline" 
@@ -53,14 +55,16 @@ const Hero = () => {
                 View Tradelines
               </Button>
             </Link>
-            <Button 
-              variant="secondary" 
-              size="lg"
-              className="hover:scale-105 transition-transform duration-300 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full sm:w-auto"
-              aria-label="Learn about CPN numbers"
-            >
-              Learn About CPNs
-            </Button>
+            <Link to="/cpn-packages" className="w-full sm:w-auto">
+              <Button 
+                variant="secondary" 
+                size="lg"
+                className="hover:scale-105 transition-transform duration-300 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full"
+                aria-label="Learn about CPN numbers"
+              >
+                Learn About CPNs
+              </Button>
+            </Link>
           </div>
           
           {/* Trust Indicators */}
