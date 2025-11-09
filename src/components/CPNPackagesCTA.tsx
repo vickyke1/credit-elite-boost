@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Package, Shield, Zap } from "lucide-react";
+import { ArrowRight, Package, Shield, Zap, Users, TrendingUp, Award } from "lucide-react";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 const CPNPackagesCTA = () => {
   return (
@@ -24,6 +25,39 @@ const CPNPackagesCTA = () => {
             Explore our comprehensive CPN packages designed to give you a fresh financial start. 
             From starter kits to elite funding-ready profiles.
           </p>
+          
+          {/* Animated Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 bg-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border/50">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Users className="w-5 h-5 text-primary" />
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  <AnimatedCounter end={10000} suffix="+" />
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground">Satisfied Clients</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-accent" />
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  <AnimatedCounter end={150} suffix="+" />
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground">Average Points Boosted</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Award className="w-5 h-5 text-primary" />
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  <AnimatedCounter end={98} suffix="%" decimals={0} />
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground">Success Rate</p>
+            </div>
+          </div>
           
           {/* Feature highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
