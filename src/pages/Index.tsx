@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import TradelineMarketplace from "@/components/TradelineMarketplace";
 import HowItWorks from "@/components/HowItWorks";
+import CPNPackagesCTA from "@/components/CPNPackagesCTA";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
@@ -43,6 +44,7 @@ const Index = () => {
           <WhyChooseUs />
           <TradelineMarketplace />
           <HowItWorks />
+          <CPNPackagesCTA />
           <Testimonials />
           <section className="py-16 px-6">
             <div className="container mx-auto">
