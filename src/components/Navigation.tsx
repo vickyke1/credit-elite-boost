@@ -62,9 +62,8 @@ const Navigation = () => {
             <Link to="/types-of-tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Tradeline Types</Link>
             <Link to="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</Link>
             <Link to="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</Link>
-            <a href="#packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</a>
-            <a href="#faq" className="text-foreground hover:text-primary transition-colors animated-underline">FAQ</a>
-            <a href="#contact" className="text-foreground hover:text-primary transition-colors animated-underline">Contact</a>
+            <Link to="/cpn-packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</Link>
+            <Link to="/contact" className="text-foreground hover:text-primary transition-colors animated-underline">Contact</Link>
           </div>
           
           {/* Desktop Cart and Auth */}
@@ -153,27 +152,20 @@ const Navigation = () => {
                   >
                     Blog
                   </Link>
-                  <a 
-                    href="#packages" 
+                  <Link 
+                    to="/cpn-packages"
                     className="text-lg text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     CPN Packages
-                  </a>
-                  <a 
-                    href="#faq" 
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    FAQ
-                  </a>
-                  <a 
-                    href="#contact" 
+                  </Link>
+                  <Link 
+                    to="/contact"
                     className="text-lg text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Contact
-                  </a>
+                  </Link>
                   
                   <div className="pt-6 border-t border-border space-y-4">
                     {user ? (
