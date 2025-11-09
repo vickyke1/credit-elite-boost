@@ -4,6 +4,15 @@ import FloatingChat from "@/components/FloatingChat";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
 import { productSchema, breadcrumbSchema } from "@/utils/schemaMarkup";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Link } from "react-router-dom";
 
 const CPNPackages = () => {
   const packages = [
@@ -108,6 +117,23 @@ const CPNPackages = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="pt-20">
+        {/* Breadcrumb Navigation */}
+        <div className="container mx-auto px-6 py-4">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>CPN Packages</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
         {/* Hero Section */}
         <header className="py-16 bg-gradient-subtle">
           <div className="container mx-auto px-6">

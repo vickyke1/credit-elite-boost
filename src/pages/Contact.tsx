@@ -6,6 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useContactForm } from "@/hooks/useContactForm";
 import { useState } from "react";
+import SEOHead from "@/components/SEOHead";
+import { breadcrumbSchema } from "@/utils/schemaMarkup";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   const { submitForm, isSubmitting } = useContactForm();
@@ -102,10 +113,44 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="pt-20">
-        {/* Hero Section */}
+    <>
+      <SEOHead
+        title="Contact Us - Get Help with Credit Building | CPN Credit Boost"
+        description="Contact our credit experts for personalized assistance. Phone, email, live chat, and client portal support available. Get help with tradelines, CPN services, and credit building."
+        keywords="contact credit services, credit help, tradeline support, CPN assistance, credit experts"
+        canonicalUrl="https://cpncreditboost.com/contact"
+        ogType="website"
+        schemaData={{
+          "@context": "https://schema.org",
+          "@graph": [
+            breadcrumbSchema([
+              { name: "Home", url: "https://cpncreditboost.com" },
+              { name: "Contact", url: "https://cpncreditboost.com/contact" }
+            ])
+          ]
+        }}
+      />
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-20">
+          {/* Breadcrumb Navigation */}
+          <div className="container mx-auto px-6 py-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Contact</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+
+          {/* Hero Section */}
         <section className="py-16 bg-gradient-subtle">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
@@ -339,10 +384,11 @@ const Contact = () => {
             </div>
           </div>
         </section>
-      </main>
-      <Footer />
-      <FloatingChat />
-    </div>
+        </main>
+        <Footer />
+        <FloatingChat />
+      </div>
+    </>
   );
 };
 
