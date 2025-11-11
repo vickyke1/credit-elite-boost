@@ -202,13 +202,14 @@ const CPNPackages = () => {
             <h2 id="comparison-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
               Package Comparison
             </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full max-w-6xl mx-auto bg-background border border-border rounded-lg">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="p-4 text-left text-foreground font-semibold">Features</th>
+            <div className="relative overflow-x-auto shadow-md rounded-lg border border-border">
+              <div className="inline-block min-w-full align-middle">
+                <table className="min-w-full bg-background">
+                  <thead className="sticky top-0 z-10 bg-surface-elevated shadow-sm">
+                    <tr className="border-b border-border">
+                      <th className="sticky left-0 z-20 p-4 text-left text-foreground font-semibold bg-surface-elevated shadow-sm min-w-[200px]">Features</th>
                     {packages.map((pkg, index) => (
-                      <th key={index} className={`p-4 text-center ${pkg.popular ? 'bg-primary/10' : ''}`}>
+                      <th key={index} className={`p-4 text-center min-w-[180px] ${pkg.popular ? 'bg-primary/10' : 'bg-surface-elevated'}`}>
                         <div className="font-bold text-foreground mb-1">{pkg.name}</div>
                         <div className="text-2xl font-bold text-primary">{pkg.price}</div>
                         {pkg.popular && (
@@ -223,8 +224,8 @@ const CPNPackages = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">CPN Number</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">CPN Number</td>
                     <td className="p-4 text-center">
                       <span className="text-primary text-xl">✓</span>
                     </td>
@@ -235,20 +236,20 @@ const CPNPackages = () => {
                       <span className="text-primary text-xl">✓</span>
                     </td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Aged Tradelines</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Aged Tradelines</td>
                     <td className="p-4 text-center text-foreground">1 (2+ years)</td>
                     <td className="p-4 text-center bg-primary/5 text-foreground">3 (3+ years)</td>
                     <td className="p-4 text-center text-foreground">5 (5+ years)</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Setup Guide</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Setup Guide</td>
                     <td className="p-4 text-center text-foreground">Basic</td>
                     <td className="p-4 text-center bg-primary/5 text-foreground">Comprehensive</td>
                     <td className="p-4 text-center text-foreground">VIP Consultation</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Credit Monitoring</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Credit Monitoring</td>
                     <td className="p-4 text-center">
                       <span className="text-primary text-xl">✓</span>
                     </td>
@@ -261,26 +262,26 @@ const CPNPackages = () => {
                       <div className="text-xs text-muted-foreground mt-1">24/7 Access</div>
                     </td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Support Level</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Support Level</td>
                     <td className="p-4 text-center text-foreground">Email</td>
                     <td className="p-4 text-center bg-primary/5 text-foreground">Priority Phone</td>
                     <td className="p-4 text-center text-foreground">Account Manager</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Documentation</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Documentation</td>
                     <td className="p-4 text-center text-foreground">Basic</td>
                     <td className="p-4 text-center bg-primary/5 text-foreground">Complete Kit</td>
                     <td className="p-4 text-center text-foreground">Legal + Complete</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Follow-up Support</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Follow-up Support</td>
                     <td className="p-4 text-center text-muted-foreground">—</td>
                     <td className="p-4 text-center bg-primary/5 text-foreground">30 Days</td>
                     <td className="p-4 text-center text-foreground">90 Days</td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Score Tracking Tools</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Score Tracking Tools</td>
                     <td className="p-4 text-center text-muted-foreground">—</td>
                     <td className="p-4 text-center bg-primary/5">
                       <span className="text-primary text-xl">✓</span>
@@ -290,8 +291,8 @@ const CPNPackages = () => {
                       <div className="text-xs text-muted-foreground mt-1">Advanced</div>
                     </td>
                   </tr>
-                  <tr className="border-b border-border">
-                    <td className="p-4 text-muted-foreground font-medium">Strategy Sessions</td>
+                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Strategy Sessions</td>
                     <td className="p-4 text-center text-muted-foreground">—</td>
                     <td className="p-4 text-center bg-primary/5 text-muted-foreground">—</td>
                     <td className="p-4 text-center">
@@ -299,8 +300,8 @@ const CPNPackages = () => {
                       <div className="text-xs text-muted-foreground mt-1">Monthly</div>
                     </td>
                   </tr>
-                  <tr>
-                    <td className="p-4"></td>
+                  <tr className="hover:bg-surface-elevated/50 transition-colors">
+                    <td className="sticky left-0 z-10 p-4 bg-background"></td>
                     <td className="p-4 text-center">
                       <Button variant="outline" className="w-full">
                         Get Started
@@ -319,6 +320,10 @@ const CPNPackages = () => {
                   </tr>
                 </tbody>
               </table>
+              </div>
+              <div className="block md:hidden text-center text-xs text-muted-foreground py-2 bg-background border-t border-border">
+                <span>← Scroll horizontally to view all packages →</span>
+              </div>
             </div>
             <p className="text-center text-sm text-muted-foreground mt-6">
               All packages include secure processing, legal compliance verification, and quality guarantee
