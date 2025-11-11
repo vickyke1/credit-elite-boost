@@ -17,7 +17,7 @@ import { Link } from "react-router-dom";
 const CPNPackages = () => {
   const packages = [
     {
-      name: "Starter Package",
+      name: "Foundation Builder",
       price: "$297",
       popular: false,
       features: [
@@ -29,10 +29,10 @@ const CPNPackages = () => {
         "Basic Documentation",
         "Setup Instructions"
       ],
-      description: "Perfect for beginners looking to start building credit with a CPN."
+      description: "Establish your credit foundation with essential tools and guidance for long-term financial success."
     },
     {
-      name: "Professional Package",
+      name: "Credit Accelerator",
       price: "$597",
       popular: true,
       features: [
@@ -45,10 +45,10 @@ const CPNPackages = () => {
         "30-Day Follow-up Support",
         "Score Tracking Tools"
       ],
-      description: "Most popular choice for serious credit building with multiple tradelines."
+      description: "Rapidly build strong credit with multiple tradelines and dedicated support from our expert team."
     },
     {
-      name: "Premium Package",
+      name: "Elite Credit Suite",
       price: "$997",
       popular: false,
       features: [
@@ -62,7 +62,7 @@ const CPNPackages = () => {
         "Advanced Score Optimization",
         "Monthly Strategy Sessions"
       ],
-      description: "Ultimate package for maximum credit building potential and personalized service."
+      description: "Maximum credit-building power with premium tradelines, white-glove service, and personalized strategy."
     }
   ];
 
