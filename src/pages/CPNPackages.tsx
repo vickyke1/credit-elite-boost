@@ -196,7 +196,136 @@ const CPNPackages = () => {
           </div>
         </section>
 
-        {/* Add-Ons */}
+        {/* Comparison Table */}
+        <section className="py-16 bg-surface-elevated" aria-labelledby="comparison-heading">
+          <div className="container mx-auto px-6">
+            <h2 id="comparison-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
+              Package Comparison
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full max-w-6xl mx-auto bg-background border border-border rounded-lg">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="p-4 text-left text-foreground font-semibold">Features</th>
+                    {packages.map((pkg, index) => (
+                      <th key={index} className={`p-4 text-center ${pkg.popular ? 'bg-primary/10' : ''}`}>
+                        <div className="font-bold text-foreground mb-1">{pkg.name}</div>
+                        <div className="text-2xl font-bold text-primary">{pkg.price}</div>
+                        {pkg.popular && (
+                          <div className="mt-2">
+                            <span className="inline-block bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
+                              Popular
+                            </span>
+                          </div>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">CPN Number</td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                    </td>
+                    <td className="p-4 text-center bg-primary/5">
+                      <span className="text-primary text-xl">✓</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Aged Tradelines</td>
+                    <td className="p-4 text-center text-foreground">1 (2+ years)</td>
+                    <td className="p-4 text-center bg-primary/5 text-foreground">3 (3+ years)</td>
+                    <td className="p-4 text-center text-foreground">5 (5+ years)</td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Setup Guide</td>
+                    <td className="p-4 text-center text-foreground">Basic</td>
+                    <td className="p-4 text-center bg-primary/5 text-foreground">Comprehensive</td>
+                    <td className="p-4 text-center text-foreground">VIP Consultation</td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Credit Monitoring</td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                    </td>
+                    <td className="p-4 text-center bg-primary/5">
+                      <span className="text-primary text-xl">✓</span>
+                      <div className="text-xs text-muted-foreground mt-1">+ Alerts</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                      <div className="text-xs text-muted-foreground mt-1">24/7 Access</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Support Level</td>
+                    <td className="p-4 text-center text-foreground">Email</td>
+                    <td className="p-4 text-center bg-primary/5 text-foreground">Priority Phone</td>
+                    <td className="p-4 text-center text-foreground">Account Manager</td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Documentation</td>
+                    <td className="p-4 text-center text-foreground">Basic</td>
+                    <td className="p-4 text-center bg-primary/5 text-foreground">Complete Kit</td>
+                    <td className="p-4 text-center text-foreground">Legal + Complete</td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Follow-up Support</td>
+                    <td className="p-4 text-center text-muted-foreground">—</td>
+                    <td className="p-4 text-center bg-primary/5 text-foreground">30 Days</td>
+                    <td className="p-4 text-center text-foreground">90 Days</td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Score Tracking Tools</td>
+                    <td className="p-4 text-center text-muted-foreground">—</td>
+                    <td className="p-4 text-center bg-primary/5">
+                      <span className="text-primary text-xl">✓</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                      <div className="text-xs text-muted-foreground mt-1">Advanced</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-border">
+                    <td className="p-4 text-muted-foreground font-medium">Strategy Sessions</td>
+                    <td className="p-4 text-center text-muted-foreground">—</td>
+                    <td className="p-4 text-center bg-primary/5 text-muted-foreground">—</td>
+                    <td className="p-4 text-center">
+                      <span className="text-primary text-xl">✓</span>
+                      <div className="text-xs text-muted-foreground mt-1">Monthly</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4"></td>
+                    <td className="p-4 text-center">
+                      <Button variant="outline" className="w-full">
+                        Get Started
+                      </Button>
+                    </td>
+                    <td className="p-4 text-center bg-primary/5">
+                      <Button className="w-full">
+                        Get Started
+                      </Button>
+                    </td>
+                    <td className="p-4 text-center">
+                      <Button variant="outline" className="w-full">
+                        Get Started
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              All packages include secure processing, legal compliance verification, and quality guarantee
+            </p>
+          </div>
+        </section>
+
         <section className="py-16 bg-surface-elevated" aria-labelledby="addons-heading">
           <div className="container mx-auto px-6">
             <h2 id="addons-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
