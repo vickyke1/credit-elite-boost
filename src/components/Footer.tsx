@@ -32,7 +32,7 @@ const Footer = () => {
       },
       { 
         name: "CPN Packages", 
-        href: "/#packages", 
+        href: "/cpn-packages",
         description: "Complete CPN packages with aged tradelines, credit monitoring, and step-by-step guidance for building strong credit profiles."
       },
       { 
