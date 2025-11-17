@@ -200,8 +200,7 @@ const Privacy = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">Privacy Officer</h3>
-                      <p>Email: privacy@cpncreditboost.com<br/>
-                      Phone: +1 (904) 243-5425<br/>
+                      <p>Telegram: <a href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@cpncreditboost</a><br/>
                       Response Time: 24-48 hours</p>
                     </div>
                     

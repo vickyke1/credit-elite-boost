@@ -94,12 +94,9 @@ const FAQ = () => {
               Our credit experts are standing by to answer your questions and help you 
               choose the perfect credit enhancement package.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="tel:+1-800-CPN-BOOST" className="inline-flex items-center justify-center px-6 py-3 bg-gradient-cta rounded-lg font-semibold hover:scale-105 transition-transform duration-300 glow-accent">
-                📞 Call Now: 1-800-CPN-BOOST
-              </a>
-              <a href="mailto:support@cpncreditboost.com" className="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-colors glow-primary">
-                ✉️ Email Support
+            <div className="flex justify-center">
+              <a href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-6 py-3 bg-gradient-cta rounded-lg font-semibold hover:scale-105 transition-transform duration-300 glow-accent">
+                💬 Contact us on Telegram
               </a>
             </div>
           </div>

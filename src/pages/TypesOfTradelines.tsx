@@ -323,13 +323,9 @@ const TypesOfTradelines = () => {
               <p className="text-muted-foreground mb-4">
                 Our credit experts are here to help you understand your options.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center text-sm">
-                <a href="tel:+18555551234" className="text-primary hover:underline font-medium">
-                  📞 (855) 555-1234
-                </a>
-                <span className="hidden sm:inline text-muted-foreground">•</span>
-                <a href="mailto:support@cpncreditboost.com" className="text-primary hover:underline font-medium">
-                  ✉️ support@cpncreditboost.com
+              <div className="flex justify-center">
+                <a href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+                  💬 Telegram: @cpncreditboost
                 </a>
               </div>
             </div>

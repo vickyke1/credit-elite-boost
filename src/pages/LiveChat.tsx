@@ -179,12 +179,10 @@ const LiveChat = () => {
               
               {/* Contact Info */}
               <div className="mt-8 bg-surface-elevated border border-border p-4 rounded-lg">
-                <h4 className="font-semibold text-foreground mb-3">Other Ways to Contact Us</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <div>📞 Phone: +1 (904) 243-5425</div>
-                  <div>✉️ Email: support@cpncreditboost.com</div>
-                  <div>🕒 Hours: Mon-Fri 9AM-6PM EST</div>
-                </div>
+                <h4 className="font-semibold text-foreground mb-3">Contact Us</h4>
+                <a href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:underline">
+                  💬 Telegram: @cpncreditboost
+                </a>
               </div>
               
               {/* Agent Status */}
