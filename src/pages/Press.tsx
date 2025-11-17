@@ -85,8 +85,7 @@ const Press = () => {
                 For press inquiries, interviews, or media kit requests, please contact our press team.
               </p>
               <div className="space-y-2 text-muted-foreground">
-                <p><strong>Email:</strong> press@cpncreditboost.com</p>
-                <p><strong>Phone:</strong> +1 (904) 243-5425</p>
+                <p><strong>Telegram:</strong> <a href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@cpncreditboost</a></p>
                 <p><strong>Response Time:</strong> Within 24 hours</p>
               </div>
             </div>
