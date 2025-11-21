@@ -39,7 +39,7 @@ export const generateTradelines = (): Tradeline[] => {
   for (let i = 0; i < 1500; i++) {
     const bank = banks[Math.floor(Math.random() * banks.length)];
     const cardType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-    const creditLimit = [5000, 7500, 10000, 12500, 15000, 20000, 25000, 30000, 35000, 40000, 50000, 75000, 100000][Math.floor(Math.random() * 13)];
+    const creditLimit = [25000, 30000, 35000, 40000, 50000, 60000, 75000, 85000, 100000, 125000, 150000][Math.floor(Math.random() * 11)];
     const yearsOld = Math.floor(Math.random() * 15) + 2; // 2-16 years old
     const monthsOld = Math.floor(Math.random() * 12);
     
@@ -53,9 +53,9 @@ export const generateTradelines = (): Tradeline[] => {
     const reportingPeriod = Math.floor(Math.random() * 3) + 1; // 1-3 cycles
     const availability = Math.floor(Math.random() * 10) + 1; // 1-10 slots
     
-    // Price calculation based on age and limit
-    const basePrice = Math.floor((creditLimit / 1000) * (yearsOld * 8) + (Math.random() * 200) + 300);
-    const price = Math.round(basePrice / 50) * 50; // Round to nearest $50
+    // Price calculation - low prices for high limits
+    const basePrice = Math.floor((creditLimit / 2000) * (yearsOld * 2) + (Math.random() * 100) + 150);
+    const price = Math.round(basePrice / 25) * 25; // Round to nearest $25
     
     tradelines.push({
       id: `TL${String(i + 1).padStart(4, '0')}`,
