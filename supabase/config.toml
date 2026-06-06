@@ -1,13 +1,1 @@
-project_id = "jpmjsbonkbiapbxzwqyp"
-
-[functions.auth-rate-limit]
-verify_jwt = false
-
-[functions.get-payment-address]
-verify_jwt = false
-
-[functions.security-headers]
-verify_jwt = false
-
-[functions.contact-form]
-verify_jwt = false
+project_id = "diksjfxgccgasbsaynji"
