@@ -1,8 +1,14 @@
 {
-  "name": "vite_react_shadcn_ts",
-  "private": true,
+  "name": "@vickyke1/credit-elite-boost",
   "version": "0.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vickyke1/credit-elite-boost.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
