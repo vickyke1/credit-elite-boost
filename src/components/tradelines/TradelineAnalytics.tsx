@@ -24,16 +24,29 @@ const EMERALD = "hsl(156, 80%, 45%)";
 const AMBER = "hsl(42, 96%, 56%)";
 const RED = "hsl(0, 84%, 62%)";
 
-const ChartTooltip = ({ active, payload, label }: any) => {
+interface TooltipEntry {
+  name?: string;
+  value?: number;
+  color?: string;
+  payload?: { fill?: string };
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string;
+}
+
+const ChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="glass-card rounded-xl px-3 py-2 text-sm">
       {label && <div className="mb-1 font-semibold text-foreground">{label}</div>}
-      {payload.map((entry: any) => (
+      {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2 text-muted-foreground">
           <span className="h-2 w-2 rounded-full" style={{ background: entry.color || entry.payload?.fill }} />
           <span>{entry.name}:</span>
-          <span className="font-semibold text-foreground">{entry.value.toLocaleString()}</span>
+          <span className="font-semibold text-foreground">{entry.value?.toLocaleString()}</span>
         </div>
       ))}
     </div>
