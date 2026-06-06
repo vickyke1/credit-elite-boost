@@ -58,8 +58,8 @@ const Footer = () => {
         description: "Get in touch with our support team through multiple channels for personalized assistance with your credit enhancement journey."
       },
       { 
-        name: "Live Chat", 
-        href: "#chat", 
+        name: "Live Chat",
+        href: "/live-chat",
         description: "Instant support through our live chat system for quick answers to your questions and real-time assistance."
       },
       { 
