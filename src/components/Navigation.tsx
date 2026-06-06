@@ -1,21 +1,35 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Cart } from "@/components/Cart";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+
+const navLinks = [
+  { to: "/", label: "Home" },
+  { to: "/tradelines", label: "Buy Tradelines" },
+  { to: "/types-of-tradelines", label: "Tradeline Types" },
+  { to: "/calculator", label: "Calculator" },
+  { to: "/blog", label: "Blog" },
+  { to: "/cpn-packages", label: "CPN Packages" },
+  { to: "/contact", label: "Contact" },
+];
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
+
+  const isActive = (to: string) =>
+    to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 40);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -38,32 +52,43 @@ const Navigation = () => {
   };
 
   return (
-    <nav 
-      className={`relative z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/95 backdrop-blur-lg border-b border-border" : "bg-transparent"
+    <nav
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-background/70 backdrop-blur-xl border-b border-[hsl(var(--glass-border))] shadow-elevated"
+          : "bg-background/30 backdrop-blur-md border-b border-transparent"
       }`}
       aria-label="Main navigation"
     >
       <div className="container mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="text-xl sm:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity"
             aria-label="CPN Credit Boost - Home"
           >
-            CPN Credit Boost
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
+              C
+            </span>
+            <span className="bg-gradient-primary bg-clip-text text-transparent">CPN Credit Boost</span>
           </Link>
-          
+
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-            <Link to="/" className="text-foreground hover:text-primary transition-colors animated-underline">Home</Link>
-            <Link to="/tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Buy Tradelines</Link>
-            <Link to="/types-of-tradelines" className="text-foreground hover:text-primary transition-colors animated-underline">Tradeline Types</Link>
-            <Link to="/calculator" className="text-foreground hover:text-primary transition-colors animated-underline">Calculator</Link>
-            <Link to="/blog" className="text-foreground hover:text-primary transition-colors animated-underline">Blog</Link>
-            <Link to="/cpn-packages" className="text-foreground hover:text-primary transition-colors animated-underline">CPN Packages</Link>
-            <Link to="/contact" className="text-foreground hover:text-primary transition-colors animated-underline">Contact</Link>
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 rounded-2xl border border-[hsl(var(--glass-border))] bg-card/40 px-2 py-1.5 backdrop-blur-md">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                  isActive(link.to)
+                    ? "bg-primary/15 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.3),0_0_16px_-4px_hsl(var(--glow-primary)/0.6)]"
+                    : "text-foreground/80 hover:text-primary hover:bg-primary/10"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
           
           {/* Desktop Cart and Auth */}
@@ -116,58 +141,23 @@ const Navigation = () => {
                 <SheetTitle className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8">
                   Menu
                 </SheetTitle>
-                <nav className="flex flex-col space-y-6" aria-label="Mobile navigation">
-                  <Link 
-                    to="/" 
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Home
-                  </Link>
-                  <Link 
-                    to="/tradelines" 
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Buy Tradelines
-                  </Link>
-                  <Link 
-                    to="/types-of-tradelines" 
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Tradeline Types
-                  </Link>
-                  <Link 
-                    to="/calculator"
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Calculator
-                  </Link>
-                  <Link 
-                    to="/blog"
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Blog
-                  </Link>
-                  <Link 
-                    to="/cpn-packages"
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    CPN Packages
-                  </Link>
-                  <Link 
-                    to="/contact"
-                    className="text-lg text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                  
-                  <div className="pt-6 border-t border-border space-y-4">
+                <nav className="flex flex-col space-y-2" aria-label="Mobile navigation">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className={`rounded-xl px-4 py-3 text-lg font-medium transition-all ${
+                        isActive(link.to)
+                          ? "bg-primary/15 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.3)]"
+                          : "text-foreground hover:bg-primary/10 hover:text-primary"
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+
+                  <div className="pt-6 mt-4 border-t border-border space-y-4">
                     {user ? (
                       <>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">

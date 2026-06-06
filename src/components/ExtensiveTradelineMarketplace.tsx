@@ -4,6 +4,8 @@ import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
 import { TradelineTable } from "@/components/tradelines/TradelineTable";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
 import { TradelineStats } from "@/components/tradelines/TradelineStats";
+import { TradelineAnalytics } from "@/components/tradelines/TradelineAnalytics";
+import { ShieldCheck, Sparkles } from "lucide-react";
 
 const ExtensiveTradelineMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,10 +57,14 @@ const ExtensiveTradelineMarketplace = () => {
   const totalPages = Math.ceil(filteredAndSortedTradelines.length / itemsPerPage);
 
   return (
-    <section className="py-20 bg-background min-h-screen">
+    <section className="py-16 md:py-20 bg-background min-h-screen">
       <div className="container mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-5">
+            <Sparkles className="h-4 w-4" />
+            Premium Aged Tradelines
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               Tradeline Marketplace
@@ -68,18 +74,30 @@ const ExtensiveTradelineMarketplace = () => {
             Browse our extensive inventory of premium aged tradelines from top financial institutions.
             All tradelines are verified and guaranteed to report within 7-14 business days.
           </p>
+          <div className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 text-accent" />
+            Verified inventory · Bank-grade security
+          </div>
         </div>
 
+        {/* KPI Overview */}
+        <TradelineStats tradelines={allTradelines} />
+
+        {/* Analytics Widgets */}
+        <TradelineAnalytics tradelines={allTradelines} />
+
         {/* Search and Filters */}
-        <TradelineFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          filterBy={filterBy}
-          setFilterBy={setFilterBy}
-          resultCount={filteredAndSortedTradelines.length}
-        />
+        <div className="mt-14">
+          <TradelineFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            resultCount={filteredAndSortedTradelines.length}
+          />
+        </div>
 
         {/* Tradelines Table */}
         <TradelineTable tradelines={paginatedTradelines} />
@@ -90,9 +108,6 @@ const ExtensiveTradelineMarketplace = () => {
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
-
-        {/* Summary Stats */}
-        <TradelineStats tradelines={allTradelines} />
       </div>
     </section>
   );
