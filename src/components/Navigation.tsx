@@ -12,7 +12,6 @@ const navLinks = [
   { to: "/tradelines", label: "Buy Tradelines" },
   { to: "/types-of-tradelines", label: "Tradeline Types" },
   { to: "/calculator", label: "Calculator" },
-  { to: "/blog", label: "Blog" },
   { to: "/cpn-packages", label: "CPN Packages" },
   { to: "/contact", label: "Contact" },
 ];
