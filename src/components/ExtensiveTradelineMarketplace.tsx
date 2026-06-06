@@ -1,11 +1,25 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, lazy, Suspense } from "react";
 import { generateTradelines } from "@/utils/tradelineData";
 import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
 import { TradelineTable } from "@/components/tradelines/TradelineTable";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
 import { TradelineStats } from "@/components/tradelines/TradelineStats";
-import { TradelineAnalytics } from "@/components/tradelines/TradelineAnalytics";
 import { ShieldCheck, Sparkles } from "lucide-react";
+
+// Code-split the Recharts-powered analytics so the chart library stays out of
+// the main bundle and only loads on this marketplace page.
+const TradelineAnalytics = lazy(() =>
+  import("@/components/tradelines/TradelineAnalytics").then((m) => ({
+    default: m.TradelineAnalytics,
+  }))
+);
+
+const AnalyticsSkeleton = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-14">
+    <div className="glass-card rounded-2xl p-6 lg:col-span-2 h-[340px] skeleton-shimmer" />
+    <div className="glass-card rounded-2xl p-6 h-[340px] skeleton-shimmer" />
+  </div>
+);
 
 const ExtensiveTradelineMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,7 +98,9 @@ const ExtensiveTradelineMarketplace = () => {
         <TradelineStats tradelines={allTradelines} />
 
         {/* Analytics Widgets */}
-        <TradelineAnalytics tradelines={allTradelines} />
+        <Suspense fallback={<AnalyticsSkeleton />}>
+          <TradelineAnalytics tradelines={allTradelines} />
+        </Suspense>
 
         {/* Search and Filters */}
         <div className="mt-14">
