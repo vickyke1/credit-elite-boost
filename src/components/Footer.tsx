@@ -13,13 +13,8 @@ const Footer = () => {
         href: "/team", 
         description: "Meet our certified credit professionals and financial experts dedicated to your success with years of industry experience."
       },
-      { 
-        name: "Careers", 
-        href: "/careers", 
-        description: "Join our growing team of credit specialists and help others achieve their financial goals while building your career in the credit industry."
-      },
-      { 
-        name: "Press", 
+      {
+        name: "Press",
         href: "/press", 
         description: "Latest news, media coverage, and press releases about CPN Credit Boost's achievements and industry recognition."
       }
