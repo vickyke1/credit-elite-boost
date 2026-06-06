@@ -29,10 +29,10 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      setIsScrolled(globalThis.scrollY > 40);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    globalThis.addEventListener("scroll", handleScroll);
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleSignOut = async () => {
@@ -42,7 +42,7 @@ const Navigation = () => {
         title: "Signed out successfully",
         description: "You have been logged out of your account.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error signing out",
         description: "There was a problem signing out. Please try again.",

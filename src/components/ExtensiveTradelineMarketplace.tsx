@@ -31,7 +31,7 @@ const ExtensiveTradelineMarketplace = () => {
   const allTradelines = useMemo(() => generateTradelines(), []);
 
   const filteredAndSortedTradelines = useMemo(() => {
-    let filtered = allTradelines.filter(tradeline => {
+    const filtered = allTradelines.filter(tradeline => {
       const matchesSearch = tradeline.bankName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            tradeline.cardId.toLowerCase().includes(searchTerm.toLowerCase());
       

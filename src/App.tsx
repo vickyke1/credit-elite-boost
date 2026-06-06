@@ -8,7 +8,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";

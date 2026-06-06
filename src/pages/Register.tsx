@@ -103,7 +103,7 @@ const Register = () => {
       };
 
       // Sign up with Supabase
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${globalThis.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
         email: sanitizedData.email,
@@ -138,8 +138,8 @@ const Register = () => {
 
       // Redirect to login page
       navigate('/login');
-      
-    } catch (error) {
+
+    } catch {
       setError('root', {
         message: 'Registration failed. Please try again or contact support if the problem persists.'
       });

@@ -5,7 +5,7 @@
 /**
  * Sanitize error messages to prevent information disclosure
  */
-export const sanitizeErrorMessage = (error: any): string => {
+export const sanitizeErrorMessage = (error: unknown): string => {
   // Generic error messages to prevent information leakage
   const genericMessages = {
     auth: 'Authentication failed. Please check your credentials.',
@@ -33,7 +33,7 @@ export const sanitizeErrorMessage = (error: any): string => {
   }
 
   // For development, log the actual error
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.error('Original error:', error);
   }
 
@@ -55,14 +55,14 @@ export const logSecurityEvent = (event: {
     ...event,
     timestamp: event.timestamp || new Date().toISOString(),
     userAgent: event.userAgent || navigator.userAgent,
-    url: window.location.href,
+    url: globalThis.location.href,
     sessionId: sessionStorage.getItem('session_id') || generateSecureSessionId(),
     severity: event.severity || 'medium',
     fingerprint: generateBrowserFingerprint()
   };
 
   // Enhanced logging for different environments
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.warn('🔒 Security Event:', securityLog);
   }
 
@@ -110,7 +110,7 @@ const generateBrowserFingerprint = (): string => {
 /**
  * Trigger security alert for critical events
  */
-const triggerSecurityAlert = (event: any) => {
+const triggerSecurityAlert = (event: unknown) => {
   // In production, this would send to security monitoring service
   console.error('🚨 CRITICAL SECURITY EVENT:', event);
   
@@ -166,7 +166,7 @@ export const generateSecureSessionId = (): string => {
  * Check if the current environment is secure (HTTPS)
  */
 export const isSecureEnvironment = (): boolean => {
-  return window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+  return globalThis.location.protocol === 'https:' || globalThis.location.hostname === 'localhost';
 };
 
 /**
@@ -219,12 +219,13 @@ export const validateSecureInput = (input: string, type: 'email' | 'text' | 'pas
   
   // Type-specific validation
   switch (type) {
-    case 'email':
+    case 'email': {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(input)) {
         return { valid: false, error: 'Invalid email format' };
       }
       break;
+    }
     case 'url':
       try {
         new URL(input);
@@ -245,7 +246,7 @@ export const validateSecureInput = (input: string, type: 'email' | 'text' | 'pas
 /**
  * Create secure audit trail entry
  */
-export const createAuditTrail = (action: string, resource: string, details?: any) => {
+export const createAuditTrail = (action: string, resource: string, details?: unknown) => {
   const auditEntry = {
     timestamp: new Date().toISOString(),
     action,
@@ -253,7 +254,7 @@ export const createAuditTrail = (action: string, resource: string, details?: any
     details,
     sessionId: sessionStorage.getItem('session_id') || generateSecureSessionId(),
     fingerprint: generateBrowserFingerprint(),
-    url: window.location.href
+    url: globalThis.location.href
   };
   
   // Store audit trail (limit to last 50 entries)
@@ -305,7 +306,7 @@ export const performRASPChecks = (): { secure: boolean; issues: string[] } => {
   // Check for suspicious global variables
   const suspiciousGlobals = ['eval', 'Function', 'setTimeout', 'setInterval'];
   suspiciousGlobals.forEach(global => {
-    if (typeof (window as any)[global] !== 'function') {
+    if (typeof (globalThis as Record<string, unknown>)[global] !== 'function') {
       issues.push(`Global ${global} has been tampered with`);
     }
   });

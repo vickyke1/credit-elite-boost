@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Shield } from 'lucide-react';
@@ -96,10 +96,10 @@ const ResetPassword = () => {
       });
 
       navigate('/login');
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to reset password. Please try again.',
+        description: (error instanceof Error && error.message) || 'Failed to reset password. Please try again.',
         variant: 'destructive',
       });
     } finally {

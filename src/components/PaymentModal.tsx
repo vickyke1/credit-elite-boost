@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { emailSchema, phoneSchema, nameSchema, transactionIdSchema, SECURITY_CONFIG } from "@/lib/security";
+import { emailSchema, phoneSchema, nameSchema, transactionIdSchema } from "@/lib/security";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -79,7 +79,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
         description: "Bitcoin address copied to clipboard",
       });
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       toast({
         title: "Failed to copy",
         description: "Please copy the address manually",
@@ -88,7 +88,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
     }
   };
 
-  const onSubmit = (data: PaymentFormData) => {
+  const onSubmit = (_data: PaymentFormData) => {
     toast({
       title: "Order Submitted!",
       description: "Your order has been submitted. We'll contact you shortly.",
@@ -127,7 +127,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                   Quick and secure crypto payment through Cashaap platform
                 </p>
                 <Button
-                  onClick={() => cryptoAddress && window.open(`https://cashaap.com/pay?address=${cryptoAddress}&amount=${total}&currency=USD`, '_blank')}
+                  onClick={() => cryptoAddress && globalThis.open(`https://cashaap.com/pay?address=${cryptoAddress}&amount=${total}&currency=USD`, '_blank')}
                   className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent mb-2"
                   disabled={!cryptoAddress || loadingAddress}
                 >

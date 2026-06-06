@@ -37,7 +37,7 @@ const ForgotPassword = () => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${globalThis.location.origin}/reset-password`,
       });
 
       if (error) throw error;
@@ -47,10 +47,10 @@ const ForgotPassword = () => {
         title: 'Password Reset Email Sent',
         description: 'Please check your email for password reset instructions.',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to send password reset email. Please try again.',
+        description: (error instanceof Error && error.message) || 'Failed to send password reset email. Please try again.',
         variant: 'destructive',
       });
     } finally {
