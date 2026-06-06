@@ -33,7 +33,7 @@ export const sanitizeErrorMessage = (error: any): string => {
   }
 
   // For development, log the actual error
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.error('Original error:', error);
   }
 
@@ -62,7 +62,7 @@ export const logSecurityEvent = (event: {
   };
 
   // Enhanced logging for different environments
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.warn('🔒 Security Event:', securityLog);
   }
 
