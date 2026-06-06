@@ -14,6 +14,7 @@ const ParticlesBackground = () => {
       },
       fpsLimit: 120,
       interactivity: {
+        detectsOn: "canvas" as const,
         events: {
           onClick: {
             enable: true,
@@ -23,48 +24,70 @@ const ParticlesBackground = () => {
             enable: true,
             mode: "repulse" as const,
           },
+          resize: true,
         },
         modes: {
-          push: {
-            quantity: 4,
+          grab: {
+            distance: 400,
+            links: {
+              opacity: 1,
+            },
+          },
+          bubble: {
+            distance: 400,
+            size: 40,
+            duration: 2,
+            opacity: 8,
+            speed: 3,
           },
           repulse: {
             distance: 200,
             duration: 0.4,
           },
+          push: {
+            quantity: 4,
+          },
+          remove: {
+            quantity: 2,
+          },
         },
       },
       particles: {
         color: {
-          value: "#3b82f6",
+          value: "#ffffff",
         },
         links: {
-          color: "#3b82f6",
+          color: "#ffffff",
           distance: 150,
           enable: true,
-          opacity: 0.2,
+          opacity: 0.4,
           width: 1,
         },
         move: {
           enable: true,
-          speed: 2,
+          speed: 6,
+          direction: "none" as const,
           random: false,
           straight: false,
           outModes: {
-            default: "bounce" as const,
+            default: "out" as const,
           },
         },
         number: {
           value: 80,
+          density: {
+            enable: true,
+            area: 800,
+          },
         },
         opacity: {
-          value: 0.3,
+          value: 0.5,
         },
         shape: {
           type: "circle" as const,
         },
         size: {
-          value: { min: 1, max: 3 },
+          value: { min: 0.1, max: 5 },
         },
       },
       detectRetina: true,
