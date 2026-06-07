@@ -13,8 +13,37 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
+
+const priceToNumber = (price: string) => parseInt(price.replace(/[$,]/g, ""), 10);
 
 const CPNPackages = () => {
+  const { addToCart } = useCart();
+
+  const handleAddPackage = (pkg: { name: string; price: string; description: string; features: string[] }) => {
+    addToCart({
+      id: `cpn-package-${pkg.name}`,
+      type: "package",
+      name: pkg.name,
+      price: priceToNumber(pkg.price),
+      description: pkg.description,
+      features: pkg.features,
+    });
+    toast({ title: "Added to Cart", description: `${pkg.name} has been added to your cart.` });
+  };
+
+  const handleAddAddon = (addon: { name: string; price: string; description: string }) => {
+    addToCart({
+      id: `cpn-addon-${addon.name}`,
+      type: "package",
+      name: addon.name,
+      price: priceToNumber(addon.price),
+      description: addon.description,
+    });
+    toast({ title: "Added to Cart", description: `${addon.name} has been added to your cart.` });
+  };
+
   const packages = [
     {
       name: "Foundation Builder",
@@ -184,9 +213,10 @@ const CPNPackages = () => {
                     ))}
                   </ul>
                   
-                  <Button 
+                  <Button
                     className={`w-full ${pkg.popular ? 'bg-primary hover:bg-primary/90' : 'border border-primary text-primary hover:bg-primary hover:text-primary-foreground'}`}
                     variant={pkg.popular ? 'default' : 'outline'}
+                    onClick={() => handleAddPackage(pkg)}
                   >
                     Get Started
                   </Button>
@@ -303,17 +333,17 @@ const CPNPackages = () => {
                   <tr className="hover:bg-surface-elevated/50 transition-colors">
                     <td className="sticky left-0 z-10 p-4 bg-background"></td>
                     <td className="p-4 text-center">
-                      <Button variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full" onClick={() => handleAddPackage(packages[0])}>
                         Get Started
                       </Button>
                     </td>
                     <td className="p-4 text-center bg-primary/5">
-                      <Button className="w-full">
+                      <Button className="w-full" onClick={() => handleAddPackage(packages[1])}>
                         Get Started
                       </Button>
                     </td>
                     <td className="p-4 text-center">
-                      <Button variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full" onClick={() => handleAddPackage(packages[2])}>
                         Get Started
                       </Button>
                     </td>
@@ -344,7 +374,7 @@ const CPNPackages = () => {
                     <span className="text-xl font-bold text-primary">{addon.price}</span>
                   </div>
                   <p className="text-muted-foreground mb-4">{addon.description}</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => handleAddAddon(addon)}>
                     Add to Package
                   </Button>
                 </div>

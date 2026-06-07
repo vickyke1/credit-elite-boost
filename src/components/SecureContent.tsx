@@ -27,7 +27,7 @@ export const SecureContent: React.FC<SecureContentProps> = ({ content, className
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element;
         const tagName = element.tagName.toLowerCase();
-        const props: any = { key: index };
+        const props: Record<string, unknown> = { key: index };
         
         // Add classes if they exist
         if (element.className) {
@@ -61,7 +61,7 @@ export const SecureContent: React.FC<SecureContentProps> = ({ content, className
             return React.createElement('ol', props, ...children);
           case 'li':
             return React.createElement('li', props, ...children);
-          case 'a':
+          case 'a': {
             // For links, only allow specific href patterns
             const href = element.getAttribute('href');
             if (href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('/'))) {
@@ -70,6 +70,7 @@ export const SecureContent: React.FC<SecureContentProps> = ({ content, className
               props.rel = 'noopener noreferrer';
             }
             return React.createElement('a', props, ...children);
+          }
           case 'blockquote':
             return React.createElement('blockquote', props, ...children);
           default:

@@ -8,7 +8,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";
@@ -21,7 +20,6 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Team from "./pages/Team";
-import Careers from "./pages/Careers";
 import Press from "./pages/Press";
 import CPNPackages from "./pages/CPNPackages";
 import BusinessCredit from "./pages/BusinessCredit";
@@ -64,7 +62,6 @@ const App = () => {
               {/* Company Pages */}
               <Route path="/about" element={<About />} />
               <Route path="/team" element={<Team />} />
-              <Route path="/careers" element={<Careers />} />
               <Route path="/press" element={<Press />} />
               
               {/* Service Pages */}

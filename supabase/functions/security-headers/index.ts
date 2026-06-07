@@ -5,16 +5,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+serve((req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get the origin URL from the request
-    const origin = req.headers.get('origin') || 'https://jpmjsbonkbiapbxzwqyp.supabase.co';
-    
     // Generate nonce for scripts and styles
     const nonce = crypto.randomUUID().replace(/-/g, '');
     

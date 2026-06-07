@@ -61,14 +61,14 @@ export const useSecureAuth = () => {
       }
 
       return { data };
-    } catch (error) {
+    } catch {
       return { error: 'An unexpected error occurred. Please try again.' };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const secureSignUp = async (email: string, password: string, metadata?: any) => {
+  const secureSignUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
     setIsLoading(true);
     
     try {
@@ -83,7 +83,7 @@ export const useSecureAuth = () => {
       }
 
       // Proceed with registration
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${globalThis.location.origin}/`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -102,7 +102,7 @@ export const useSecureAuth = () => {
       }
 
       return { data };
-    } catch (error) {
+    } catch {
       return { error: 'An unexpected error occurred. Please try again.' };
     } finally {
       setIsLoading(false);
@@ -124,7 +124,7 @@ export const useSecureAuth = () => {
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${globalThis.location.origin}/reset-password`,
       });
 
       if (error) {
@@ -132,7 +132,7 @@ export const useSecureAuth = () => {
       }
 
       return { success: true };
-    } catch (error) {
+    } catch {
       return { error: 'An unexpected error occurred. Please try again.' };
     } finally {
       setIsLoading(false);

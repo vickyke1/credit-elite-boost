@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 
@@ -177,8 +178,8 @@ const PopularPackages = () => {
           <p className="text-muted-foreground mb-4">
             Need a custom package? Our experts can create a solution tailored to your specific needs.
           </p>
-          <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            Request Custom Quote
+          <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Link to="/contact">Request Custom Quote</Link>
           </Button>
         </div>
       </div>

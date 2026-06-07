@@ -7,7 +7,7 @@ interface SEOHeadProps {
   canonicalUrl?: string;
   ogImage?: string;
   ogType?: string;
-  schemaData?: any;
+  schemaData?: unknown;
 }
 
 const SEOHead = ({

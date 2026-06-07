@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
 
 const TradelineMarketplace = () => {
+  const { addToCart } = useCart();
   const tradelines = [
     {
       issuer: "Chase Sapphire",
@@ -100,9 +104,24 @@ const TradelineMarketplace = () => {
                 </div>
               </div>
               
-              <Button 
+              <Button
                 className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent font-semibold"
                 size="lg"
+                onClick={() => {
+                  addToCart({
+                    id: `tradeline-${tradeline.issuer}`,
+                    type: "tradeline",
+                    name: tradeline.issuer,
+                    price: parseInt(tradeline.price.replace(/[$,]/g, ""), 10),
+                    bankName: tradeline.issuer,
+                    creditLimit: parseInt(tradeline.limit.replace(/[$,]/g, ""), 10),
+                    age: tradeline.age,
+                  });
+                  toast({
+                    title: "Added to Cart",
+                    description: `${tradeline.issuer} tradeline has been added to your cart.`,
+                  });
+                }}
               >
                 Add to Cart
               </Button>
@@ -111,12 +130,13 @@ const TradelineMarketplace = () => {
         </div>
         
         <div className="text-center mt-12">
-          <Button 
-            variant="outline" 
+          <Button
+            asChild
+            variant="outline"
             size="lg"
             className="border-primary text-primary hover:bg-primary hover:text-primary-foreground glow-primary"
           >
-            View All Tradelines
+            <Link to="/tradelines">View All Tradelines</Link>
           </Button>
         </div>
       </div>

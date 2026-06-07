@@ -5,7 +5,7 @@ export interface SecurityEvent {
   user_id?: string;
   ip_address?: string;
   user_agent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
 
@@ -57,7 +57,7 @@ export class SecurityAudit {
   /**
    * Log authentication events
    */
-  async logAuthEvent(type: 'login_success' | 'login_failed' | 'logout' | 'registration' | 'password_reset', metadata?: any) {
+  async logAuthEvent(type: 'login_success' | 'login_failed' | 'logout' | 'registration' | 'password_reset', metadata?: Record<string, unknown>) {
     await this.logEvent({
       event_type: type,
       user_id: (await supabase.auth.getUser()).data.user?.id,
@@ -69,7 +69,7 @@ export class SecurityAudit {
   /**
    * Log suspicious activity
    */
-  async logSuspiciousActivity(description: string, metadata?: any) {
+  async logSuspiciousActivity(description: string, metadata?: Record<string, unknown>) {
     await this.logEvent({
       event_type: 'suspicious_activity',
       user_id: (await supabase.auth.getUser()).data.user?.id,
@@ -111,9 +111,9 @@ export class SecurityAudit {
   /**
    * Get client IP address
    */
-  private async getClientIP(): Promise<string> {
+  private getClientIP(): Promise<string> {
     // Avoid third-party IP lookups from the client for privacy
-    return 'redacted';
+    return Promise.resolve('redacted');
   }
 
   /**

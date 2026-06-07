@@ -50,7 +50,7 @@ export const useSecurityMonitor = () => {
       }
 
       // Check for suspicious URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(globalThis.location.search);
       for (const [key, value] of urlParams) {
         if (value.includes('<script') || value.includes('javascript:')) {
           threats.push('Suspicious URL parameters detected');
@@ -68,7 +68,7 @@ export const useSecurityMonitor = () => {
         const testKey = 'security_test_' + Date.now();
         localStorage.setItem(testKey, 'test');
         localStorage.removeItem(testKey);
-      } catch (error) {
+      } catch {
         threats.push('localStorage tampering detected');
         riskLevel = 'medium';
       }
@@ -126,7 +126,7 @@ export const useSecurityMonitor = () => {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    globalThis.addEventListener('beforeunload', handleBeforeUnload);
 
     // Store session start time
     if (!sessionStorage.getItem('session_start')) {
@@ -137,7 +137,7 @@ export const useSecurityMonitor = () => {
     return () => {
       clearInterval(securityInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      globalThis.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 

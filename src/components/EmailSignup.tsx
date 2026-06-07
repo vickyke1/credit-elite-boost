@@ -38,7 +38,7 @@ const EmailSignup = ({
       
       toast.success("Success! Check your inbox for your free credit tips.");
       setEmail("");
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

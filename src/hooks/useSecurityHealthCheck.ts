@@ -26,13 +26,13 @@ export const useSecurityHealthCheck = () => {
       const raspResults = performRASPChecks();
       
       // Check for security environment
-      const isHTTPS = window.location.protocol === 'https:';
+      const isHTTPS = globalThis.location.protocol === 'https:';
       const hasCSP = !!document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-      
+
       // Collect all issues
       const allIssues = [
         ...raspResults.issues,
-        ...(!isHTTPS && window.location.hostname !== 'localhost' ? ['Site not served over HTTPS'] : []),
+        ...(!isHTTPS && globalThis.location.hostname !== 'localhost' ? ['Site not served over HTTPS'] : []),
         ...(!hasCSP ? ['Content Security Policy not detected'] : [])
       ];
 

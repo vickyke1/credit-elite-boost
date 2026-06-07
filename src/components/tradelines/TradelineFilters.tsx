@@ -22,11 +22,11 @@ export const TradelineFilters = ({
   resultCount
 }: TradelineFiltersProps) => {
   return (
-    <div className="surface-elevated rounded-2xl p-6 mb-8">
+    <div className="glass-panel rounded-2xl p-6 mb-8 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary" />
           <Input
             placeholder="Search by bank or card ID..."
             value={searchTerm}
@@ -65,9 +65,10 @@ export const TradelineFilters = ({
         </Select>
 
         {/* Results Count */}
-        <div className="flex items-center justify-center bg-surface-elevated rounded-lg px-4 py-2">
-          <span className="text-sm text-muted-foreground">
-            {resultCount} tradelines found
+        <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2">
+          <span className="status-dot h-2 w-2 rounded-full bg-accent" />
+          <span className="text-sm font-medium text-foreground">
+            <span className="font-bold text-primary">{resultCount.toLocaleString()}</span> tradelines found
           </span>
         </div>
       </div>

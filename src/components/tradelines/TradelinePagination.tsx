@@ -10,7 +10,7 @@ export const TradelinePagination = ({ currentPage, totalPages, onPageChange }: T
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex justify-center items-center gap-4 mt-8">
+    <div className="mt-8 flex flex-wrap justify-center items-center gap-3 rounded-2xl glass-panel px-4 py-4">
       <Button 
         variant="outline" 
         disabled={currentPage === 1}

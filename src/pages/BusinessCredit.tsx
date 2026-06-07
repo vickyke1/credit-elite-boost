@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const BusinessCredit = () => {
   const services = [
@@ -173,8 +174,8 @@ const BusinessCredit = () => {
                     ))}
                   </ul>
                   
-                  <Button className="w-full">
-                    Get Started
+                  <Button asChild className="w-full">
+                    <Link to="/contact">Get Started</Link>
                   </Button>
                 </div>
               ))}
@@ -255,11 +256,11 @@ const BusinessCredit = () => {
               for growth and financing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="px-8 py-3">
-                Get Started Today
+              <Button asChild size="lg" className="px-8 py-3">
+                <Link to="/contact">Get Started Today</Link>
               </Button>
-              <Button variant="outline" size="lg" className="px-8 py-3">
-                Free Consultation
+              <Button asChild variant="outline" size="lg" className="px-8 py-3">
+                <Link to="/contact">Free Consultation</Link>
               </Button>
             </div>
           </div>
