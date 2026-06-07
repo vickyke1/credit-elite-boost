@@ -1,0 +1,17 @@
+{
+  "name": "DigitalHive",
+  "short_name": "DigitalHive",
+  "description": "Discover Premium Digital Products.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffbeb",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
