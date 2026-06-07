@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const CreditRepair = () => {
   const services = [
@@ -171,8 +172,8 @@ const CreditRepair = () => {
                     ))}
                   </ul>
                   
-                  <Button className="w-full">
-                    Get Started
+                  <Button asChild className="w-full">
+                    <Link to="/contact">Get Started</Link>
                   </Button>
                 </div>
               ))}
@@ -284,11 +285,11 @@ const CreditRepair = () => {
               Start your credit repair journey today with a free consultation and credit analysis.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="px-8 py-3">
-                Free Credit Analysis
+              <Button asChild size="lg" className="px-8 py-3">
+                <Link to="/contact">Free Credit Analysis</Link>
               </Button>
-              <Button variant="outline" size="lg" className="px-8 py-3">
-                Speak to Expert
+              <Button asChild variant="outline" size="lg" className="px-8 py-3">
+                <Link to="/live-chat">Speak to Expert</Link>
               </Button>
             </div>
           </div>

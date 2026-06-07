@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
+import { Link } from "react-router-dom";
 
 const Team = () => {
   const teamMembers = [
@@ -119,12 +120,12 @@ const Team = () => {
               Get started with a free consultation today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+              <Link to="/contact" className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
                 Free Consultation
-              </button>
-              <button className="border border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
+              </Link>
+              <Link to="/contact" className="border border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">
                 Contact Team
-              </button>
+              </Link>
             </div>
           </div>
         </section>

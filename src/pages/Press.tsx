@@ -1,8 +1,10 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
 
 const Press = () => {
+  const [expandedRelease, setExpandedRelease] = useState<number | null>(null);
   const pressReleases = [
     {
       title: "CPN Credit Boost Reaches 10,000 Successful Client Milestone",
@@ -108,18 +110,28 @@ const Press = () => {
                       </span>
                       <span className="text-sm text-muted-foreground">{release.date}</span>
                     </div>
-                    <button className="text-primary hover:text-primary/80 font-semibold text-sm">
-                      Read Full Release →
+                    <button
+                      onClick={() => setExpandedRelease(expandedRelease === index ? null : index)}
+                      aria-expanded={expandedRelease === index}
+                      className="text-primary hover:text-primary/80 font-semibold text-sm"
+                    >
+                      {expandedRelease === index ? "Show Less ↑" : "Read Full Release →"}
                     </button>
                   </div>
-                  
+
                   <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">
                     {release.title}
                   </h3>
-                  
+
                   <p className="text-muted-foreground leading-relaxed">
                     {release.excerpt}
                   </p>
+
+                  {expandedRelease === index && (
+                    <p className="text-muted-foreground leading-relaxed mt-4 pt-4 border-t border-border">
+                      {release.content}
+                    </p>
+                  )}
                 </article>
               ))}
             </div>
@@ -141,9 +153,14 @@ const Press = () => {
                   <h3 className="font-semibold text-foreground mb-2">{resource.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
                   <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded">{resource.type}</span>
-                  <button className="w-full mt-4 text-primary hover:text-primary/80 font-semibold text-sm">
+                  <a
+                    href="https://t.me/cpncreditboost"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full mt-4 text-primary hover:text-primary/80 font-semibold text-sm"
+                  >
                     Download
-                  </button>
+                  </a>
                 </div>
               ))}
             </div>
