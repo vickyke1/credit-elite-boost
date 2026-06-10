@@ -19,23 +19,29 @@ const Hero = () => {
       <div className="relative z-10 container px-4 sm:px-6 text-center">
         <div className="max-w-4xl mx-auto">
           {/* Main Headline */}
-          <h1 
-            id="hero-heading" 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
+          <h1
+            id="hero-heading"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight animate-slide-up"
           >
             Boost Your Credit Score with{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent pulse-glow">
+            <span className="bg-gradient-primary bg-clip-text text-transparent pulse-glow gradient-text-animated">
               Elite Credit Profiles
             </span>
           </h1>
-          
+
           {/* Subheadline */}
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
+          <p
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4 animate-slide-up"
+            style={{ animationDelay: "150ms" }}
+          >
             Premium Aged Tradelines, Clean CPN Numbers & Credit Repair Kits. Fast 24-48 Hour Delivery with Money-Back Guarantee.
           </p>
-          
+
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-8 sm:mb-12 px-4">
+          <div
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-8 sm:mb-12 px-4 animate-slide-up"
+            style={{ animationDelay: "300ms" }}
+          >
             <Link to="/tradelines" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
@@ -68,8 +74,9 @@ const Hero = () => {
           </div>
           
           {/* Trust Indicators */}
-          <div 
-            className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground px-4"
+          <div
+            className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground px-4 animate-fade-in"
+            style={{ animationDelay: "500ms" }}
             role="list"
             aria-label="Trust indicators"
           >

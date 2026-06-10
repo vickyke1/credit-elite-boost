@@ -358,11 +358,34 @@
     box-shadow: 0 0 8px currentColor;
   }
 
+  /* Gradient text shimmer */
+  .gradient-text-animated {
+    background-size: 200% auto;
+    animation: gradientShift 4s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+  }
+
   /* Cyber Grid Pattern */
   .cyber-grid {
     background-image:
       linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
+  }
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

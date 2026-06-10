@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const Testimonials = () => {
   const testimonials = [
@@ -62,7 +63,7 @@ const Testimonials = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Client{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
@@ -89,12 +90,13 @@ const Testimonials = () => {
               <div className="text-sm text-muted-foreground">Avg Score Increase</div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
-            <div 
+            <ScrollReveal
               key={index}
+              delay={(index % 3) * 100}
               className="surface-elevated rounded-2xl p-6 hover:scale-105 transition-all duration-300"
             >
               {/* Rating Stars */}
@@ -132,12 +134,12 @@ const Testimonials = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
-        
+
         {/* Bottom CTA */}
-        <div className="text-center mt-12">
+        <ScrollReveal variant="fade-in" className="text-center mt-12">
           <p className="text-muted-foreground mb-4">
             Join thousands of satisfied clients who have transformed their credit profiles
           </p>
@@ -145,7 +147,7 @@ const Testimonials = () => {
             <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
             Over 98% customer satisfaction rate
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

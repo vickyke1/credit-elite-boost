@@ -1,4 +1,5 @@
 import { Shield, Users, Phone, CheckCircle, Zap, CreditCard } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const WhyChooseUs = () => {
   const benefits = [
@@ -37,7 +38,7 @@ const WhyChooseUs = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Why Choose{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
@@ -45,15 +46,16 @@ const WhyChooseUs = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We're the industry leaders in credit enhancement with over 10 years of experience 
+            We're the industry leaders in credit enhancement with over 10 years of experience
             helping clients achieve their financial goals.
           </p>
-        </div>
-        
+        </ScrollReveal>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => (
-            <div 
+            <ScrollReveal
               key={index}
+              delay={index * 100}
               className="surface-elevated rounded-2xl p-8 hover:scale-105 transition-all duration-300 group"
             >
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-6 group-hover:glow-primary transition-all duration-300">
@@ -65,7 +67,7 @@ const WhyChooseUs = () => {
               <p className="text-muted-foreground leading-relaxed">
                 {benefit.description}
               </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

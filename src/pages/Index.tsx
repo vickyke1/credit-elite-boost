@@ -11,6 +11,7 @@ import FloatingChat from "@/components/FloatingChat";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import EmailSignup from "@/components/EmailSignup";
 import SEOHead from "@/components/SEOHead";
+import ScrollReveal from "@/components/ScrollReveal";
 import { organizationSchema, faqSchema } from "@/utils/schemaMarkup";
 
 const Index = () => {
@@ -48,7 +49,9 @@ const Index = () => {
           <Testimonials />
           <section className="py-16 px-6">
             <div className="container mx-auto">
-              <EmailSignup />
+              <ScrollReveal>
+                <EmailSignup />
+              </ScrollReveal>
             </div>
           </section>
           <FAQ />

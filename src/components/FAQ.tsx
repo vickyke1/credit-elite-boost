@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const FAQ = () => {
   const faqs = [
@@ -52,7 +53,7 @@ const FAQ = () => {
   return (
     <section id="faq" className="py-20 bg-surface-elevated">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Knowledge Center &{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
@@ -60,12 +61,12 @@ const FAQ = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Get answers to the most common questions about CPNs, tradelines, and our credit 
+            Get answers to the most common questions about CPNs, tradelines, and our credit
             enhancement services. Still have questions? Contact our expert support team.
           </p>
-        </div>
+        </ScrollReveal>
 
-        <div className="max-w-4xl mx-auto">
+        <ScrollReveal variant="fade-in" className="max-w-4xl mx-auto">
           <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem 
@@ -82,10 +83,10 @@ const FAQ = () => {
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
-        
+        </ScrollReveal>
+
         {/* Bottom Contact CTA */}
-        <div className="text-center mt-16">
+        <ScrollReveal variant="scale-in" className="text-center mt-16">
           <div className="surface-elevated rounded-2xl p-8 max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold mb-4 text-foreground">
               Still Have Questions?
@@ -100,7 +101,7 @@ const FAQ = () => {
               </a>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -1,3 +1,5 @@
+import ScrollReveal from "@/components/ScrollReveal";
+
 const HowItWorks = () => {
   const steps = [
     {
@@ -29,7 +31,7 @@ const HowItWorks = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             How It{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
@@ -39,11 +41,11 @@ const HowItWorks = () => {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Our streamlined process gets you from application to improved credit in just 4 simple steps.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((stepItem, index) => (
-            <div key={index} className="relative group">
+            <ScrollReveal key={index} delay={index * 120} className="relative group">
               {/* Connection Line */}
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary to-accent opacity-30 z-0"></div>
@@ -67,16 +69,16 @@ const HowItWorks = () => {
                   {stepItem.description}
                 </p>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
-        
-        <div className="text-center mt-16">
+
+        <ScrollReveal variant="fade-in" className="text-center mt-16">
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-surface-elevated px-6 py-3 rounded-full">
             <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
             Typical completion time: 24-72 hours
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
