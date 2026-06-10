@@ -19,19 +19,19 @@ const Hero = () => {
       <div className="relative z-10 container px-4 sm:px-6 text-center">
         <div className="max-w-4xl mx-auto">
           {/* Main Headline */}
-          <h1 
-            id="hero-heading" 
+          <h1
+            id="hero-heading"
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
           >
-            Boost Your Credit Score with{" "}
+            Build a Stronger Credit Profile with{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent pulse-glow">
-              Elite Credit Profiles
+              Credit Elite Boost
             </span>
           </h1>
-          
+
           {/* Subheadline */}
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
-            Premium Aged Tradelines, Clean CPN Numbers & Credit Repair Kits. Fast 24-48 Hour Delivery with Money-Back Guarantee.
+            Get added as an authorized user to seasoned, perfectly-paid tradelines from a marketplace built on transparency, security, and real results. A proven, legal credit-building strategy — backed by our posting guarantee.
           </p>
           
           {/* CTA Buttons */}
@@ -40,9 +40,9 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto font-semibold min-h-[56px] w-full"
-                aria-label="Get started with credit boost services"
+                aria-label="Browse available tradelines"
               >
-                Get Started
+                Browse Tradelines
               </Button>
             </Link>
             <Link to="/tradelines" className="w-full sm:w-auto">
@@ -75,7 +75,7 @@ const Hero = () => {
           >
             <div className="flex items-center gap-2" role="listitem">
               <div className="w-3 h-3 bg-accent rounded-full animate-pulse" aria-hidden="true"></div>
-              <span>SSL Secured</span>
+              <span>Bank-Level Encryption</span>
             </div>
             <div className="flex items-center gap-2" role="listitem">
               <div className="w-3 h-3 bg-primary rounded-full animate-pulse" aria-hidden="true"></div>
@@ -83,9 +83,14 @@ const Hero = () => {
             </div>
             <div className="flex items-center gap-2" role="listitem">
               <div className="w-3 h-3 bg-accent rounded-full animate-pulse" aria-hidden="true"></div>
-              <span>Money-Back Guarantee</span>
+              <span>Posting Guarantee</span>
             </div>
           </div>
+
+          {/* Compliance disclaimer */}
+          <p className="text-xs text-muted-foreground/80 mt-6 max-w-2xl mx-auto px-4">
+            Authorized-user tradelines are a legal, established credit-building strategy. Individual results vary and are not guaranteed.
+          </p>
         </div>
       </div>
       

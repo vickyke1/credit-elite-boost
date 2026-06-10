@@ -2,26 +2,26 @@ const HowItWorks = () => {
   const steps = [
     {
       step: "01",
-      title: "Pick Your Package",
-      description: "Choose from our CPN kits, tradelines, or complete credit boosting packages tailored to your needs.",
+      title: "Browse the Marketplace",
+      description: "Explore our vetted inventory of authorized-user tradelines. Filter by age, credit limit, and reporting date to find the right fit for your goals.",
       color: "primary"
     },
     {
-      step: "02", 
-      title: "Submit Info Securely",
-      description: "Provide your information through our encrypted portal. All data is protected with bank-level security.",
+      step: "02",
+      title: "Choose Your Tradeline",
+      description: "Select with confidence using clear, upfront details on every listing, then check out through our secure, encrypted payment system.",
       color: "accent"
     },
     {
       step: "03",
-      title: "Tradelines/CPN Delivered", 
-      description: "Receive your CPNs and tradelines within 24-72 hours. Track progress in your client dashboard.",
+      title: "Get Added as an Authorized User",
+      description: "We submit your information to be added to the account. You'll receive confirmation and an estimated reporting date.",
       color: "primary"
     },
     {
       step: "04",
-      title: "Watch Your Score Improve",
-      description: "Monitor your credit profile transformation and access funding opportunities within 30-60 days.",
+      title: "Watch the History Report",
+      description: "Once the account posts, the established payment history appears on your credit file as an authorized user — strengthening your overall profile.",
       color: "accent"
     }
   ];
@@ -37,7 +37,7 @@ const HowItWorks = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our streamlined process gets you from application to improved credit in just 4 simple steps.
+            A clear, transparent process that gets you from browsing to a stronger credit profile in 4 simple steps.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ const HowItWorks = () => {
         <div className="text-center mt-16">
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-surface-elevated px-6 py-3 rounded-full">
             <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-            Typical completion time: 24-72 hours
+            Reporting timelines depend on the issuing bank's cycle and are estimates, not guarantees.
           </div>
         </div>
       </div>

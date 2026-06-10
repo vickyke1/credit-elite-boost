@@ -4,58 +4,52 @@ import { Star } from "lucide-react";
 const Testimonials = () => {
   const testimonials = [
     {
-      name: "Marcus Johnson",
+      name: "Marcus T.",
       location: "Atlanta, GA",
-      score: "580 → 780",
       rating: 5,
-      text: "CPN Credit Boost completely transformed my financial life. Within 45 days, I went from a 580 to 780 credit score and qualified for a $50K business loan!",
+      text: "The process was clear from start to finish. I knew exactly what I was buying and when it would report. No vague promises — just professionalism.",
       verified: true,
-      package: "Credit Boost Combo"
+      tradeline: "Seasoned Tradeline"
     },
     {
-      name: "Sarah Chen", 
+      name: "Priya R.",
       location: "Los Angeles, CA",
-      score: "520 → 720",
       rating: 5,
-      text: "I was skeptical at first, but the results speak for themselves. The team was professional, the process was smooth, and my credit is now excellent.",
+      text: "What sold me was the transparency. Every tradeline listed the age, limit, and reporting date. The support team actually explained how it all worked instead of overselling.",
       verified: true,
-      package: "Business Builder"
+      tradeline: "Premium Tradeline"
     },
     {
-      name: "David Rodriguez",
-      location: "Miami, FL", 
-      score: "610 → 760",
+      name: "Devon W.",
+      location: "Miami, FL",
       rating: 5,
-      text: "Outstanding service! Got approved for my dream home after using their Elite Profile package. The investment paid for itself within weeks.",
+      text: "I was nervous about security, but the encrypted checkout and confidentiality put me at ease. Everything posted on the date they estimated.",
       verified: true,
-      package: "Elite Profile"
+      tradeline: "Aged Tradeline"
     },
     {
-      name: "Jennifer Williams",
+      name: "Alana K.",
       location: "Chicago, IL",
-      score: "550 → 740",
       rating: 5,
-      text: "Fast, reliable, and exactly as promised. Their tradelines reported quickly and my score jumped 190 points. Highly recommend!",
+      text: "Customer service is on another level. They set honest expectations and followed through. That kind of integrity is rare in this space.",
       verified: true,
-      package: "Credit Boost Combo"
+      tradeline: "Premium Tradeline"
     },
     {
-      name: "Robert Kim",
+      name: "Robert M.",
       location: "Seattle, WA",
-      score: "590 → 790", 
       rating: 5,
-      text: "Professional team that delivers results. Used their business package and now have access to $100K+ in business credit lines.",
+      text: "Straightforward marketplace with real details on every listing. The posting guarantee gave me confidence that I was protected if anything went wrong.",
       verified: true,
-      package: "Business Builder"
+      tradeline: "Seasoned Tradeline"
     },
     {
-      name: "Amanda Thompson",
+      name: "Amanda T.",
       location: "Houston, TX",
-      score: "540 → 710",
       rating: 5,
-      text: "Life-changing experience! From poor credit to excellent in just 2 months. The support team guided me through every step.",
+      text: "From browsing to confirmation, everything was smooth and clearly communicated. They guided me through how authorized-user history fits a bigger plan.",
       verified: true,
-      package: "Basic CPN Kit"
+      tradeline: "Starter Tradeline"
     }
   ];
 
@@ -64,36 +58,36 @@ const Testimonials = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Client{" "}
+            Real Members.{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Success Stories
+              Real Experiences.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Real results from real clients. See how CPN Credit Boost has helped thousands 
-            achieve their credit and funding goals.
+            See why thousands of members trust Credit Elite Boost for a transparent,
+            secure way to add premium authorized-user tradelines to their credit strategy.
           </p>
-          
+
           {/* Trust Stats */}
           <div className="flex flex-wrap justify-center gap-8 mt-8">
             <div className="text-center">
               <div className="text-3xl font-bold text-accent">10,000+</div>
-              <div className="text-sm text-muted-foreground">Happy Clients</div>
+              <div className="text-sm text-muted-foreground">Members Served</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">4.9/5</div>
               <div className="text-sm text-muted-foreground">Average Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-accent">180+</div>
-              <div className="text-sm text-muted-foreground">Avg Score Increase</div>
+              <div className="text-3xl font-bold text-accent">100%</div>
+              <div className="text-sm text-muted-foreground">Posting Guarantee</div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
-            <div 
+            <div
               key={index}
               className="surface-elevated rounded-2xl p-6 hover:scale-105 transition-all duration-300"
             >
@@ -103,48 +97,41 @@ const Testimonials = () => {
                   <Star key={i} className="w-5 h-5 text-accent fill-current" />
                 ))}
               </div>
-              
+
               {/* Testimonial Text */}
               <p className="text-muted-foreground mb-6 leading-relaxed italic">
                 "{testimonial.text}"
               </p>
-              
+
               {/* Client Info */}
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-semibold text-foreground">{testimonial.name}</div>
                   <div className="text-sm text-muted-foreground">{testimonial.location}</div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    Package: {testimonial.package}
+                    {testimonial.tradeline}
                   </div>
                 </div>
-                
-                <div className="text-right">
-                  {/* Score Improvement */}
-                  <div className="text-lg font-bold text-accent mb-1">
-                    {testimonial.score}
-                  </div>
-                  {/* Verified Badge */}
-                  {testimonial.verified && (
-                    <Badge variant="outline" className="text-xs border-primary text-primary">
-                      Verified
-                    </Badge>
-                  )}
-                </div>
+
+                {/* Verified Badge */}
+                {testimonial.verified && (
+                  <Badge variant="outline" className="text-xs border-primary text-primary">
+                    Verified
+                  </Badge>
+                )}
               </div>
             </div>
           ))}
         </div>
-        
-        {/* Bottom CTA */}
+
+        {/* Bottom note */}
         <div className="text-center mt-12">
           <p className="text-muted-foreground mb-4">
-            Join thousands of satisfied clients who have transformed their credit profiles
+            Join thousands of members who chose the transparent, secure way to build credit
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-            Over 98% customer satisfaction rate
-          </div>
+          <p className="text-sm text-muted-foreground/80 max-w-3xl mx-auto">
+            Testimonials reflect individual experiences. Your results may differ. Compensation was not provided for these reviews.
+          </p>
         </div>
       </div>
     </section>

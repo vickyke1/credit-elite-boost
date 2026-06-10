@@ -3,34 +3,34 @@ import { Shield, Users, Phone, CheckCircle, Zap, CreditCard } from "lucide-react
 const WhyChooseUs = () => {
   const benefits = [
     {
-      icon: Zap,
-      title: "Fast Delivery",
-      description: "Tradelines and CPNs delivered within 24-72 hours"
+      icon: CreditCard,
+      title: "Seasoned, Premium Tradelines",
+      description: "Established accounts with long histories, low utilization, and spotless payment records — the qualities lenders look at most."
     },
     {
       icon: Shield,
-      title: "Clean, Safe CPNs",
-      description: "Verified, aged CPNs with no negative history"
-    },
-    {
-      icon: CreditCard,
-      title: "Real Aged Tradelines",
-      description: "Authentic tradelines from major banks and credit unions"
-    },
-    {
-      icon: Users,
-      title: "Business Credit Profiles",
-      description: "Complete business credit packages for funding"
-    },
-    {
-      icon: Phone,
-      title: "24/7 Support",
-      description: "Round-the-clock customer service and guidance"
+      title: "Full Transparency, Zero Surprises",
+      description: "Every listing shows age, credit limit, utilization, and reporting cycle up front. You know exactly what you're getting before you commit."
     },
     {
       icon: CheckCircle,
-      title: "Money-Back Guarantee",
-      description: "100% satisfaction guaranteed or your money back"
+      title: "Secure & Confidential",
+      description: "Bank-level encryption and strict data-handling practices protect your information. Your privacy is never for sale."
+    },
+    {
+      icon: Zap,
+      title: "Reliable Reporting Windows",
+      description: "We match you to tradelines aligned with upcoming reporting dates, so you're never left waiting and wondering."
+    },
+    {
+      icon: Users,
+      title: "Guidance, Not Hype",
+      description: "Our specialists help you understand how authorized-user history fits a broader credit-building plan, with realistic expectations."
+    },
+    {
+      icon: Phone,
+      title: "Posting Guarantee",
+      description: "If a tradeline you purchase doesn't post as described, we make it right with a replacement or refund per our guarantee terms."
     }
   ];
 
@@ -39,14 +39,14 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Why Choose{" "}
+            Why Members Choose{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              CPN Credit Boost?
+              Credit Elite Boost
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We're the industry leaders in credit enhancement with over 10 years of experience 
-            helping clients achieve their financial goals.
+            A tradeline marketplace built on transparency, security, and real results —
+            helping thousands of members strengthen their credit profiles the smart, strategic way.
           </p>
         </div>
         
@@ -68,6 +68,11 @@ const WhyChooseUs = () => {
             </div>
           ))}
         </div>
+
+        <p className="text-sm text-muted-foreground/80 text-center max-w-3xl mx-auto mt-12">
+          We help you add positive credit history. We do not promise specific credit-score
+          increases, removal of accurate information, or approval for any loan.
+        </p>
       </div>
     </section>
   );

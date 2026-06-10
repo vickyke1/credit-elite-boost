@@ -14,16 +14,16 @@ const CPNPackagesCTA = () => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Main headline */}
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Transform Your{" "}
+            Ready to Build a Stronger{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               Credit Profile?
             </span>
           </h2>
-          
+
           {/* Subheadline */}
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Explore our comprehensive CPN packages designed to give you a fresh financial start. 
-            From starter kits to elite funding-ready profiles.
+            Browse our curated marketplace of premium authorized-user tradelines —
+            from starter listings to seasoned, high-limit accounts. Transparent details, secure checkout, honest guidance.
           </p>
           
           {/* Animated Statistics */}
@@ -35,27 +35,27 @@ const CPNPackagesCTA = () => {
                   <AnimatedCounter end={10000} suffix="+" />
                 </p>
               </div>
-              <p className="text-sm text-muted-foreground">Satisfied Clients</p>
+              <p className="text-sm text-muted-foreground">Members Served</p>
             </div>
-            
+
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingUp className="w-5 h-5 text-accent" />
                 <p className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  <AnimatedCounter end={150} suffix="+" />
+                  <AnimatedCounter end={4.9} suffix="/5" decimals={1} />
                 </p>
               </div>
-              <p className="text-sm text-muted-foreground">Average Points Boosted</p>
+              <p className="text-sm text-muted-foreground">Average Rating</p>
             </div>
-            
+
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Award className="w-5 h-5 text-primary" />
                 <p className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  <AnimatedCounter end={98} suffix="%" decimals={0} />
+                  <AnimatedCounter end={100} suffix="%" decimals={0} />
                 </p>
               </div>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
+              <p className="text-sm text-muted-foreground">Posting Guarantee</p>
             </div>
           </div>
           
@@ -65,24 +65,24 @@ const CPNPackagesCTA = () => {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Package className="w-6 h-6 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">4 Package Tiers</p>
-              <p className="text-xs text-muted-foreground">From $299 to $2,499</p>
+              <p className="text-sm font-medium text-foreground">Curated Inventory</p>
+              <p className="text-xs text-muted-foreground">Seasoned, vetted tradelines</p>
             </div>
-            
+
             <div className="flex flex-col items-center gap-3 p-4">
               <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                 <Shield className="w-6 h-6 text-accent" />
               </div>
-              <p className="text-sm font-medium text-foreground">Money-Back Guarantee</p>
-              <p className="text-xs text-muted-foreground">On all packages</p>
+              <p className="text-sm font-medium text-foreground">Posting Guarantee</p>
+              <p className="text-xs text-muted-foreground">On every listing</p>
             </div>
-            
+
             <div className="flex flex-col items-center gap-3 p-4">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Zap className="w-6 h-6 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">Fast Delivery</p>
-              <p className="text-xs text-muted-foreground">24-48 hour setup</p>
+              <p className="text-sm font-medium text-foreground">Full Transparency</p>
+              <p className="text-xs text-muted-foreground">Details shown up front</p>
             </div>
           </div>
           
@@ -92,13 +92,19 @@ const CPNPackagesCTA = () => {
               size="lg"
               className="bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent text-lg px-8 py-6 h-auto font-semibold group"
             >
-              View CPN Packages
+              Browse Tradelines Now
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-          
+
           <p className="text-sm text-muted-foreground mt-6">
-            Join 10,000+ clients who've transformed their credit with our packages
+            Join 10,000+ members who chose the transparent, secure way to build credit
+          </p>
+
+          <p className="text-xs text-muted-foreground/80 mt-6 max-w-2xl mx-auto">
+            Credit Elite Boost provides authorized-user tradeline services as one component of a
+            personal credit-building strategy. We do not guarantee specific credit-score results,
+            loan approvals, or removal of accurate information from your credit report. Results vary by individual.
           </p>
         </div>
       </div>
