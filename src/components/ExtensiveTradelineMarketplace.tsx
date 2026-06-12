@@ -1,7 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from "react";
 import { generateTradelines } from "@/utils/tradelineData";
 import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
-import { TradelineTable } from "@/components/tradelines/TradelineTable";
+import { TradelineGrid } from "@/components/tradelines/TradelineGrid";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
 import { TradelineStats } from "@/components/tradelines/TradelineStats";
 import { ShieldCheck, Sparkles } from "lucide-react";
@@ -26,7 +26,7 @@ const ExtensiveTradelineMarketplace = () => {
   const [sortBy, setSortBy] = useState("age");
   const [filterBy, setFilterBy] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 50;
+  const itemsPerPage = 24;
 
   const allTradelines = useMemo(() => generateTradelines(), []);
 
@@ -115,8 +115,8 @@ const ExtensiveTradelineMarketplace = () => {
           />
         </div>
 
-        {/* Tradelines Table */}
-        <TradelineTable tradelines={paginatedTradelines} />
+        {/* Tradeline Product Cards */}
+        <TradelineGrid tradelines={paginatedTradelines} />
 
         {/* Pagination */}
         <TradelinePagination

@@ -10,6 +10,7 @@ import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
+import ProductDetail from "./pages/ProductDetail";
 import TradelineCalculatorPage from "./pages/TradelineCalculatorPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -51,6 +52,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
