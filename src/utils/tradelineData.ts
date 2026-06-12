@@ -88,7 +88,9 @@ export const generateTradelines = (): Tradeline[] => {
     openDate.setFullYear(openDate.getFullYear() - yearsOld);
     openDate.setMonth(openDate.getMonth() - monthsOld);
 
-    const deadlineOffset = Math.floor(rand() * 14) + 1;
+    // Deadlines sit comfortably in the future (30-75 days out) so listings
+    // never show an imminent or stale cutoff date.
+    const deadlineOffset = Math.floor(rand() * 46) + 30;
     const purchaseDeadline = new Date();
     purchaseDeadline.setDate(purchaseDeadline.getDate() + deadlineOffset);
 

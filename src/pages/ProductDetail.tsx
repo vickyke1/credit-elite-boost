@@ -11,8 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   getTradelineBySlug,
   getTradelineByCardId,
-  type Tradeline,
 } from "@/utils/tradelineData";
+import { BankCardMockup } from "@/components/BankCardMockup";
 import {
   ChevronLeft,
   ShoppingCart,
@@ -22,47 +22,7 @@ import {
   Building2,
   Clock,
   BadgeCheck,
-  Wifi,
 } from "lucide-react";
-
-const CreditCardVisual = ({ tradeline }: { tradeline: Tradeline }) => (
-  <div
-    className="relative aspect-[1.6/1] w-full rounded-2xl p-6 text-white shadow-2xl overflow-hidden"
-    style={{
-      background:
-        "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(220 40% 18%) 55%, hsl(190 95% 30%) 100%)",
-    }}
-    aria-hidden="true"
-  >
-    <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
-    <div className="absolute right-10 bottom-0 h-32 w-32 rounded-full bg-accent/20 blur-2xl" />
-
-    <div className="relative flex h-full flex-col justify-between">
-      <div className="flex items-start justify-between">
-        <span className="text-lg font-semibold tracking-wide">{tradeline.bankName}</span>
-        <Wifi className="h-6 w-6 rotate-90 opacity-80" />
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="h-9 w-12 rounded-md bg-gradient-to-br from-yellow-200 to-yellow-400 shadow-inner" />
-        <div className="font-mono text-lg tracking-[0.2em] opacity-90">
-          1234 5678 9012 {tradeline.cardId.slice(-4).padStart(4, "0")}
-        </div>
-      </div>
-
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="text-[10px] uppercase tracking-widest opacity-60">Card Holder</div>
-          <div className="text-sm font-medium tracking-wide">AUTHORIZED USER</div>
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] uppercase tracking-widest opacity-60">Limit</div>
-          <div className="text-sm font-semibold">${tradeline.creditLimit.toLocaleString()}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 const DetailItem = ({
   icon: Icon,
@@ -170,7 +130,11 @@ const ProductDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
             {/* Left: visual */}
             <div className="space-y-6">
-              <CreditCardVisual tradeline={tradeline} />
+              <BankCardMockup
+                bankName={tradeline.bankName}
+                lastFour={tradeline.cardId.slice(-4)}
+                size="lg"
+              />
 
               <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent">

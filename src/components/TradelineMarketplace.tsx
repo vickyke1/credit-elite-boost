@@ -3,12 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { BankCardMockup } from "@/components/BankCardMockup";
 
 const TradelineMarketplace = () => {
   const { addToCart } = useCart();
   const tradelines = [
     {
       issuer: "Chase Sapphire",
+      bank: "Chase",
       limit: "$25,000",
       age: "8 years",
       price: "$899",
@@ -17,7 +19,8 @@ const TradelineMarketplace = () => {
     },
     {
       issuer: "American Express Gold",
-      limit: "$15,000", 
+      bank: "American Express",
+      limit: "$15,000",
       age: "5 years",
       price: "$649",
       badge: "Best Value",
@@ -25,14 +28,16 @@ const TradelineMarketplace = () => {
     },
     {
       issuer: "Capital One Venture",
+      bank: "Capital One",
       limit: "$20,000",
-      age: "6 years", 
+      age: "6 years",
       price: "$749",
       badge: "",
       badgeVariant: "outline" as const
     },
     {
       issuer: "Citi Double Cash",
+      bank: "Citi",
       limit: "$18,000",
       age: "7 years",
       price: "$799",
@@ -41,6 +46,7 @@ const TradelineMarketplace = () => {
     },
     {
       issuer: "Bank of America",
+      bank: "Bank of America",
       limit: "$12,000",
       age: "4 years",
       price: "$549",
@@ -49,6 +55,7 @@ const TradelineMarketplace = () => {
     },
     {
       issuer: "Wells Fargo Platinum",
+      bank: "Wells Fargo",
       limit: "$30,000",
       age: "10 years",
       price: "$1,199",
@@ -76,8 +83,11 @@ const TradelineMarketplace = () => {
           {tradelines.map((tradeline, index) => (
             <div 
               key={index}
-              className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow-primary group"
+              className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow-primary group flex flex-col"
             >
+              {/* Matching bank card mockup */}
+              <BankCardMockup bankName={tradeline.bank} className="mb-5" />
+
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-semibold text-foreground">
                   {tradeline.issuer}
@@ -105,7 +115,7 @@ const TradelineMarketplace = () => {
               </div>
               
               <Button
-                className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent font-semibold"
+                className="w-full mt-auto bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent font-semibold"
                 size="lg"
                 onClick={() => {
                   addToCart({
