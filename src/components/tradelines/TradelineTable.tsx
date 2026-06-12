@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { Tradeline } from "@/utils/tradelineData";
-import { ShoppingCart, Building2 } from "lucide-react";
+import { Tradeline, getProductUrl } from "@/utils/tradelineData";
+import { ShoppingCart, Building2, Eye } from "lucide-react";
 
 interface TradelineTableProps {
   tradelines: Tradeline[];
@@ -76,18 +77,20 @@ export const TradelineTable = ({ tradelines }: TradelineTableProps) => {
             {tradelines.map((tradeline) => (
               <tr key={tradeline.id} className="group hover:bg-surface-hover/50 transition-colors border-b border-border/40 last:border-0">
                 <td className="p-4">
-                  <div className="flex items-center gap-3">
+                  <Link to={getProductUrl(tradeline)} className="flex items-center gap-3 group/link">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
                       <Building2 className="h-4 w-4" />
                     </div>
                     <div>
-                      <div className="font-semibold text-foreground">{tradeline.bankName}</div>
+                      <div className="font-semibold text-foreground group-hover/link:text-primary group-hover/link:underline transition-colors">{tradeline.bankName}</div>
                       <div className="text-sm text-muted-foreground">{tradeline.age} old</div>
                     </div>
-                  </div>
+                  </Link>
                 </td>
                 <td className="p-4">
-                  <code className="text-xs bg-muted/60 px-2 py-1 rounded-md text-primary border border-primary/10">{tradeline.cardId}</code>
+                  <Link to={getProductUrl(tradeline)}>
+                    <code className="text-xs bg-muted/60 px-2 py-1 rounded-md text-primary border border-primary/10 hover:bg-muted">{tradeline.cardId}</code>
+                  </Link>
                 </td>
                 <td className="p-4">
                   <div className="font-bold text-accent">${tradeline.creditLimit.toLocaleString()}</div>
@@ -102,19 +105,27 @@ export const TradelineTable = ({ tradelines }: TradelineTableProps) => {
                   <div className="text-xl font-bold text-foreground">${tradeline.price}</div>
                 </td>
                 <td className="p-4">
-                  <Button
-                    size="sm"
-                    disabled={tradeline.status === 'sold-out'}
-                    onClick={() => handleAddToCart(tradeline)}
-                    className={`${
-                      tradeline.status === 'sold-out'
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'bg-gradient-cta text-accent-foreground hover:scale-105 transition-transform duration-300 glow-accent'
-                    }`}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add to Cart'}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button asChild size="sm" variant="outline">
+                      <Link to={getProductUrl(tradeline)}>
+                        <Eye className="h-4 w-4" />
+                        View
+                      </Link>
+                    </Button>
+                    <Button
+                      size="sm"
+                      disabled={tradeline.status === 'sold-out'}
+                      onClick={() => handleAddToCart(tradeline)}
+                      className={`${
+                        tradeline.status === 'sold-out'
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'bg-gradient-cta text-accent-foreground hover:scale-105 transition-transform duration-300 glow-accent'
+                      }`}
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                      {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add to Cart'}
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
