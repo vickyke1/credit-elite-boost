@@ -13,11 +13,14 @@ import { z } from "zod";
 import { emailSchema, phoneSchema, nameSchema, transactionIdSchema } from "@/lib/security";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import type { CartItem } from "@/contexts/CartContext";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   total: number;
+  items?: CartItem[];
+  onSuccess?: () => void;
 }
 
 const paymentFormSchema = z.object({
@@ -25,17 +28,21 @@ const paymentFormSchema = z.object({
   lastName: nameSchema,
   email: emailSchema,
   phone: phoneSchema,
-  transactionId: transactionIdSchema.optional()
+  // Transaction ID is optional — customers paying via Cashaap/Zelle may not
+  // have one yet. Accept an empty string so checkout isn't blocked, while
+  // still validating the format when a value is provided.
+  transactionId: transactionIdSchema.or(z.literal("")).optional()
 });
 
 type PaymentFormData = z.infer<typeof paymentFormSchema>;
 
-export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
+export const PaymentModal = ({ isOpen, onClose, total, items = [], onSuccess }: PaymentModalProps) => {
   const [copied, setCopied] = useState(false);
   const [cryptoAddress, setCryptoAddress] = useState<string>("");
   const [loadingAddress, setLoadingAddress] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PaymentFormData>({
     resolver: zodResolver(paymentFormSchema)
   });
@@ -88,13 +95,61 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
     }
   };
 
-  const onSubmit = (_data: PaymentFormData) => {
-    toast({
-      title: "Order Submitted!",
-      description: "Your order has been submitted. We'll contact you shortly.",
-    });
-    reset();
-    onClose();
+  const onSubmit = async (data: PaymentFormData) => {
+    setIsSubmitting(true);
+
+    // Build a readable order summary so the merchant receives what was bought.
+    const orderLines = items.length
+      ? items
+          .map((item) => {
+            const details = item.type === "tradeline"
+              ? ` (Card ID: ${item.cardId ?? "N/A"}, Limit: $${item.creditLimit?.toLocaleString() ?? "N/A"})`
+              : "";
+            return `- ${item.name}${details} - $${item.price}`;
+          })
+          .join("\n")
+      : "- (No itemized cart data)";
+
+    const message =
+      `New tradeline order received.\n\n` +
+      `Items:\n${orderLines}\n\n` +
+      `Order Total: $${total}\n` +
+      `Bitcoin Transaction ID: ${data.transactionId?.trim() ? data.transactionId.trim() : "Not provided yet"}\n` +
+      `Customer Phone: ${data.phone}`;
+
+    try {
+      const { data: response, error } = await supabase.functions.invoke("contact-form", {
+        body: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          subject: `New Tradeline Order - $${total}`,
+          message,
+        },
+      });
+
+      if (error) throw error;
+      if (response?.error) throw new Error(response.error);
+
+      toast({
+        title: "Order Submitted!",
+        description: "Your order has been received. We'll contact you shortly to confirm.",
+      });
+      reset();
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      console.error("Failed to submit order:", err);
+      toast({
+        title: "Could not submit order",
+        description:
+          "We couldn't submit your order automatically. Please email Admin@cpncreditboost.com with your transaction ID so we can complete it.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -271,11 +326,18 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
                   )}
                 </div>
 
-                <Button 
+                <Button
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent"
                 >
-                  Confirm Order
+                  {isSubmitting ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Submitting order…
+                    </span>
+                  ) : (
+                    "Confirm Order"
+                  )}
                 </Button>
               </form>
             </div>

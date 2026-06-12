@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { PaymentModal } from "./PaymentModal";
 
 export const Cart = () => {
-  const { items, removeFromCart, getTotalPrice, getItemCount } = useCart();
+  const { items, removeFromCart, getTotalPrice, getItemCount, clearCart } = useCart();
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   return (
@@ -83,10 +83,12 @@ export const Cart = () => {
         </SheetContent>
       </Sheet>
 
-      <PaymentModal 
-        isOpen={isPaymentOpen} 
+      <PaymentModal
+        isOpen={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
         total={getTotalPrice()}
+        items={items}
+        onSuccess={clearCart}
       />
     </>
   );
