@@ -33,6 +33,7 @@ import Disclaimer from "./pages/Disclaimer";
 import Compliance from "./pages/Compliance";
 import TypesOfTradelines from "./pages/TypesOfTradelines";
 import SellTradelines from "./pages/SellTradelines";
+import ApartmentApprovalGuide from "./pages/ApartmentApprovalGuide";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => {
               <Route path="/business-credit" element={<BusinessCredit />} />
               <Route path="/credit-repair" element={<CreditRepair />} />
               <Route path="/types-of-tradelines" element={<TypesOfTradelines />} />
+              <Route path="/apartment-approval-guide" element={<ApartmentApprovalGuide />} />
               <Route path="/sell-tradelines" element={<SellTradelines />} />
               
               {/* Support Pages */}
