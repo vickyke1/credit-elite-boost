@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/tradelines", label: "Buy Tradelines" },
+  { to: "/sell-tradelines", label: "Sell Tradelines" },
   { to: "/types-of-tradelines", label: "Tradeline Types" },
   { to: "/calculator", label: "Calculator" },
   { to: "/cpn-packages", label: "CPN Packages" },
