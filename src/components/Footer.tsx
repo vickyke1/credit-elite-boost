@@ -25,8 +25,13 @@ const Footer = () => {
         href: "/tradelines", 
         description: "Browse our extensive marketplace of aged tradelines from trusted banks to boost your credit profile and improve your creditworthiness."
       },
-      { 
-        name: "CPN Packages", 
+      {
+        name: "Sell Tradelines",
+        href: "/sell-tradelines",
+        description: "Become a credit partner and earn passive income by safely adding authorized users to your seasoned, well-managed credit cards."
+      },
+      {
+        name: "CPN Packages",
         href: "/cpn-packages",
         description: "Complete CPN packages with aged tradelines, credit monitoring, and step-by-step guidance for building strong credit profiles."
       },
