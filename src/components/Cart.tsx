@@ -1,14 +1,13 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { PaymentModal } from "./PaymentModal";
+import { useNavigate } from "react-router-dom";
 
 export const Cart = () => {
   const { items, removeFromCart, getTotalPrice, getItemCount } = useCart();
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -70,24 +69,20 @@ export const Cart = () => {
                     <span className="text-2xl font-bold text-accent">${getTotalPrice()}</span>
                   </div>
                   
-                  <Button 
-                    className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent"
-                    onClick={() => setIsPaymentOpen(true)}
-                  >
-                    Proceed to Checkout
-                  </Button>
+                  <SheetClose asChild>
+                    <Button
+                      className="w-full bg-gradient-cta hover:scale-105 transition-transform duration-300 glow-accent"
+                      onClick={() => navigate("/checkout")}
+                    >
+                      Proceed to Checkout
+                    </Button>
+                  </SheetClose>
                 </div>
               </>
             )}
           </div>
         </SheetContent>
       </Sheet>
-
-      <PaymentModal 
-        isOpen={isPaymentOpen} 
-        onClose={() => setIsPaymentOpen(false)}
-        total={getTotalPrice()}
-      />
     </>
   );
 };

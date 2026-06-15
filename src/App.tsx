@@ -33,6 +33,11 @@ import Disclaimer from "./pages/Disclaimer";
 import Compliance from "./pages/Compliance";
 import TypesOfTradelines from "./pages/TypesOfTradelines";
 import SellTradelines from "./pages/SellTradelines";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import OrderHistory from "./pages/OrderHistory";
+import AdminOrders from "./pages/admin/AdminOrders";
+import { AdminRoute } from "@/components/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +59,12 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
+
+              {/* Checkout & Orders */}
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order/:token" element={<OrderConfirmation />} />
+              <Route path="/orders" element={<OrderHistory />} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
