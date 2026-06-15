@@ -15,13 +15,54 @@ import {
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { CheckCircle2, Star, Zap } from "lucide-react";
 
 const priceToNumber = (price: string) => parseInt(price.replace(/[$,]/g, ""), 10);
+
+type Tier = "standard" | "popular" | "premium";
+
+interface Package {
+  name: string;
+  price: string;
+  tier: Tier;
+  badge?: string;
+  description: string;
+  features: string[];
+}
+
+const tierStyles: Record<
+  Tier,
+  { card: string; price: string; check: string; button: string }
+> = {
+  standard: {
+    card: "border-border hover:border-primary/50 hover:shadow-glow-primary",
+    price: "text-primary",
+    check: "text-primary",
+    button: "",
+  },
+  popular: {
+    card: "border-primary shadow-glow-primary",
+    price: "text-primary",
+    check: "text-primary",
+    button: "",
+  },
+  premium: {
+    card: "border-accent shadow-glow-accent",
+    price: "text-accent",
+    check: "text-accent",
+    button: "bg-accent text-accent-foreground hover:bg-accent/90",
+  },
+};
 
 const CPNPackages = () => {
   const { addToCart } = useCart();
 
-  const handleAddPackage = (pkg: { name: string; price: string; description: string; features: string[] }) => {
+  const handleAddPackage = (pkg: {
+    name: string;
+    price: string;
+    description: string;
+    features: string[];
+  }) => {
     addToCart({
       id: `cpn-package-${pkg.name}`,
       type: "package",
@@ -30,100 +71,157 @@ const CPNPackages = () => {
       description: pkg.description,
       features: pkg.features,
     });
-    toast({ title: "Added to Cart", description: `${pkg.name} has been added to your cart.` });
-  };
-
-  const handleAddAddon = (addon: { name: string; price: string; description: string }) => {
-    addToCart({
-      id: `cpn-addon-${addon.name}`,
-      type: "package",
-      name: addon.name,
-      price: priceToNumber(addon.price),
-      description: addon.description,
+    toast({
+      title: "Added to Cart",
+      description: `${pkg.name} has been added to your cart.`,
     });
-    toast({ title: "Added to Cart", description: `${addon.name} has been added to your cart.` });
   };
 
-  const packages = [
+  const packages: Package[] = [
     {
-      name: "Foundation Builder",
-      price: "$297",
-      popular: false,
+      name: "Starter",
+      price: "$149",
+      tier: "standard",
+      description:
+        "Everything you need to establish a fresh CPN profile and start building from day one.",
       features: [
-        "Fresh CPN Number",
-        "Initial Credit Setup Guide",
-        "1 Aged Tradeline (2+ years)",
-        "Credit Monitoring Access",
-        "Email Support",
-        "Basic Documentation",
-        "Setup Instructions"
+        "New CPN Number (SSN Alternative)",
+        "Complete DOB + Address + Phone Setup",
+        "Disposable Email Account Setup",
+        "Soft-Pull Ready Format",
+        "Basic Identity Protection Guide",
+        "CPN Number Verification",
+        "24/7 Email Support",
       ],
-      description: "Establish your credit foundation with essential tools and guidance for long-term financial success."
     },
     {
-      name: "Credit Accelerator",
-      price: "$597",
-      popular: true,
+      name: "Bronze",
+      price: "$299",
+      tier: "standard",
+      description:
+        "A complete identity packet with the documentation needed to support your new CPN.",
       features: [
-        "Fresh CPN Number",
-        "Comprehensive Setup Guide",
-        "3 Aged Tradelines (3+ years)",
-        "Credit Monitoring & Alerts",
+        "Everything in Starter Package",
+        "Full CPN Identity Packet (PDF Format)",
+        "Basic Utility Bill Documentation",
+        "Income Stub Template (Editable)",
+        "Address Verification Letter",
+        "Identity Profile Setup Guide",
+        "Credit Building Strategy PDF",
+        "Priority Email Support",
+      ],
+    },
+    {
+      name: "Silver",
+      price: "$499",
+      tier: "standard",
+      description:
+        "A full document set plus dispute tools and a vendor roadmap to grow your file fast.",
+      features: [
+        "Everything in Bronze Package",
+        "Full Identity Document Set (Lease Agreement)",
+        "Bank Statement Documentation",
+        "Complete CPN Credit File Setup Guide",
+        "Professional Dispute Letter Templates (10+)",
+        "Credit Bureau Contact Information",
+        "Vendor Creditor List (50+ Vendors)",
+        "30-Day Credit Building Roadmap",
+        "Live Chat Support Access",
+      ],
+    },
+    {
+      name: "Gold",
+      price: "$850",
+      tier: "popular",
+      badge: "Most Popular",
+      description:
+        "Our most popular package — tri-merge ready with premium vendors and tradeline strategy.",
+      features: [
+        "Everything in Silver Package",
+        "Tri-Merge Bureau Ready Formatting",
+        "Premium Vendor Starter List (100+ Vendors)",
+        "AU Tradeline Strategy & Recommendations",
+        "Credit Mix Optimization Guide",
+        "Secured Card Application Templates",
+        "Business Credit Setup Instructions",
+        "Tax ID (EIN) Application Guide",
+        "Credit Monitoring Service (6 Months Free)",
         "Priority Phone Support",
-        "Complete Documentation Kit",
-        "30-Day Follow-up Support",
-        "Score Tracking Tools"
       ],
-      description: "Rapidly build strong credit with multiple tradelines and dedicated support from our expert team."
     },
     {
-      name: "Elite Credit Suite",
-      price: "$997",
-      popular: false,
+      name: "Platinum",
+      price: "$1500",
+      tier: "standard",
+      description:
+        "Aged identity assets and advanced strategies for serious profile strengthening.",
       features: [
-        "Fresh CPN Number",
-        "VIP Setup & Consultation",
-        "5 Premium Aged Tradelines (5+ years)",
-        "24/7 Credit Monitoring",
-        "Dedicated Account Manager",
-        "Complete Legal Documentation",
-        "90-Day Success Support",
-        "Advanced Score Optimization",
-        "Monthly Strategy Sessions"
+        "Everything in Gold Package",
+        "Aged Phone Number (6+ Months Old)",
+        "Aged Email Account (6+ Months Old)",
+        "Complete Profile Strengthening Report",
+        "Synthetic Risk Score Enhancement Tools",
+        "Advanced Dispute & Removal Strategies",
+        "LLC/Corporation Setup Guide",
+        "Business Banking Recommendations",
+        "Funding Source Directory (200+ Sources)",
+        "Personal Credit Specialist (1 Hour Consultation)",
+        "VIP 24/7 Phone Support",
       ],
-      description: "Maximum credit-building power with premium tradelines, white-glove service, and personalized strategy."
-    }
+    },
+    {
+      name: "Ultimate",
+      price: "$2500",
+      tier: "premium",
+      badge: "Premium",
+      description:
+        "The complete business and personal credit identity suite with a dedicated manager.",
+      features: [
+        "Everything in Platinum Package",
+        "Full CPN Business Identity Package",
+        "Bank-Ready Complete Document Set",
+        "Exclusive Private Vendor Network (500+)",
+        "Premium Tradeline Connection Map",
+        "Business Credit Card Strategy Guide",
+        "Net-30 Vendor Account Setup (10 Accounts)",
+        "Business Credit Profile Building Plan",
+        "Store Credit Card Application Templates",
+        "Financial Management Software (1 Year License)",
+        "Dedicated Account Manager",
+        "Weekly Check-ins for 3 Months",
+      ],
+    },
   ];
 
-  const addOns = [
-    {
-      name: "Additional Tradeline",
-      price: "$149",
-      description: "Add extra aged tradelines to boost your credit profile"
-    },
-    {
-      name: "Expedited Processing",
-      price: "$97", 
-      description: "Rush processing for faster delivery (24-48 hours)"
-    },
-    {
-      name: "Extended Support",
-      price: "$197",
-      description: "Additional 6 months of dedicated support and guidance"
-    },
-    {
-      name: "Business Credit Setup",
-      price: "$297",
-      description: "Complete business credit profile establishment"
-    }
-  ];
+  const premiumTradelines: Package = {
+    name: "Premium Tradelines",
+    price: "$2000",
+    tier: "premium",
+    badge: "Premium",
+    description:
+      "Five seasoned, high-limit US bank tradelines reporting to all three major bureaus.",
+    features: [
+      "5 Premium US Bank Tradelines",
+      "High Credit Limits ($25K–$50K each)",
+      "Perfect Payment History (0% Late Payments)",
+      "Aged Accounts (5–15+ Years History)",
+      "Low Utilization (<10% on all accounts)",
+      "Major US Banks Only (Chase, Amex, BoA, Citi)",
+      "Instant Score Boost (50–100+ Points Estimated)",
+      "Reports to All 3 Bureaus (Experian, Equifax, TransUnion)",
+      "Fast Posting (14–45 Days)",
+      "60-Day Reporting Guarantee",
+      "Primary Account Holder Verification",
+      "Tradeline Performance Report",
+    ],
+  };
 
   return (
     <>
       <SEOHead
-        title="CPN Packages - Complete Credit Building Solutions | CPN Credit Boost"
-        description="Choose from our comprehensive CPN packages including fresh CPN numbers, aged tradelines, credit monitoring, and expert support. Starter, Professional, and Premium options available."
-        keywords="CPN packages, credit privacy number packages, CPN with tradelines, credit building packages, aged tradeline packages, CPN services"
+        title="CPN Packages & Premium Tradelines — Complete Credit Building Solutions | CPN Credit Boost"
+        description="Choose from six CPN identity packages (Starter to Ultimate) plus premium aged tradelines. Fresh CPN numbers, full identity documentation, dispute tools, vendor lists, and expert support. One-time pricing from $149."
+        keywords="CPN packages, CPN identity package, credit privacy number packages, CPN with tradelines, premium tradelines, aged tradeline packages, credit building packages, CPN services"
         canonicalUrl="https://cpncreditboost.com/cpn-packages"
         ogType="website"
         schemaData={{
@@ -131,334 +229,289 @@ const CPNPackages = () => {
           "@graph": [
             breadcrumbSchema([
               { name: "Home", url: "https://cpncreditboost.com" },
-              { name: "CPN Packages", url: "https://cpncreditboost.com/cpn-packages" }
+              { name: "CPN Packages", url: "https://cpncreditboost.com/cpn-packages" },
             ]),
-            ...packages.map(pkg => productSchema({
-              name: pkg.name,
-              description: pkg.description,
-              price: pkg.price.replace('$', ''),
-              rating: 4.8,
-              reviewCount: 127
-            }))
-          ]
+            ...[...packages, premiumTradelines].map((pkg) =>
+              productSchema({
+                name: pkg.name,
+                description: pkg.description,
+                price: pkg.price.replace("$", ""),
+                rating: 4.8,
+                reviewCount: 127,
+              })
+            ),
+          ],
         }}
       />
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="pt-20">
-        {/* Breadcrumb Navigation */}
-        <div className="container mx-auto px-6 py-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/">Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>CPN Packages</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+          {/* Breadcrumb Navigation */}
+          <div className="container mx-auto px-6 py-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>CPN Packages</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
 
-        {/* Hero Section */}
-        <header className="py-16 bg-gradient-subtle">
-          <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                Complete CPN Packages with Aged Tradelines
-              </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Choose from our comprehensive CPN packages including fresh CPN numbers, premium aged tradelines, 
-                credit monitoring, and expert support to build strong credit profiles fast.
+          {/* Hero Section */}
+          <header className="relative overflow-hidden py-16 md:py-20">
+            <div className="absolute inset-0 bg-gradient-hero opacity-40" aria-hidden="true" />
+            <div className="container relative mx-auto px-6">
+              <div className="max-w-4xl mx-auto text-center">
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+                  CPN Packages &{" "}
+                  <span className="bg-gradient-primary bg-clip-text text-transparent">
+                    Premium Tradelines
+                  </span>
+                </h1>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  Six complete CPN identity packages — from a fresh Starter profile to the
+                  full Ultimate business suite — plus premium aged tradelines. Every
+                  package is a one-time payment with documentation, strategy, and expert
+                  support included.
+                </p>
+              </div>
+            </div>
+          </header>
+
+          {/* Package Grid */}
+          <section className="py-16" aria-labelledby="packages-heading">
+            <div className="container mx-auto px-6">
+              <h2 id="packages-heading" className="sr-only">
+                Available CPN Packages
+              </h2>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+                {packages.map((pkg) => {
+                  const styles = tierStyles[pkg.tier];
+                  return (
+                    <article
+                      key={pkg.name}
+                      className={`relative flex flex-col rounded-2xl border bg-surface-elevated p-8 transition-all duration-300 ${styles.card}`}
+                      itemScope
+                      itemType="https://schema.org/Product"
+                    >
+                      {pkg.badge && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1 text-sm font-semibold ${
+                              pkg.tier === "premium"
+                                ? "bg-accent text-accent-foreground"
+                                : "bg-primary text-primary-foreground"
+                            }`}
+                          >
+                            {pkg.tier === "premium" ? (
+                              <Zap className="h-4 w-4" />
+                            ) : (
+                              <Star className="h-4 w-4" />
+                            )}
+                            {pkg.badge}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="text-center mb-8">
+                        <h3 className="text-2xl font-bold text-foreground mb-2" itemProp="name">
+                          {pkg.name}
+                        </h3>
+                        <div
+                          className={`text-4xl font-bold mb-1 ${styles.price}`}
+                          itemProp="offers"
+                          itemScope
+                          itemType="https://schema.org/Offer"
+                        >
+                          <span itemProp="price" content={pkg.price.replace("$", "")}>
+                            {pkg.price}
+                          </span>
+                          <meta itemProp="priceCurrency" content="USD" />
+                        </div>
+                        <div className="text-xs uppercase tracking-wide text-muted-foreground mb-4">
+                          one-time payment
+                        </div>
+                        <p className="text-muted-foreground text-sm" itemProp="description">
+                          {pkg.description}
+                        </p>
+                      </div>
+
+                      <ul className="space-y-3 mb-8 flex-1">
+                        {pkg.features.map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-3 text-muted-foreground">
+                            <CheckCircle2
+                              className={`mt-0.5 h-5 w-5 flex-shrink-0 ${styles.check}`}
+                              aria-hidden="true"
+                            />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button
+                        className={`w-full ${styles.button}`}
+                        onClick={() => handleAddPackage(pkg)}
+                      >
+                        Select {pkg.name}
+                      </Button>
+                    </article>
+                  );
+                })}
+              </div>
+              <p className="text-center text-sm text-muted-foreground mt-8">
+                All packages include secure processing, legal compliance verification, and
+                a quality guarantee.
               </p>
             </div>
-          </div>
-        </header>
+          </section>
 
-        {/* Package Grid */}
-        <section className="py-16" aria-labelledby="packages-heading">
-          <div className="container mx-auto px-6">
-            <h2 id="packages-heading" className="sr-only">Available CPN Packages</h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {packages.map((pkg, index) => (
-                <article key={index} className={`relative bg-surface-elevated border rounded-lg p-8 hover:shadow-elegant transition-all duration-300 ${
-                  pkg.popular ? 'border-primary shadow-glow' : 'border-border'
-                }`} itemScope itemType="https://schema.org/Product">
-                  {pkg.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="text-center mb-8">
-                    <h3 className="text-2xl font-bold text-foreground mb-2" itemProp="name">{pkg.name}</h3>
-                    <div className="text-4xl font-bold text-primary mb-3" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                      <span itemProp="price" content={pkg.price.replace('$', '')}>{pkg.price}</span>
-                      <meta itemProp="priceCurrency" content="USD" />
-                    </div>
-                    <p className="text-muted-foreground text-sm" itemProp="description">{pkg.description}</p>
-                  </div>
-                  
-                  <ul className="space-y-3 mb-8">
-                    {pkg.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-3 text-muted-foreground">
-                        <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button
-                    className={`w-full ${pkg.popular ? 'bg-primary hover:bg-primary/90' : 'border border-primary text-primary hover:bg-primary hover:text-primary-foreground'}`}
-                    variant={pkg.popular ? 'default' : 'outline'}
-                    onClick={() => handleAddPackage(pkg)}
+          {/* Premium Tradelines Feature */}
+          <section className="py-16 bg-surface-elevated" aria-labelledby="tradelines-heading">
+            <div className="container mx-auto px-6">
+              <div className="max-w-3xl mx-auto text-center mb-12">
+                <h2
+                  id="tradelines-heading"
+                  className="text-3xl md:text-4xl font-bold text-foreground mb-4"
+                >
+                  Add Premium Aged Tradelines
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Pair any CPN package with seasoned, high-limit tradelines from major US
+                  banks for an instant, bureau-reported credit boost.
+                </p>
+              </div>
+
+              <article
+                className="relative mx-auto max-w-lg rounded-2xl border border-accent bg-background p-8 shadow-glow-accent"
+                itemScope
+                itemType="https://schema.org/Product"
+              >
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1 text-sm font-semibold text-accent-foreground">
+                    <Zap className="h-4 w-4" />
+                    {premiumTradelines.badge}
+                  </span>
+                </div>
+
+                <div className="text-center mb-8">
+                  <h3
+                    className="text-2xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent"
+                    itemProp="name"
                   >
-                    Get Started
-                  </Button>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Comparison Table */}
-        <section className="py-16 bg-surface-elevated" aria-labelledby="comparison-heading">
-          <div className="container mx-auto px-6">
-            <h2 id="comparison-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
-              Package Comparison
-            </h2>
-            <div className="relative overflow-x-auto shadow-md rounded-lg border border-border">
-              <div className="inline-block min-w-full align-middle">
-                <table className="min-w-full bg-background">
-                  <thead className="sticky top-0 z-10 bg-surface-elevated shadow-sm">
-                    <tr className="border-b border-border">
-                      <th className="sticky left-0 z-20 p-4 text-left text-foreground font-semibold bg-surface-elevated shadow-sm min-w-[200px]">Features</th>
-                    {packages.map((pkg, index) => (
-                      <th key={index} className={`p-4 text-center min-w-[180px] ${pkg.popular ? 'bg-primary/10' : 'bg-surface-elevated'}`}>
-                        <div className="font-bold text-foreground mb-1">{pkg.name}</div>
-                        <div className="text-2xl font-bold text-primary">{pkg.price}</div>
-                        {pkg.popular && (
-                          <div className="mt-2">
-                            <span className="inline-block bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
-                              Popular
-                            </span>
-                          </div>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">CPN Number</td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                    </td>
-                    <td className="p-4 text-center bg-primary/5">
-                      <span className="text-primary text-xl">✓</span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Aged Tradelines</td>
-                    <td className="p-4 text-center text-foreground">1 (2+ years)</td>
-                    <td className="p-4 text-center bg-primary/5 text-foreground">3 (3+ years)</td>
-                    <td className="p-4 text-center text-foreground">5 (5+ years)</td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Setup Guide</td>
-                    <td className="p-4 text-center text-foreground">Basic</td>
-                    <td className="p-4 text-center bg-primary/5 text-foreground">Comprehensive</td>
-                    <td className="p-4 text-center text-foreground">VIP Consultation</td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Credit Monitoring</td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                    </td>
-                    <td className="p-4 text-center bg-primary/5">
-                      <span className="text-primary text-xl">✓</span>
-                      <div className="text-xs text-muted-foreground mt-1">+ Alerts</div>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                      <div className="text-xs text-muted-foreground mt-1">24/7 Access</div>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Support Level</td>
-                    <td className="p-4 text-center text-foreground">Email</td>
-                    <td className="p-4 text-center bg-primary/5 text-foreground">Priority Phone</td>
-                    <td className="p-4 text-center text-foreground">Account Manager</td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Documentation</td>
-                    <td className="p-4 text-center text-foreground">Basic</td>
-                    <td className="p-4 text-center bg-primary/5 text-foreground">Complete Kit</td>
-                    <td className="p-4 text-center text-foreground">Legal + Complete</td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Follow-up Support</td>
-                    <td className="p-4 text-center text-muted-foreground">—</td>
-                    <td className="p-4 text-center bg-primary/5 text-foreground">30 Days</td>
-                    <td className="p-4 text-center text-foreground">90 Days</td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Score Tracking Tools</td>
-                    <td className="p-4 text-center text-muted-foreground">—</td>
-                    <td className="p-4 text-center bg-primary/5">
-                      <span className="text-primary text-xl">✓</span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                      <div className="text-xs text-muted-foreground mt-1">Advanced</div>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-border hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 text-muted-foreground font-medium bg-background">Strategy Sessions</td>
-                    <td className="p-4 text-center text-muted-foreground">—</td>
-                    <td className="p-4 text-center bg-primary/5 text-muted-foreground">—</td>
-                    <td className="p-4 text-center">
-                      <span className="text-primary text-xl">✓</span>
-                      <div className="text-xs text-muted-foreground mt-1">Monthly</div>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-surface-elevated/50 transition-colors">
-                    <td className="sticky left-0 z-10 p-4 bg-background"></td>
-                    <td className="p-4 text-center">
-                      <Button variant="outline" className="w-full" onClick={() => handleAddPackage(packages[0])}>
-                        Get Started
-                      </Button>
-                    </td>
-                    <td className="p-4 text-center bg-primary/5">
-                      <Button className="w-full" onClick={() => handleAddPackage(packages[1])}>
-                        Get Started
-                      </Button>
-                    </td>
-                    <td className="p-4 text-center">
-                      <Button variant="outline" className="w-full" onClick={() => handleAddPackage(packages[2])}>
-                        Get Started
-                      </Button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              </div>
-              <div className="block md:hidden text-center text-xs text-muted-foreground py-2 bg-background border-t border-border">
-                <span>← Scroll horizontally to view all packages →</span>
-              </div>
-            </div>
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              All packages include secure processing, legal compliance verification, and quality guarantee
-            </p>
-          </div>
-        </section>
-
-        <section className="py-16 bg-surface-elevated" aria-labelledby="addons-heading">
-          <div className="container mx-auto px-6">
-            <h2 id="addons-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
-              Optional Add-Ons to Enhance Your Package
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {addOns.map((addon, index) => (
-                <div key={index} className="bg-background border border-border p-6 rounded-lg">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-semibold text-foreground">{addon.name}</h3>
-                    <span className="text-xl font-bold text-primary">{addon.price}</span>
+                    {premiumTradelines.name}
+                  </h3>
+                  <div
+                    className="text-4xl font-bold text-accent mb-1"
+                    itemProp="offers"
+                    itemScope
+                    itemType="https://schema.org/Offer"
+                  >
+                    <span itemProp="price" content="2000">
+                      {premiumTradelines.price}
+                    </span>
+                    <meta itemProp="priceCurrency" content="USD" />
                   </div>
-                  <p className="text-muted-foreground mb-4">{addon.description}</p>
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => handleAddAddon(addon)}>
-                    Add to Package
-                  </Button>
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                    one-time payment
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* Process */}
-        <section className="py-16" aria-labelledby="process-heading">
-          <div className="container mx-auto px-6">
-            <h2 id="process-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
-              How Our CPN Package Process Works
-            </h2>
-            <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground font-bold">1</span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">Choose Package</h3>
-                <p className="text-sm text-muted-foreground">Select the package that best fits your credit goals</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground font-bold">2</span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">Secure Processing</h3>
-                <p className="text-sm text-muted-foreground">Complete secure order and verification process</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground font-bold">3</span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">Setup & Delivery</h3>
-                <p className="text-sm text-muted-foreground">Receive your CPN and tradelines with setup guide</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground font-bold">4</span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">Build Credit</h3>
-                <p className="text-sm text-muted-foreground">Follow guidance to establish strong credit history</p>
-              </div>
-            </div>
-          </div>
-        </section>
+                <ul className="space-y-3 mb-8">
+                  {premiumTradelines.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-muted-foreground">
+                      <CheckCircle2
+                        className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent"
+                        aria-hidden="true"
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-        {/* Guarantees */}
-        <section className="py-16 bg-surface-elevated" aria-labelledby="guarantees-heading">
-          <div className="container mx-auto px-6">
-            <h2 id="guarantees-heading" className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12">
-              Our Service Guarantees
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center p-6">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground">✓</span>
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">Legal Compliance</h3>
-                <p className="text-muted-foreground">
-                  All our services comply with FCRA regulations and federal laws.
-                </p>
-              </div>
-              <div className="text-center p-6">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground">🔒</span>
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">Secure Process</h3>
-                <p className="text-muted-foreground">
-                  Bank-level encryption and security for all transactions and data.
-                </p>
-              </div>
-              <div className="text-center p-6">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-primary-foreground">💎</span>
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">Quality Tradelines</h3>
-                <p className="text-muted-foreground">
-                  Only premium aged tradelines from reputable financial institutions.
-                </p>
+                <Button
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  onClick={() => handleAddPackage(premiumTradelines)}
+                >
+                  Select {premiumTradelines.name}
+                </Button>
+              </article>
+            </div>
+          </section>
+
+          {/* Process */}
+          <section className="py-16" aria-labelledby="process-heading">
+            <div className="container mx-auto px-6">
+              <h2
+                id="process-heading"
+                className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12"
+              >
+                How Our CPN Package Process Works
+              </h2>
+              <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                {[
+                  { n: 1, t: "Choose Package", d: "Select the package that best fits your credit goals" },
+                  { n: 2, t: "Secure Processing", d: "Complete secure order and verification process" },
+                  { n: 3, t: "Setup & Delivery", d: "Receive your CPN and documents with a setup guide" },
+                  { n: 4, t: "Build Credit", d: "Follow guidance to establish strong credit history" },
+                ].map((step) => (
+                  <div key={step.n} className="text-center">
+                    <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-2xl text-primary-foreground font-bold">{step.n}</span>
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2">{step.t}</h3>
+                    <p className="text-sm text-muted-foreground">{step.d}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* Guarantees */}
+          <section className="py-16 bg-surface-elevated" aria-labelledby="guarantees-heading">
+            <div className="container mx-auto px-6">
+              <h2
+                id="guarantees-heading"
+                className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12"
+              >
+                Our Service Guarantees
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center p-6">
+                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl text-primary-foreground">✓</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">Legal Compliance</h3>
+                  <p className="text-muted-foreground">
+                    All our services comply with FCRA regulations and federal laws.
+                  </p>
+                </div>
+                <div className="text-center p-6">
+                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl text-primary-foreground">🔒</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">Secure Process</h3>
+                  <p className="text-muted-foreground">
+                    Bank-level encryption and security for all transactions and data.
+                  </p>
+                </div>
+                <div className="text-center p-6">
+                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl text-primary-foreground">💎</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">Quality Tradelines</h3>
+                  <p className="text-muted-foreground">
+                    Only premium aged tradelines from reputable financial institutions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
         </main>
         <Footer />
         <FloatingChat />
