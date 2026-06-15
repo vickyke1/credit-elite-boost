@@ -41,7 +41,6 @@ const Index = () => {
         <Navigation />
         <main id="main-content">
           <Hero />
-          <WhyChooseUs />
           <TradelineMarketplace />
           <HowItWorks />
           <CPNPackagesCTA />
@@ -52,6 +51,7 @@ const Index = () => {
             </div>
           </section>
           <FAQ />
+          <WhyChooseUs />
         </main>
         <Footer />
         <FloatingChat />
