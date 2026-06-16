@@ -1,4 +1,70 @@
+import { useState } from "react";
 import { Wifi } from "lucide-react";
+
+// Maps each issuing bank to its primary web domain so we can pull the real
+// brand logo from a logo CDN (Clearbit). Anything not listed here gracefully
+// falls back to the embossed bank-name text below.
+const BANK_DOMAINS: Record<string, string> = {
+  "Chase": "chase.com",
+  "American Express": "americanexpress.com",
+  "Capital One": "capitalone.com",
+  "Citi": "citi.com",
+  "Bank of America": "bankofamerica.com",
+  "Wells Fargo": "wellsfargo.com",
+  "Discover": "discover.com",
+  "Barclays": "barclays.com",
+  "U.S. Bank": "usbank.com",
+  "PNC": "pnc.com",
+  "TD Bank": "td.com",
+  "Regions": "regions.com",
+  "SunTrust": "suntrust.com",
+  "Fifth Third": "53.com",
+  "KeyBank": "key.com",
+  "Huntington": "huntington.com",
+  "Synchrony": "synchrony.com",
+  "Navy Federal": "navyfederal.org",
+  "USAA": "usaa.com",
+  "First National": "fnni.com",
+  "Citizens Bank": "citizensbank.com",
+  "BB&T": "bbt.com",
+  "Union Bank": "unionbank.com",
+  "HSBC": "hsbc.com",
+  "Goldman Sachs": "goldmansachs.com",
+  "Morgan Stanley": "morganstanley.com",
+  "Charles Schwab": "schwab.com",
+  "Fidelity": "fidelity.com",
+  "Vanguard": "vanguard.com",
+  "Ally Bank": "ally.com",
+  "Marcus": "marcus.com",
+  "Truist": "truist.com",
+  "BMO Harris": "bmoharris.com",
+  "M&T Bank": "mtb.com",
+  "Santander": "santanderbank.com",
+  "Citizens": "citizensbank.com",
+  "First Citizens": "firstcitizens.com",
+  "Comerica": "comerica.com",
+  "Zions": "zionsbank.com",
+  "Webster Bank": "websterbank.com",
+  "BOK Financial": "bokfinancial.com",
+  "Synovus": "synovus.com",
+  "Valley National": "valley.com",
+  "Old National": "oldnational.com",
+  "First Horizon": "firsthorizon.com",
+  "Umpqua": "umpquabank.com",
+  "BancorpSouth": "bancorpsouth.com",
+  "Arvest": "arvest.com",
+  "Frost Bank": "frostbank.com",
+  "Associated Bank": "associatedbank.com",
+  "Commerce Bank": "commercebank.com",
+  "Pinnacle": "pnfp.com",
+  "Texas Capital": "texascapitalbank.com",
+  "CIT Bank": "cit.com",
+};
+
+const getBankLogo = (bankName: string): string | null => {
+  const domain = BANK_DOMAINS[bankName];
+  return domain ? `https://logo.clearbit.com/${domain}` : null;
+};
 
 // Subtle brand tint applied over the metallic silver base so each card
 // visually "belongs" to its issuing bank while keeping the premium look.
@@ -49,6 +115,11 @@ export const BankCardMockup = ({
 }: BankCardMockupProps) => {
   const accent = getBankAccent(bankName);
   const lg = size === "lg";
+
+  // Real bank logo (falls back to the embossed name if it's missing or fails).
+  const logoUrl = getBankLogo(bankName);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const showLogo = logoUrl && !logoFailed;
 
   const embossStyle = {
     color: "#3a3f45",
@@ -101,15 +172,26 @@ export const BankCardMockup = ({
         <div
           className={`relative flex h-full flex-col justify-between ${lg ? "p-6" : "p-4"}`}
         >
-          {/* Bank name + contactless */}
+          {/* Bank logo (with name fallback) + contactless */}
           <div className="flex items-start justify-between gap-2">
-            <span
-              className={`font-bold tracking-wide text-[#23272d] ${
-                lg ? "text-xl" : "text-sm leading-tight"
-              }`}
-            >
-              {bankName}
-            </span>
+            {showLogo ? (
+              <img
+                src={logoUrl}
+                alt={bankName}
+                onError={() => setLogoFailed(true)}
+                className={`w-auto max-w-[62%] object-contain object-left ${
+                  lg ? "h-8" : "h-5"
+                }`}
+              />
+            ) : (
+              <span
+                className={`font-bold tracking-wide text-[#23272d] ${
+                  lg ? "text-xl" : "text-sm leading-tight"
+                }`}
+              >
+                {bankName}
+              </span>
+            )}
             <Wifi
               className={`shrink-0 rotate-90 text-[#3a3f45]/80 ${lg ? "h-6 w-6" : "h-4 w-4"}`}
             />
