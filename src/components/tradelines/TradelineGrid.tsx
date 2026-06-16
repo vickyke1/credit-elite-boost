@@ -64,66 +64,67 @@ export const TradelineGrid = ({ tradelines }: TradelineGridProps) => {
           key={tradeline.id}
           className="glass-card group flex flex-col rounded-2xl border border-border/60 p-5 transition-all duration-300 hover:border-primary/50 hover:shadow-glow-primary"
         >
-          {/* Bank card mockup */}
-          <Link to={getProductUrl(tradeline)} className="mb-4 block">
+          {/* Bank card mockup with the status badge overlaid on top */}
+          <Link to={getProductUrl(tradeline)} className="relative mb-4 block">
             <BankCardMockup
               bankName={tradeline.bankName}
               lastFour={tradeline.cardId.slice(-4)}
             />
+            <div className="absolute left-2 top-2 z-10">
+              {getStatusBadge(tradeline.status, tradeline.availability)}
+            </div>
           </Link>
 
-          {/* Status */}
-          <div className="mb-2">
-            {getStatusBadge(tradeline.status, tradeline.availability)}
+          {/* Title + headline price share a row so the cost reads at a glance */}
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <Link to={getProductUrl(tradeline)} className="min-w-0">
+              <h3 className="font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                ${tradeline.creditLimit.toLocaleString()} Seasoned {tradeline.bankName} Tradeline {tradeline.cardId}
+              </h3>
+            </Link>
+            <div className="shrink-0 text-right">
+              <div className="text-2xl font-bold leading-none text-foreground">${tradeline.price}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">Price</div>
+            </div>
           </div>
 
-          {/* Title */}
-          <Link to={getProductUrl(tradeline)}>
-            <h3 className="mb-3 font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-              ${tradeline.creditLimit.toLocaleString()} Seasoned {tradeline.bankName} Tradeline {tradeline.cardId}
-            </h3>
-          </Link>
-
-          {/* Specs */}
-          <div className="mb-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Credit Limit:</span>
+          {/* Specs grouped in an inset panel with dividers */}
+          <div className="mb-4 divide-y divide-border/50 rounded-xl border border-border/50 bg-background/30 px-4 text-sm">
+            <div className="flex items-center justify-between py-2.5">
+              <span className="text-muted-foreground">Credit Limit</span>
               <span className="font-semibold text-accent">${tradeline.creditLimit.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Age:</span>
+            <div className="flex items-center justify-between py-2.5">
+              <span className="text-muted-foreground">Age</span>
               <span className="font-semibold text-primary">{tradeline.age}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Purchase Deadline:</span>
+            <div className="flex items-center justify-between py-2.5">
+              <span className="text-muted-foreground">Purchase Deadline</span>
               <span className="font-medium text-foreground">{tradeline.purchaseDeadline}</span>
             </div>
           </div>
 
-          {/* Price + actions pinned to the bottom for consistent card heights */}
-          <div className="mt-auto">
-            <div className="mb-4 text-2xl font-bold text-foreground">${tradeline.price}</div>
-            <div className="flex items-center gap-2">
-              <Button asChild size="sm" variant="outline" className="flex-1">
-                <Link to={getProductUrl(tradeline)}>
-                  <Eye className="h-4 w-4" />
-                  View
-                </Link>
-              </Button>
-              <Button
-                size="sm"
-                disabled={tradeline.status === 'sold-out'}
-                onClick={() => handleAddToCart(tradeline)}
-                className={`flex-1 ${
-                  tradeline.status === 'sold-out'
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'bg-gradient-cta text-accent-foreground hover:scale-105 transition-transform duration-300 glow-accent'
-                }`}
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add to Cart'}
-              </Button>
-            </div>
+          {/* Actions pinned to the bottom for consistent card heights */}
+          <div className="mt-auto flex items-center gap-2">
+            <Button asChild size="sm" variant="outline" className="flex-1">
+              <Link to={getProductUrl(tradeline)}>
+                <Eye className="h-4 w-4" />
+                View
+              </Link>
+            </Button>
+            <Button
+              size="sm"
+              disabled={tradeline.status === 'sold-out'}
+              onClick={() => handleAddToCart(tradeline)}
+              className={`flex-1 ${
+                tradeline.status === 'sold-out'
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'bg-gradient-cta text-accent-foreground hover:scale-105 transition-transform duration-300 glow-accent'
+              }`}
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {tradeline.status === 'sold-out' ? 'Sold Out' : 'Add to Cart'}
+            </Button>
           </div>
         </div>
       ))}
