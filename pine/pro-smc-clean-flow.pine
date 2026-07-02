@@ -1,0 +1,297 @@
+//@version=6
+// Pro SMC Clean Flow — Sweep → BOS → FVG-retest state machine.
+//
+// Two independent machines (bull / bear). Each walks the sequence the title
+// promises, and the entry only fires at the end of it:
+//
+//   0 IDLE        nothing armed
+//   1 SWEPT       liquidity sweep of the last swing (SSL for longs, BSL for shorts)
+//   2 BOS         close crosses the opposing swing while armed
+//   3 ZONE ARMED  an FVG printed after the BOS — its gap is the entry zone
+//   → ENTRY       price trades back into the zone and closes back out of it
+//
+// Reset conditions (any stage → IDLE):
+//   · opposite structure break at any stage
+//   · stage timer expires (Sweep→BOS, BOS→FVG, zone lifetime)
+//   · zone traded through (close beyond its far edge)
+//   · entry fires — the setup is consumed
+indicator("Pro SMC Clean Flow — Sweep BOS FVG Zones", overlay=true, max_labels_count=200, max_boxes_count=100, max_lines_count=100)
+
+// ── Inputs ───────────────────────────────────────────────────────────────
+grpFlow = "Setup Flow"
+swingLen       = input.int(5,  "Swing Length", minval=2, group=grpFlow)
+sweepToBosBars = input.int(20, "Max bars: Sweep → BOS", minval=1, group=grpFlow)
+bosToFvgBars   = input.int(10, "Max bars: BOS → FVG", minval=1, group=grpFlow)
+zoneLifeBars   = input.int(60, "Max bars: zone stays valid", minval=1, group=grpFlow)
+zoneExtendBars = input.int(5,  "Zone box right extension", minval=0, group=grpFlow)
+
+grpFilter = "Confluence Filters"
+useTrendFilter = input.bool(true, "Require EMA trend alignment", group=grpFilter)
+useHtfFilter   = input.bool(true, "Require HTF bias alignment", group=grpFilter)
+useMomentum    = input.bool(true, "Require RSI momentum", group=grpFilter)
+fastEmaLen     = input.int(21,  "Fast EMA", group=grpFilter)
+slowEmaLen     = input.int(50,  "Slow EMA", group=grpFilter)
+trendEmaLen    = input.int(200, "Trend EMA", group=grpFilter)
+rsiLen         = input.int(14,  "RSI Length", group=grpFilter)
+htf            = input.timeframe("240", "Higher Timeframe Bias", group=grpFilter)
+
+grpRisk = "Risk / Display"
+atrLen        = input.int(14, "ATR Length", group=grpRisk)
+slAtrPad      = input.float(0.5, "SL padding beyond zone (ATR mult)", step=0.1, group=grpRisk)
+rangeLen      = input.int(100, "Premium/Discount range lookback", group=grpRisk)
+eventRiskMode = input.bool(false, "Event Risk Mode (block entries)", group=grpRisk)
+showSignals   = input.bool(true, "Show Signals", group=grpRisk)
+
+// ── Calculations ─────────────────────────────────────────────────────────
+emaFast  = ta.ema(close, fastEmaLen)
+emaSlow  = ta.ema(close, slowEmaLen)
+emaTrend = ta.ema(close, trendEmaLen)
+rsi      = ta.rsi(close, rsiLen)
+atr      = ta.atr(atrLen)
+
+// HTF bias from the last CONFIRMED higher-timeframe bar (no repainting)
+htfClose = request.security(syminfo.tickerid, htf, close[1], lookahead=barmerge.lookahead_on)
+htfEMA   = request.security(syminfo.tickerid, htf, ta.ema(close, trendEmaLen)[1], lookahead=barmerge.lookahead_on)
+htfBull  = htfClose > htfEMA
+htfBear  = htfClose < htfEMA
+
+emaBull = close > emaTrend and emaFast > emaSlow
+emaBear = close < emaTrend and emaFast < emaSlow
+
+trendOkBull = (not useTrendFilter or emaBull) and (not useHtfFilter or htfBull)
+trendOkBear = (not useTrendFilter or emaBear) and (not useHtfFilter or htfBear)
+
+// Premium / Discount — informational only, does not gate entries
+rangeHigh  = ta.highest(high, rangeLen)
+rangeLow   = ta.lowest(low, rangeLen)
+eqLine     = (rangeHigh + rangeLow) / 2
+inDiscount = close < eqLine
+inPremium  = close > eqLine
+
+// ── Structure: swings, sweeps, breaks ────────────────────────────────────
+swingHigh = ta.pivothigh(high, swingLen, swingLen)
+swingLow  = ta.pivotlow(low, swingLen, swingLen)
+
+var float lastHigh = na
+var float lastLow  = na
+if not na(swingHigh)
+    lastHigh := swingHigh
+if not na(swingLow)
+    lastLow := swingLow
+
+// Sweeps: wick through the swing, close back inside
+sslSweep = not na(lastLow)  and low < lastLow  and close > lastLow   // sell-side taken → bullish intent
+bslSweep = not na(lastHigh) and high > lastHigh and close < lastHigh // buy-side taken → bearish intent
+
+// Breaks as EVENTS (crossings), not persistent states
+bullBreakEvt = not na(lastHigh) and ta.crossover(close, lastHigh)
+bearBreakEvt = not na(lastLow)  and ta.crossunder(close, lastLow)
+
+// FVGs
+bullFVG = low > high[2]
+bearFVG = high < low[2]
+
+// ── Bull state machine ───────────────────────────────────────────────────
+var int   bullState = 0
+var int   bullStamp = na
+var float dzTop     = na
+var float dzBottom  = na
+var int   dzBar     = na
+var box   dzBox     = na
+var label dzLabel   = na
+
+bool evtSslArmed    = false
+bool evtBullBos     = false
+bool evtDemandArmed = false
+
+// Resets first: invalidation always outranks progression
+if bullState > 0 and bearBreakEvt
+    bullState := 0
+    box.delete(dzBox)
+    label.delete(dzLabel)
+if bullState == 1 and bar_index - bullStamp > sweepToBosBars
+    bullState := 0
+if bullState == 2 and bar_index - bullStamp > bosToFvgBars
+    bullState := 0
+if bullState == 3 and (bar_index - dzBar > zoneLifeBars or close < dzBottom)
+    bullState := 0
+    box.delete(dzBox)
+    label.delete(dzLabel)
+
+// Transitions (sequential ifs let a displacement bar walk 0→1→2→3 in one bar)
+if bullState <= 1 and sslSweep and trendOkBull
+    evtSslArmed := bullState == 0
+    bullState   := 1
+    bullStamp   := bar_index
+if bullState == 1 and bullBreakEvt
+    evtBullBos := true
+    bullState  := 2
+    bullStamp  := bar_index
+if bullState == 2 and bullFVG
+    evtDemandArmed := true
+    bullState      := 3
+    dzTop          := low
+    dzBottom       := high[2]
+    dzBar          := bar_index
+    box.delete(dzBox)
+    label.delete(dzLabel)
+    dzBox   := box.new(bar_index - 2, dzTop, bar_index + zoneExtendBars, dzBottom, bgcolor=color.new(color.green, 85), border_color=color.green)
+    dzLabel := label.new(bar_index, dzTop, "Demand (FVG)", style=label.style_label_down, color=color.green, textcolor=color.white)
+
+if bullState == 3
+    box.set_right(dzBox, bar_index + zoneExtendBars)
+
+// ── Bear state machine ───────────────────────────────────────────────────
+var int   bearState = 0
+var int   bearStamp = na
+var float szTop     = na
+var float szBottom  = na
+var int   szBar     = na
+var box   szBox     = na
+var label szLabel   = na
+
+bool evtBslArmed    = false
+bool evtBearBos     = false
+bool evtSupplyArmed = false
+
+if bearState > 0 and bullBreakEvt
+    bearState := 0
+    box.delete(szBox)
+    label.delete(szLabel)
+if bearState == 1 and bar_index - bearStamp > sweepToBosBars
+    bearState := 0
+if bearState == 2 and bar_index - bearStamp > bosToFvgBars
+    bearState := 0
+if bearState == 3 and (bar_index - szBar > zoneLifeBars or close > szTop)
+    bearState := 0
+    box.delete(szBox)
+    label.delete(szLabel)
+
+if bearState <= 1 and bslSweep and trendOkBear
+    evtBslArmed := bearState == 0
+    bearState   := 1
+    bearStamp   := bar_index
+if bearState == 1 and bearBreakEvt
+    evtBearBos := true
+    bearState  := 2
+    bearStamp  := bar_index
+if bearState == 2 and bearFVG
+    evtSupplyArmed := true
+    bearState      := 3
+    szTop          := low[2]
+    szBottom       := high
+    szBar          := bar_index
+    box.delete(szBox)
+    label.delete(szLabel)
+    szBox   := box.new(bar_index - 2, szTop, bar_index + zoneExtendBars, szBottom, bgcolor=color.new(color.red, 85), border_color=color.red)
+    szLabel := label.new(bar_index, szBottom, "Supply (FVG)", style=label.style_label_up, color=color.red, textcolor=color.white)
+
+if bearState == 3
+    box.set_right(szBox, bar_index + zoneExtendBars)
+
+// ── Entries: zone retest + rejection consumes the setup ──────────────────
+buyMomentumOk  = not useMomentum or rsi > 50
+sellMomentumOk = not useMomentum or rsi < 50
+
+buyRetest  = bullState == 3 and bar_index > dzBar and low <= dzTop and close > dzTop
+sellRetest = bearState == 3 and bar_index > szBar and high >= szBottom and close < szBottom
+
+buySignal  = buyRetest and close > open and buyMomentumOk and trendOkBull and not eventRiskMode
+sellSignal = sellRetest and close < open and sellMomentumOk and trendOkBear and not eventRiskMode
+
+// SL beyond the zone's far edge, targets in R multiples — snapshotted at entry
+var float buySL   = na
+var float buyTP1  = na
+var float buyTP2  = na
+var float sellSL  = na
+var float sellTP1 = na
+var float sellTP2 = na
+
+var label riskLabel = na
+
+if buySignal
+    buySL  := dzBottom - atr * slAtrPad
+    buyTP1 := close + (close - buySL)
+    buyTP2 := close + (close - buySL) * 2
+    bullState := 0
+    box.set_right(dzBox, bar_index)
+    box.set_bgcolor(dzBox, color.new(color.green, 92))
+    label.delete(dzLabel)
+    label.delete(riskLabel)
+    riskLabel := label.new(bar_index, low, "BUY CONFIRMED\nEntry: " + str.tostring(close, format.mintick) + "\nSL: " + str.tostring(buySL, format.mintick) + "\nTP1: " + str.tostring(buyTP1, format.mintick) + "\nTP2: " + str.tostring(buyTP2, format.mintick), style=label.style_label_up, color=color.green, textcolor=color.white)
+
+if sellSignal
+    sellSL  := szTop + atr * slAtrPad
+    sellTP1 := close - (sellSL - close)
+    sellTP2 := close - (sellSL - close) * 2
+    bearState := 0
+    box.set_right(szBox, bar_index)
+    box.set_bgcolor(szBox, color.new(color.red, 92))
+    label.delete(szLabel)
+    label.delete(riskLabel)
+    riskLabel := label.new(bar_index, high, "SELL CONFIRMED\nEntry: " + str.tostring(close, format.mintick) + "\nSL: " + str.tostring(sellSL, format.mintick) + "\nTP1: " + str.tostring(sellTP1, format.mintick) + "\nTP2: " + str.tostring(sellTP2, format.mintick), style=label.style_label_down, color=color.red, textcolor=color.white)
+
+// ── Plots & labels ───────────────────────────────────────────────────────
+plot(emaFast, "Fast EMA", color=color.green)
+plot(emaSlow, "Slow EMA", color=color.orange)
+plot(emaTrend, "Trend EMA", color=color.red)
+
+var line eq = na
+if barstate.islast
+    line.delete(eq)
+    eq := line.new(bar_index - rangeLen, eqLine, bar_index + zoneExtendBars, eqLine, color=color.gray, width=1, style=line.style_dashed)
+
+// Structure event label (BOS with trend, CHOCH against it)
+var label structLbl = na
+if bullBreakEvt or bearBreakEvt
+    label.delete(structLbl)
+    isBull = bullBreakEvt
+    structTxt = isBull ? (emaBear ? "CHOCH ↑" : "BOS ↑") : (emaBull ? "CHOCH ↓" : "BOS ↓")
+    structLbl := label.new(bar_index, isBull ? high : low, structTxt, style=isBull ? label.style_label_down : label.style_label_up, color=isBull ? color.green : color.red, textcolor=color.white)
+
+// Sweep label only when a machine actually arms
+var label sweepLbl = na
+if evtSslArmed or evtBslArmed
+    label.delete(sweepLbl)
+    sweepLbl := evtSslArmed ?
+         label.new(bar_index, low, "SSL Sweep ✓\nwaiting BOS ↑", style=label.style_label_up, color=color.green, textcolor=color.white) :
+         label.new(bar_index, high, "BSL Sweep ✓\nwaiting BOS ↓", style=label.style_label_down, color=color.red, textcolor=color.white)
+
+plotshape(showSignals and buySignal, title="BUY Confirmed", text="BUY", style=shape.triangleup, location=location.belowbar, color=color.green, textcolor=color.white, size=size.small)
+plotshape(showSignals and sellSignal, title="SELL Confirmed", text="SELL", style=shape.triangledown, location=location.abovebar, color=color.red, textcolor=color.white, size=size.small)
+
+// ── Dashboard ────────────────────────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 7, border_width=1)
+
+if barstate.islast
+    htfText   = htfBull ? "Bullish" : htfBear ? "Bearish" : "Mixed"
+    trendText = emaBull ? "Bullish" : emaBear ? "Bearish" : "Mixed"
+    zoneText  = inDiscount ? "Discount" : inPremium ? "Premium" : "Equilibrium"
+    bullFlow  = bullState == 1 ? "SSL swept → wait BOS ↑" : bullState == 2 ? "BOS ↑ → wait FVG" : bullState == 3 ? "Demand armed → wait retest" : "Idle"
+    bearFlow  = bearState == 1 ? "BSL swept → wait BOS ↓" : bearState == 2 ? "BOS ↓ → wait FVG" : bearState == 3 ? "Supply armed → wait retest" : "Idle"
+    entryText = buySignal ? "BUY NOW" : sellSignal ? "SELL NOW" : "WAIT"
+
+    table.cell(dash, 0, 0, "HTF Bias", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 0, htfText, text_color=color.white, bgcolor=htfBull ? color.green : htfBear ? color.red : color.gray)
+    table.cell(dash, 0, 1, "EMA Trend", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 1, trendText, text_color=color.white, bgcolor=emaBull ? color.green : emaBear ? color.red : color.gray)
+    table.cell(dash, 0, 2, "Range", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 2, zoneText, text_color=color.white, bgcolor=inDiscount ? color.green : inPremium ? color.red : color.gray)
+    table.cell(dash, 0, 3, "Bull Flow", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 3, bullFlow, text_color=color.white, bgcolor=bullState > 0 ? color.green : color.gray)
+    table.cell(dash, 0, 4, "Bear Flow", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 4, bearFlow, text_color=color.white, bgcolor=bearState > 0 ? color.red : color.gray)
+    table.cell(dash, 0, 5, "Entry", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 5, entryText, text_color=color.white, bgcolor=buySignal ? color.green : sellSignal ? color.red : color.gray)
+    table.cell(dash, 0, 6, "Risk Mode", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 6, eventRiskMode ? "ON" : "OFF", text_color=color.white, bgcolor=eventRiskMode ? color.red : color.green)
+
+// ── Alerts (all are one-shot events by construction) ─────────────────────
+alertcondition(evtSslArmed, title="SSL Sweep armed", message="SSL Sweep — bull flow armed, waiting for BOS ↑.")
+alertcondition(evtBslArmed, title="BSL Sweep armed", message="BSL Sweep — bear flow armed, waiting for BOS ↓.")
+alertcondition(evtBullBos, title="Bullish BOS confirmed", message="Bullish BOS after SSL sweep — waiting for FVG.")
+alertcondition(evtBearBos, title="Bearish BOS confirmed", message="Bearish BOS after BSL sweep — waiting for FVG.")
+alertcondition(evtDemandArmed, title="Demand zone armed", message="Bullish FVG after BOS — demand zone armed, waiting for retest.")
+alertcondition(evtSupplyArmed, title="Supply zone armed", message="Bearish FVG after BOS — supply zone armed, waiting for retest.")
+alertcondition(buySignal, title="BUY Confirmed", message="BUY CONFIRMED: SSL sweep → BOS → FVG retest complete.")
+alertcondition(sellSignal, title="SELL Confirmed", message="SELL CONFIRMED: BSL sweep → BOS → FVG retest complete.")
