@@ -1,0 +1,470 @@
+//@version=6
+// CNX Concepts PRO v3 — all-in-one Smart Money Concepts toolkit.
+//
+// Modules (each toggleable):
+//   · Market structure: HH / HL / LH / LL swing labels
+//   · BOS & CHoCH as one-shot crossing events with structure lines
+//   · Order Blocks → Breaker Blocks on violation (smart visibility: capped,
+//     auto-extended, auto-removed/converted when mitigated)
+//   · Fair Value Gaps with fill detection and minimum-size filter
+//   · Liquidity sweeps (SSL / BSL) and Equal Highs / Lows (EQH / EQL)
+//   · Premium / Discount / Equilibrium zones over a rolling range
+//   · Higher-timeframe trend filter (confirmed bars — no repainting)
+//   · Confluence LONG / SHORT signals scored out of 7 conditions
+//   · Psychological round-number levels (auto step or manual)
+//   · Two-level ZigZag, Donchian breakout detection, candlestick patterns
+//   · Asia / London / New York session highlighting
+//   · Dashboard + alerts for every event
+indicator("CNX Concepts PRO v3 — SMC Toolkit", "CNX PRO v3", overlay=true, max_labels_count=500, max_boxes_count=500, max_lines_count=500)
+
+// ── Inputs ───────────────────────────────────────────────────────────────
+grpMS = "Market Structure"
+swingLen   = input.int(5, "Swing Length", minval=2, group=grpMS)
+showSwings = input.bool(true, "Label HH / HL / LH / LL", group=grpMS)
+showBos    = input.bool(true, "Show BOS / CHoCH", group=grpMS)
+
+grpZones = "Zones — Order Blocks / Breakers / FVG"
+showOB       = input.bool(true, "Order Blocks", group=grpZones)
+showBreakers = input.bool(true, "Convert broken OBs to Breaker Blocks", group=grpZones)
+showFvg      = input.bool(true, "Fair Value Gaps", group=grpZones)
+maxZones     = input.int(6, "Max zones kept per type", minval=1, maxval=20, group=grpZones)
+obLookback   = input.int(10, "OB search lookback (bars)", minval=1, maxval=50, group=grpZones)
+fvgMinAtr    = input.float(0.0, "Min FVG size (ATR mult)", minval=0, step=0.1, group=grpZones)
+
+grpLiq = "Liquidity"
+showSweeps  = input.bool(true, "Liquidity Sweeps", group=grpLiq)
+showEq      = input.bool(true, "Equal Highs / Lows", group=grpLiq)
+eqTolAtr    = input.float(0.25, "EQH/EQL tolerance (ATR mult)", minval=0.05, step=0.05, group=grpLiq)
+sweepMemory = input.int(10, "Sweep memory for confluence (bars)", minval=1, group=grpLiq)
+
+grpPD = "Premium / Discount"
+showPD   = input.bool(true, "Show zones", group=grpPD)
+rangeLen = input.int(100, "Range lookback", minval=10, group=grpPD)
+
+grpHtf = "Higher Timeframe Filter"
+htfTf     = input.timeframe("240", "Higher timeframe", group=grpHtf)
+htfEmaLen = input.int(50, "HTF EMA length", group=grpHtf)
+
+grpSig = "Confluence Signals"
+enableSignals = input.bool(true, "Enable LONG / SHORT signals", group=grpSig)
+minScore      = input.int(5, "Min confluence score (of 7)", minval=1, maxval=7, group=grpSig)
+sigCooldown   = input.int(10, "Signal cooldown (bars)", minval=0, group=grpSig)
+
+grpZZ = "ZigZag"
+showZZ  = input.bool(true, "Multi-level ZigZag", group=grpZZ)
+zz2Mult = input.int(3, "Level-2 length multiplier", minval=2, group=grpZZ)
+
+grpPsy = "Psychological Levels"
+showPsy   = input.bool(true, "Show levels", group=grpPsy)
+psyStepIn = input.float(0.0, "Level step (0 = auto)", minval=0, group=grpPsy)
+psyCount  = input.int(3, "Levels each side", minval=1, maxval=10, group=grpPsy)
+
+grpBrk = "Breakouts & Candles"
+showBreakout = input.bool(true, "Breakout detection", group=grpBrk)
+brkLen       = input.int(20, "Breakout channel length", minval=5, group=grpBrk)
+showCandles  = input.bool(true, "Candlestick patterns", group=grpBrk)
+
+grpSess = "Sessions"
+showSessions = input.bool(true, "Highlight sessions", group=grpSess)
+sessTz       = input.string("UTC", "Timezone", group=grpSess)
+sessAsia     = input.session("0000-0900", "Asia", group=grpSess)
+sessLdn      = input.session("0800-1700", "London", group=grpSess)
+sessNy       = input.session("1300-2200", "New York", group=grpSess)
+
+grpDash = "Dashboard"
+showDash = input.bool(true, "Show dashboard", group=grpDash)
+
+// ── Core series ──────────────────────────────────────────────────────────
+atr = ta.atr(14)
+
+// HTF trend from the last CONFIRMED higher-timeframe bar (no repainting)
+htfClose = request.security(syminfo.tickerid, htfTf, close[1], lookahead=barmerge.lookahead_on)
+htfEma   = request.security(syminfo.tickerid, htfTf, ta.ema(close, htfEmaLen)[1], lookahead=barmerge.lookahead_on)
+htfBull  = htfClose > htfEma
+htfBear  = htfClose < htfEma
+
+// ── Swings, HH/HL/LH/LL, EQH/EQL, ZigZag level 1 ─────────────────────────
+ph = ta.pivothigh(high, swingLen, swingLen)
+pl = ta.pivotlow(low, swingLen, swingLen)
+
+var float lastPH   = na
+var int   lastPHBar = na
+var float lastPL   = na
+var int   lastPLBar = na
+var int   zz1Bar   = na
+var float zz1Price = na
+
+bool eqhEvt = false
+bool eqlEvt = false
+
+if not na(ph)
+    phBar = bar_index - swingLen
+    if showEq and not na(lastPH) and math.abs(ph - lastPH) <= eqTolAtr * atr
+        line.new(lastPHBar, lastPH, phBar, ph, color=color.new(color.red, 30), style=line.style_dotted, width=2)
+        label.new(phBar, ph, "EQH", style=label.style_label_down, color=color.new(color.red, 40), textcolor=color.white, size=size.tiny)
+        eqhEvt := true
+    if showSwings
+        label.new(phBar, ph, na(lastPH) ? "H" : ph > lastPH ? "HH" : "LH", style=label.style_label_down, color=color.new(color.gray, 65), textcolor=color.white, size=size.tiny)
+    if showZZ
+        if not na(zz1Bar)
+            line.new(zz1Bar, zz1Price, phBar, ph, color=color.new(color.teal, 30), width=1)
+        zz1Bar := phBar
+        zz1Price := ph
+    lastPH := ph
+    lastPHBar := phBar
+
+if not na(pl)
+    plBar = bar_index - swingLen
+    if showEq and not na(lastPL) and math.abs(pl - lastPL) <= eqTolAtr * atr
+        line.new(lastPLBar, lastPL, plBar, pl, color=color.new(color.green, 30), style=line.style_dotted, width=2)
+        label.new(plBar, pl, "EQL", style=label.style_label_up, color=color.new(color.green, 40), textcolor=color.white, size=size.tiny)
+        eqlEvt := true
+    if showSwings
+        label.new(plBar, pl, na(lastPL) ? "L" : pl > lastPL ? "HL" : "LL", style=label.style_label_up, color=color.new(color.gray, 65), textcolor=color.white, size=size.tiny)
+    if showZZ
+        if not na(zz1Bar)
+            line.new(zz1Bar, zz1Price, plBar, pl, color=color.new(color.teal, 30), width=1)
+        zz1Bar := plBar
+        zz1Price := pl
+    lastPL := pl
+    lastPLBar := plBar
+
+// ZigZag level 2 (slower structure)
+zz2Len = swingLen * zz2Mult
+ph2 = ta.pivothigh(high, zz2Len, zz2Len)
+pl2 = ta.pivotlow(low, zz2Len, zz2Len)
+var int   zz2Bar   = na
+var float zz2Price = na
+if showZZ and not na(ph2)
+    if not na(zz2Bar)
+        line.new(zz2Bar, zz2Price, bar_index - zz2Len, ph2, color=color.new(color.orange, 20), width=2)
+    zz2Bar := bar_index - zz2Len
+    zz2Price := ph2
+if showZZ and not na(pl2)
+    if not na(zz2Bar)
+        line.new(zz2Bar, zz2Price, bar_index - zz2Len, pl2, color=color.new(color.orange, 20), width=2)
+    zz2Bar := bar_index - zz2Len
+    zz2Price := pl2
+
+// ── BOS / CHoCH (crossing events, so they fire once per break) ───────────
+var int structDir = 0     // 1 bullish, -1 bearish, 0 undefined
+bullBreakEvt = not na(lastPH) and ta.crossover(close, lastPH)
+bearBreakEvt = not na(lastPL) and ta.crossunder(close, lastPL)
+
+bool bosUpEvt   = false
+bool bosDnEvt   = false
+bool chochUpEvt = false
+bool chochDnEvt = false
+var string lastStructTxt = "—"
+
+if bullBreakEvt
+    isCh = structDir == -1
+    chochUpEvt := isCh
+    bosUpEvt := not isCh
+    lastStructTxt := isCh ? "CHoCH ↑" : "BOS ↑"
+    if showBos
+        line.new(lastPHBar, lastPH, bar_index, lastPH, color=color.new(color.green, 20), style=isCh ? line.style_dashed : line.style_solid)
+        label.new(bar_index, lastPH, lastStructTxt, style=label.style_label_down, color=color.new(color.green, 30), textcolor=color.white, size=size.tiny)
+    structDir := 1
+
+if bearBreakEvt
+    isCh = structDir == 1
+    chochDnEvt := isCh
+    bosDnEvt := not isCh
+    lastStructTxt := isCh ? "CHoCH ↓" : "BOS ↓"
+    if showBos
+        line.new(lastPLBar, lastPL, bar_index, lastPL, color=color.new(color.red, 20), style=isCh ? line.style_dashed : line.style_solid)
+        label.new(bar_index, lastPL, lastStructTxt, style=label.style_label_up, color=color.new(color.red, 30), textcolor=color.white, size=size.tiny)
+    structDir := -1
+
+// ── Order Blocks & Breaker Blocks ────────────────────────────────────────
+// Bullish OB: last down candle before a bullish break. Broken bull OB → bearish
+// breaker (resistance). Mirrored for bearish. Zones are capped, auto-extended,
+// and removed/converted the moment they are mitigated.
+var box[] bullObs  = array.new<box>()
+var box[] bearObs  = array.new<box>()
+var box[] bullBrks = array.new<box>()   // broken bear OBs → support
+var box[] bearBrks = array.new<box>()   // broken bull OBs → resistance
+
+if showOB and bullBreakEvt
+    obIdx = -1
+    for i = 1 to obLookback
+        if close[i] < open[i]
+            obIdx := i
+            break
+    if obIdx > 0
+        array.push(bullObs, box.new(bar_index - obIdx, high[obIdx], bar_index + 1, low[obIdx], bgcolor=color.new(color.teal, 82), border_color=color.new(color.teal, 40), text="OB", text_color=color.new(color.teal, 30), text_size=size.tiny, text_halign=text.align_right))
+        if array.size(bullObs) > maxZones
+            box.delete(array.shift(bullObs))
+
+if showOB and bearBreakEvt
+    obIdx = -1
+    for i = 1 to obLookback
+        if close[i] > open[i]
+            obIdx := i
+            break
+    if obIdx > 0
+        array.push(bearObs, box.new(bar_index - obIdx, high[obIdx], bar_index + 1, low[obIdx], bgcolor=color.new(color.maroon, 82), border_color=color.new(color.maroon, 40), text="OB", text_color=color.new(color.maroon, 30), text_size=size.tiny, text_halign=text.align_right))
+        if array.size(bearObs) > maxZones
+            box.delete(array.shift(bearObs))
+
+bool nearBullOB  = false
+bool nearBearOB  = false
+bool nearBullBrk = false
+bool nearBearBrk = false
+
+if array.size(bullObs) > 0
+    for i = array.size(bullObs) - 1 to 0
+        b = array.get(bullObs, i)
+        box.set_right(b, bar_index + 1)
+        if close < box.get_bottom(b)
+            array.remove(bullObs, i)
+            if showBreakers
+                box.set_bgcolor(b, color.new(color.orange, 85))
+                box.set_border_color(b, color.new(color.orange, 40))
+                box.set_text(b, "Breaker")
+                box.set_text_color(b, color.new(color.orange, 30))
+                array.push(bearBrks, b)
+                if array.size(bearBrks) > maxZones
+                    box.delete(array.shift(bearBrks))
+            else
+                box.delete(b)
+        else if low <= box.get_top(b)
+            nearBullOB := true
+
+if array.size(bearObs) > 0
+    for i = array.size(bearObs) - 1 to 0
+        b = array.get(bearObs, i)
+        box.set_right(b, bar_index + 1)
+        if close > box.get_top(b)
+            array.remove(bearObs, i)
+            if showBreakers
+                box.set_bgcolor(b, color.new(color.orange, 85))
+                box.set_border_color(b, color.new(color.orange, 40))
+                box.set_text(b, "Breaker")
+                box.set_text_color(b, color.new(color.orange, 30))
+                array.push(bullBrks, b)
+                if array.size(bullBrks) > maxZones
+                    box.delete(array.shift(bullBrks))
+            else
+                box.delete(b)
+        else if high >= box.get_bottom(b)
+            nearBearOB := true
+
+if array.size(bullBrks) > 0
+    for i = array.size(bullBrks) - 1 to 0
+        b = array.get(bullBrks, i)
+        box.set_right(b, bar_index + 1)
+        if close < box.get_bottom(b)
+            box.delete(b)
+            array.remove(bullBrks, i)
+        else if low <= box.get_top(b)
+            nearBullBrk := true
+
+if array.size(bearBrks) > 0
+    for i = array.size(bearBrks) - 1 to 0
+        b = array.get(bearBrks, i)
+        box.set_right(b, bar_index + 1)
+        if close > box.get_top(b)
+            box.delete(b)
+            array.remove(bearBrks, i)
+        else if high >= box.get_bottom(b)
+            nearBearBrk := true
+
+// ── Fair Value Gaps ──────────────────────────────────────────────────────
+var box[] bullFvgs = array.new<box>()
+var box[] bearFvgs = array.new<box>()
+
+bullFvg = low > high[2] and (low - high[2]) >= fvgMinAtr * atr
+bearFvg = high < low[2] and (low[2] - high) >= fvgMinAtr * atr
+
+if showFvg and bullFvg
+    array.push(bullFvgs, box.new(bar_index - 2, low, bar_index + 1, high[2], bgcolor=color.new(color.green, 90), border_color=color.new(color.green, 65), text="FVG", text_color=color.new(color.green, 45), text_size=size.tiny, text_halign=text.align_right))
+    if array.size(bullFvgs) > maxZones
+        box.delete(array.shift(bullFvgs))
+
+if showFvg and bearFvg
+    array.push(bearFvgs, box.new(bar_index - 2, low[2], bar_index + 1, high, bgcolor=color.new(color.red, 90), border_color=color.new(color.red, 65), text="FVG", text_color=color.new(color.red, 45), text_size=size.tiny, text_halign=text.align_right))
+    if array.size(bearFvgs) > maxZones
+        box.delete(array.shift(bearFvgs))
+
+bool inBullFvg = false
+bool inBearFvg = false
+
+if array.size(bullFvgs) > 0
+    for i = array.size(bullFvgs) - 1 to 0
+        b = array.get(bullFvgs, i)
+        box.set_right(b, bar_index + 1)
+        if close < box.get_bottom(b)
+            box.delete(b)
+            array.remove(bullFvgs, i)
+        else if low <= box.get_top(b)
+            inBullFvg := true
+
+if array.size(bearFvgs) > 0
+    for i = array.size(bearFvgs) - 1 to 0
+        b = array.get(bearFvgs, i)
+        box.set_right(b, bar_index + 1)
+        if close > box.get_top(b)
+            box.delete(b)
+            array.remove(bearFvgs, i)
+        else if high >= box.get_bottom(b)
+            inBearFvg := true
+
+// ── Liquidity Sweeps ─────────────────────────────────────────────────────
+var int lastSslBar = na
+var int lastBslBar = na
+
+sslRaw = not na(lastPL) and low < lastPL and close > lastPL    // sell-side taken, closed back above
+bslRaw = not na(lastPH) and high > lastPH and close < lastPH   // buy-side taken, closed back below
+
+sslSweepEvt = showSweeps and sslRaw and (na(lastSslBar) or bar_index - lastSslBar > swingLen)
+bslSweepEvt = showSweeps and bslRaw and (na(lastBslBar) or bar_index - lastBslBar > swingLen)
+
+if sslSweepEvt
+    lastSslBar := bar_index
+    label.new(bar_index, low, "SSL ✕", style=label.style_label_up, color=color.new(color.green, 40), textcolor=color.white, size=size.tiny)
+if bslSweepEvt
+    lastBslBar := bar_index
+    label.new(bar_index, high, "BSL ✕", style=label.style_label_down, color=color.new(color.red, 40), textcolor=color.white, size=size.tiny)
+
+recentSsl = not na(lastSslBar) and bar_index - lastSslBar <= sweepMemory
+recentBsl = not na(lastBslBar) and bar_index - lastBslBar <= sweepMemory
+
+// ── Premium / Discount / Equilibrium ─────────────────────────────────────
+rangeHigh = ta.highest(high, rangeLen)
+rangeLow  = ta.lowest(low, rangeLen)
+rangeMid  = math.avg(rangeHigh, rangeLow)
+rangeSpan = rangeHigh - rangeLow
+
+inDiscount = close < rangeMid
+inPremium  = close > rangeMid
+
+var box  premBox = na
+var box  discBox = na
+var line eqLn    = na
+var label eqLbl  = na
+if showPD and barstate.islast
+    box.delete(premBox)
+    box.delete(discBox)
+    line.delete(eqLn)
+    label.delete(eqLbl)
+    premBox := box.new(bar_index - rangeLen, rangeHigh, bar_index + 10, rangeHigh - rangeSpan * 0.3, bgcolor=color.new(color.red, 93), border_color=color.new(color.red, 75), text="PREMIUM", text_color=color.new(color.red, 55), text_size=size.tiny, text_halign=text.align_right)
+    discBox := box.new(bar_index - rangeLen, rangeLow + rangeSpan * 0.3, bar_index + 10, rangeLow, bgcolor=color.new(color.green, 93), border_color=color.new(color.green, 75), text="DISCOUNT", text_color=color.new(color.green, 55), text_size=size.tiny, text_halign=text.align_right)
+    eqLn  := line.new(bar_index - rangeLen, rangeMid, bar_index + 10, rangeMid, color=color.new(color.gray, 40), style=line.style_dashed)
+    eqLbl := label.new(bar_index + 10, rangeMid, "EQ", style=label.style_label_left, color=color.new(color.gray, 80), textcolor=color.white, size=size.tiny)
+
+// ── Psychological Levels ─────────────────────────────────────────────────
+var line[]  psyLines  = array.new<line>()
+var label[] psyLabels = array.new<label>()
+if showPsy and barstate.islast
+    for ln in psyLines
+        line.delete(ln)
+    array.clear(psyLines)
+    for lb in psyLabels
+        label.delete(lb)
+    array.clear(psyLabels)
+    psyStep = psyStepIn > 0 ? psyStepIn : math.pow(10, math.floor(math.log10(close))) / 10
+    psyBase = math.round(close / psyStep) * psyStep
+    for i = -psyCount to psyCount
+        lvl = psyBase + i * psyStep
+        array.push(psyLines, line.new(bar_index - 30, lvl, bar_index + 15, lvl, color=color.new(color.blue, 65), style=line.style_dotted))
+        array.push(psyLabels, label.new(bar_index + 15, lvl, str.tostring(lvl, format.mintick), style=label.style_label_left, color=color.new(color.blue, 92), textcolor=color.new(color.blue, 20), size=size.tiny))
+
+// ── Breakout Detection ───────────────────────────────────────────────────
+donHi = ta.highest(high, brkLen)[1]
+donLo = ta.lowest(low, brkLen)[1]
+brkUpEvt = showBreakout and ta.crossover(close, donHi)
+brkDnEvt = showBreakout and ta.crossunder(close, donLo)
+
+// ── Candlestick Patterns ─────────────────────────────────────────────────
+body   = math.abs(close - open)
+upWick = high - math.max(close, open)
+dnWick = math.min(close, open) - low
+
+bullEngulf = close > open and close[1] < open[1] and close >= open[1] and open <= close[1] and body > body[1]
+bearEngulf = close < open and close[1] > open[1] and close <= open[1] and open >= close[1] and body > body[1]
+hammer       = body > 0 and dnWick >= body * 2 and upWick <= body
+shootingStar = body > 0 and upWick >= body * 2 and dnWick <= body
+
+bullCandle = showCandles and (bullEngulf or hammer)
+bearCandle = showCandles and (bearEngulf or shootingStar)
+
+// ── Sessions ─────────────────────────────────────────────────────────────
+inAsia = showSessions and timeframe.isintraday and not na(time(timeframe.period, sessAsia, sessTz))
+inLdn  = showSessions and timeframe.isintraday and not na(time(timeframe.period, sessLdn, sessTz))
+inNy   = showSessions and timeframe.isintraday and not na(time(timeframe.period, sessNy, sessTz))
+
+bgcolor(inAsia ? color.new(color.purple, 94) : na, title="Asia session")
+bgcolor(inLdn ? color.new(color.blue, 94) : na, title="London session")
+bgcolor(inNy ? color.new(color.orange, 94) : na, title="New York session")
+
+// ── Confluence Signals (scored out of 7) ─────────────────────────────────
+// HTF trend · structure direction · premium/discount · OB or breaker touch ·
+// FVG touch · recent sweep · candlestick confirmation
+bullScore = (htfBull ? 1 : 0) + (structDir == 1 ? 1 : 0) + (inDiscount ? 1 : 0) + (nearBullOB or nearBullBrk ? 1 : 0) + (inBullFvg ? 1 : 0) + (recentSsl ? 1 : 0) + (bullEngulf or hammer ? 1 : 0)
+bearScore = (htfBear ? 1 : 0) + (structDir == -1 ? 1 : 0) + (inPremium ? 1 : 0) + (nearBearOB or nearBearBrk ? 1 : 0) + (inBearFvg ? 1 : 0) + (recentBsl ? 1 : 0) + (bearEngulf or shootingStar ? 1 : 0)
+
+var int lastSigBar = na
+canSig = na(lastSigBar) or bar_index - lastSigBar >= sigCooldown
+
+longSignal  = enableSignals and canSig and close > open and bullScore >= minScore
+shortSignal = enableSignals and canSig and close < open and bearScore >= minScore
+
+var string lastSigTxt = "—"
+if longSignal
+    lastSigBar := bar_index
+    lastSigTxt := "LONG @ " + str.tostring(close, format.mintick)
+if shortSignal
+    lastSigBar := bar_index
+    lastSigTxt := "SHORT @ " + str.tostring(close, format.mintick)
+
+// ── Shapes ───────────────────────────────────────────────────────────────
+plotshape(longSignal, title="LONG", text="LONG", style=shape.labelup, location=location.belowbar, color=color.new(color.green, 0), textcolor=color.white, size=size.small)
+plotshape(shortSignal, title="SHORT", text="SHORT", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 0), textcolor=color.white, size=size.small)
+plotshape(brkUpEvt, title="Breakout Up", style=shape.triangleup, location=location.belowbar, color=color.new(color.aqua, 20), size=size.tiny)
+plotshape(brkDnEvt, title="Breakout Down", style=shape.triangledown, location=location.abovebar, color=color.new(color.fuchsia, 20), size=size.tiny)
+plotshape(bullCandle, title="Bullish Pattern", style=shape.diamond, location=location.belowbar, color=color.new(color.teal, 40), size=size.tiny)
+plotshape(bearCandle, title="Bearish Pattern", style=shape.diamond, location=location.abovebar, color=color.new(color.maroon, 40), size=size.tiny)
+
+// ── Dashboard ────────────────────────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 9, border_width=1)
+
+if showDash and barstate.islast
+    htfTxt    = htfBull ? "Bullish" : htfBear ? "Bearish" : "Flat"
+    structTxt = structDir == 1 ? "Bullish" : structDir == -1 ? "Bearish" : "—"
+    zoneTxt   = inDiscount ? "Discount" : inPremium ? "Premium" : "Equilibrium"
+    sessTxt   = inNy ? "New York" : inLdn ? "London" : inAsia ? "Asia" : timeframe.isintraday ? "Off-session" : "—"
+
+    table.cell(dash, 0, 0, "CNX PRO v3", text_color=color.white, bgcolor=color.new(color.blue, 20))
+    table.cell(dash, 1, 0, syminfo.ticker + " · " + timeframe.period, text_color=color.white, bgcolor=color.new(color.blue, 20))
+    table.cell(dash, 0, 1, "HTF Trend (" + htfTf + ")", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 1, htfTxt, text_color=color.white, bgcolor=htfBull ? color.green : htfBear ? color.red : color.gray)
+    table.cell(dash, 0, 2, "Structure", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 2, structTxt, text_color=color.white, bgcolor=structDir == 1 ? color.green : structDir == -1 ? color.red : color.gray)
+    table.cell(dash, 0, 3, "Last Event", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 3, lastStructTxt, text_color=color.white, bgcolor=color.gray)
+    table.cell(dash, 0, 4, "Range Zone", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 4, zoneTxt, text_color=color.white, bgcolor=inDiscount ? color.green : inPremium ? color.red : color.gray)
+    table.cell(dash, 0, 5, "Session", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 5, sessTxt, text_color=color.white, bgcolor=color.new(color.blue, 40))
+    table.cell(dash, 0, 6, "Bull Score", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 6, str.tostring(bullScore) + " / 7", text_color=color.white, bgcolor=bullScore >= minScore ? color.green : color.gray)
+    table.cell(dash, 0, 7, "Bear Score", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 7, str.tostring(bearScore) + " / 7", text_color=color.white, bgcolor=bearScore >= minScore ? color.red : color.gray)
+    table.cell(dash, 0, 8, "Last Signal", text_color=color.white, bgcolor=color.black)
+    table.cell(dash, 1, 8, lastSigTxt, text_color=color.white, bgcolor=color.gray)
+
+// ── Alerts ───────────────────────────────────────────────────────────────
+alertcondition(longSignal, title="CNX LONG", message="CNX PRO v3: LONG confluence signal.")
+alertcondition(shortSignal, title="CNX SHORT", message="CNX PRO v3: SHORT confluence signal.")
+alertcondition(bosUpEvt, title="BOS Up", message="CNX PRO v3: Bullish Break of Structure.")
+alertcondition(bosDnEvt, title="BOS Down", message="CNX PRO v3: Bearish Break of Structure.")
+alertcondition(chochUpEvt, title="CHoCH Up", message="CNX PRO v3: Bullish Change of Character.")
+alertcondition(chochDnEvt, title="CHoCH Down", message="CNX PRO v3: Bearish Change of Character.")
+alertcondition(sslSweepEvt, title="SSL Sweep", message="CNX PRO v3: Sell-side liquidity sweep.")
+alertcondition(bslSweepEvt, title="BSL Sweep", message="CNX PRO v3: Buy-side liquidity sweep.")
+alertcondition(eqhEvt, title="Equal Highs", message="CNX PRO v3: Equal Highs (EQH) formed.")
+alertcondition(eqlEvt, title="Equal Lows", message="CNX PRO v3: Equal Lows (EQL) formed.")
+alertcondition(brkUpEvt, title="Breakout Up", message="CNX PRO v3: Bullish breakout of the channel.")
+alertcondition(brkDnEvt, title="Breakout Down", message="CNX PRO v3: Bearish breakout of the channel.")
