@@ -8,6 +8,10 @@
  *                              https://<worker>.workers.dev/hook-<HOOK_SECRET>
  *                              and any other path is rejected.
  *
+ * Optional KV binding (Settings → Bindings → KV Namespace, variable name SIGNALS):
+ *   when bound, every parsed alert is stored and the latest one is served at
+ *   GET /signal-<HOOK_SECRET> as JSON — this is what the MT5 executor EA polls.
+ *
  * Expected alert payload (pipe-separated, as emitted by the CNX PRO v3 script):
  *   CNX PRO v3 LONG | US100 | 15 | Entry 29789.85 | SL 29714.20 | TP1 29900.10 | TP2 30010.55 | Score 5/7
  * Anything that doesn't match is forwarded verbatim, so plain-text alerts still arrive.
@@ -70,10 +74,25 @@ async function sendTelegram(env, body) {
 
 export default {
   async fetch(request, env) {
+    const { pathname } = new URL(request.url);
+
+    // Polling endpoint for the MT5 executor EA: returns the latest stored
+    // signal as JSON, or 204 when none exists yet. Requires the SIGNALS KV
+    // binding and HOOK_SECRET (the secret gates reads the same way it gates
+    // webhook posts).
+    if (request.method === "GET" && env.SIGNALS && env.HOOK_SECRET) {
+      if (pathname === `/signal-${env.HOOK_SECRET}`) {
+        const latest = await env.SIGNALS.get("latest");
+        if (!latest) return new Response(null, { status: 204 });
+        return new Response(latest, {
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
     if (request.method !== "POST") return new Response("ok");
 
     if (env.HOOK_SECRET) {
-      const { pathname } = new URL(request.url);
       if (pathname !== `/hook-${env.HOOK_SECRET}`) {
         return new Response("not found", { status: 404 });
       }
@@ -83,6 +102,13 @@ export default {
     if (!text) return new Response("empty body", { status: 400 });
 
     const alert = parseCnxAlert(text);
+
+    if (alert && env.SIGNALS) {
+      await env.SIGNALS.put(
+        "latest",
+        JSON.stringify({ id: Date.now(), ts: new Date().toISOString(), ...alert })
+      );
+    }
     let r;
     if (alert) {
       r = await sendTelegram(env, {
