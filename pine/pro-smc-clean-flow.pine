@@ -219,6 +219,7 @@ if buySignal
     label.delete(dzLabel)
     label.delete(riskLabel)
     riskLabel := label.new(bar_index, low, "BUY CONFIRMED\nEntry: " + str.tostring(close, format.mintick) + "\nSL: " + str.tostring(buySL, format.mintick) + "\nTP1: " + str.tostring(buyTP1, format.mintick) + "\nTP2: " + str.tostring(buyTP2, format.mintick), style=label.style_label_up, color=color.green, textcolor=color.white)
+    alert("SMC Clean Flow BUY | " + syminfo.ticker + " " + timeframe.period + " | Entry " + str.tostring(close, format.mintick) + " | SL " + str.tostring(buySL, format.mintick) + " | TP1 " + str.tostring(buyTP1, format.mintick) + " | TP2 " + str.tostring(buyTP2, format.mintick), alert.freq_once_per_bar_close)
 
 if sellSignal
     sellSL  := szTop + atr * slAtrPad
@@ -230,6 +231,7 @@ if sellSignal
     label.delete(szLabel)
     label.delete(riskLabel)
     riskLabel := label.new(bar_index, high, "SELL CONFIRMED\nEntry: " + str.tostring(close, format.mintick) + "\nSL: " + str.tostring(sellSL, format.mintick) + "\nTP1: " + str.tostring(sellTP1, format.mintick) + "\nTP2: " + str.tostring(sellTP2, format.mintick), style=label.style_label_down, color=color.red, textcolor=color.white)
+    alert("SMC Clean Flow SELL | " + syminfo.ticker + " " + timeframe.period + " | Entry " + str.tostring(close, format.mintick) + " | SL " + str.tostring(sellSL, format.mintick) + " | TP1 " + str.tostring(sellTP1, format.mintick) + " | TP2 " + str.tostring(sellTP2, format.mintick), alert.freq_once_per_bar_close)
 
 // ── Plots & labels ───────────────────────────────────────────────────────
 plot(emaFast, "Fast EMA", color=color.green)

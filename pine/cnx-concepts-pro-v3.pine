@@ -49,6 +49,8 @@ grpSig = "Confluence Signals"
 enableSignals = input.bool(true, "Enable LONG / SHORT signals", group=grpSig)
 minScore      = input.int(5, "Min confluence score (of 7)", minval=1, maxval=7, group=grpSig)
 sigCooldown   = input.int(10, "Signal cooldown (bars)", minval=0, group=grpSig)
+slAtrMult     = input.float(1.5, "Trade stop distance (ATR mult)", minval=0.1, step=0.1, group=grpSig)
+showRiskLabel = input.bool(true, "Show Entry/SL/TP label on signals", group=grpSig)
 
 grpZZ = "ZigZag"
 showZZ  = input.bool(true, "Multi-level ZigZag", group=grpZZ)
@@ -411,13 +413,28 @@ canSig = na(lastSigBar) or bar_index - lastSigBar >= sigCooldown
 longSignal  = enableSignals and canSig and close > open and bullScore >= minScore
 shortSignal = enableSignals and canSig and close < open and bearScore >= minScore
 
+// Trade plan per signal: ATR-based stop, targets at 1R and 2R. The alert()
+// calls carry the full plan, so one "Any alert() function call" alert in
+// TradingView covers both directions with live prices (webhook-friendly).
 var string lastSigTxt = "—"
 if longSignal
     lastSigBar := bar_index
     lastSigTxt := "LONG @ " + str.tostring(close, format.mintick)
+    longSL  = close - atr * slAtrMult
+    longTP1 = close + (close - longSL)
+    longTP2 = close + (close - longSL) * 2
+    if showRiskLabel
+        label.new(bar_index, low, "LONG\nEntry " + str.tostring(close, format.mintick) + "\nSL " + str.tostring(longSL, format.mintick) + "\nTP1 " + str.tostring(longTP1, format.mintick) + "\nTP2 " + str.tostring(longTP2, format.mintick), style=label.style_label_up, color=color.new(color.green, 20), textcolor=color.white, size=size.small)
+    alert("CNX PRO v3 LONG | " + syminfo.ticker + " " + timeframe.period + " | Entry " + str.tostring(close, format.mintick) + " | SL " + str.tostring(longSL, format.mintick) + " | TP1 " + str.tostring(longTP1, format.mintick) + " | TP2 " + str.tostring(longTP2, format.mintick) + " | Score " + str.tostring(bullScore) + "/7", alert.freq_once_per_bar_close)
 if shortSignal
     lastSigBar := bar_index
     lastSigTxt := "SHORT @ " + str.tostring(close, format.mintick)
+    shortSL  = close + atr * slAtrMult
+    shortTP1 = close - (shortSL - close)
+    shortTP2 = close - (shortSL - close) * 2
+    if showRiskLabel
+        label.new(bar_index, high, "SHORT\nEntry " + str.tostring(close, format.mintick) + "\nSL " + str.tostring(shortSL, format.mintick) + "\nTP1 " + str.tostring(shortTP1, format.mintick) + "\nTP2 " + str.tostring(shortTP2, format.mintick), style=label.style_label_down, color=color.new(color.red, 20), textcolor=color.white, size=size.small)
+    alert("CNX PRO v3 SHORT | " + syminfo.ticker + " " + timeframe.period + " | Entry " + str.tostring(close, format.mintick) + " | SL " + str.tostring(shortSL, format.mintick) + " | TP1 " + str.tostring(shortTP1, format.mintick) + " | TP2 " + str.tostring(shortTP2, format.mintick) + " | Score " + str.tostring(bearScore) + "/7", alert.freq_once_per_bar_close)
 
 // ── Shapes ───────────────────────────────────────────────────────────────
 plotshape(longSignal, title="LONG", text="LONG", style=shape.labelup, location=location.belowbar, color=color.new(color.green, 0), textcolor=color.white, size=size.small)
