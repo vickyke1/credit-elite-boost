@@ -64,7 +64,7 @@ function formatTradeCard(a) {
   return lines.join("\n");
 }
 
-async function sendTelegram(env, body) {
+function sendTelegram(env, body) {
   return fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
