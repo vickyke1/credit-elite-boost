@@ -99,7 +99,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[calc(100vw-1rem)] sm:max-w-[600px] max-h-[90dvh] overflow-y-auto overscroll-contain p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Complete Your Purchase - ${total}</DialogTitle>
           <DialogDescription>Secure checkout via crypto. Your payment address is generated server-side.</DialogDescription>
