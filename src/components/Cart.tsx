@@ -24,7 +24,7 @@ export const Cart = () => {
             )}
           </Button>
         </SheetTrigger>
-        <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetContent className="w-full max-w-full sm:w-[540px] sm:max-w-[540px] h-[100dvh] overflow-y-auto overscroll-contain">
           <SheetHeader>
             <SheetTitle>Shopping Cart ({getItemCount()} items)</SheetTitle>
           </SheetHeader>
