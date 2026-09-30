@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
+import type { ISourceOptions } from "@tsparticles/engine";
 
 const ParticlesBackground = () => {
   const [init, setInit] = useState(false);
 
-  const options = useMemo(
+  const options = useMemo<ISourceOptions>(
     () => ({
       background: {
         color: {
@@ -14,17 +15,19 @@ const ParticlesBackground = () => {
       },
       fpsLimit: 120,
       interactivity: {
-        detectsOn: "canvas" as const,
+        detectsOn: "canvas",
         events: {
           onClick: {
             enable: true,
-            mode: "push" as const,
+            mode: "push",
           },
           onHover: {
             enable: true,
-            mode: "repulse" as const,
+            mode: "repulse",
           },
-          resize: true,
+          resize: {
+            enable: true,
+          },
         },
         modes: {
           grab: {
@@ -66,11 +69,11 @@ const ParticlesBackground = () => {
         move: {
           enable: true,
           speed: 6,
-          direction: "none" as const,
+          direction: "none",
           random: false,
           straight: false,
           outModes: {
-            default: "out" as const,
+            default: "out",
           },
         },
         number: {
@@ -84,14 +87,14 @@ const ParticlesBackground = () => {
           value: 0.5,
         },
         shape: {
-          type: "circle" as const,
+          type: "circle",
         },
         size: {
           value: { min: 0.1, max: 3 },
         },
       },
       detectRetina: true,
-    } as const),
+    }),
     [],
   );
 

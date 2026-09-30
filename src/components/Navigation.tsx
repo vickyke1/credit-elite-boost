@@ -118,7 +118,7 @@ const Navigation = () => {
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground min-h-[44px]" 
                 asChild
               >
-                <Link to="/login">Client Login</Link>
+                <Link to="/login">Member Access</Link>
               </Button>
             )}
           </div>
@@ -183,7 +183,7 @@ const Navigation = () => {
                         className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground min-h-[44px]" 
                         asChild
                       >
-                        <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Client Login</Link>
+                        <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Member Access</Link>
                       </Button>
                     )}
                   </div>
