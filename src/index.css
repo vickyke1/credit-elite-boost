@@ -119,8 +119,20 @@
     @apply border-border;
   }
 
+  /* Let the window be the single scroll container so touch scrolling and
+     native pull-to-refresh work; `clip` hides horizontal overflow without
+     turning body into its own scroll container (as overflow-x:hidden does). */
+  html,
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    height: auto;
+    min-height: 100%;
+    overflow-x: clip;
+    overflow-y: visible;
+    overscroll-behavior-y: auto;
+  }
+
+  body {
+    @apply bg-background text-foreground;
     background-image:
       radial-gradient(circle at 12% -10%, hsl(174 90% 45% / 0.08) 0%, transparent 45%),
       radial-gradient(circle at 95% 0%, hsl(156 80% 45% / 0.07) 0%, transparent 40%);
