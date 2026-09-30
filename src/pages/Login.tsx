@@ -44,7 +44,7 @@ const Login = () => {
                 <Shield className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">Client Login</CardTitle>
+            <CardTitle className="text-2xl font-bold">Member Access</CardTitle>
             <CardDescription className="text-muted-foreground">
               Access your secure CPN Credit Boost account
             </CardDescription>
