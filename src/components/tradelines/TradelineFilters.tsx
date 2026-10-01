@@ -22,7 +22,7 @@ export const TradelineFilters = ({
   resultCount
 }: TradelineFiltersProps) => {
   return (
-    <div className="glass-panel rounded-2xl p-6 mb-8 animate-fade-in">
+    <div className="mb-4 border-y border-border bg-card/40 p-3 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Search */}
         <div className="relative">
@@ -65,7 +65,7 @@ export const TradelineFilters = ({
         </Select>
 
         {/* Results Count */}
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2">
+        <div className="flex min-h-11 items-center justify-center gap-2 border border-primary/20 bg-primary/5 px-4 py-2">
           <span className="status-dot h-2 w-2 rounded-full bg-accent" />
           <span className="text-sm font-medium text-foreground">
             <span className="font-bold text-primary">{resultCount.toLocaleString()}</span> tradelines found
