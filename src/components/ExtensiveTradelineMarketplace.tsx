@@ -1,25 +1,9 @@
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useMemo } from "react";
 import { generateTradelines } from "@/utils/tradelineData";
 import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
 import { TradelineGrid } from "@/components/tradelines/TradelineGrid";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
-import { TradelineStats } from "@/components/tradelines/TradelineStats";
 import { ShieldCheck, Sparkles } from "lucide-react";
-
-// Code-split the Recharts-powered analytics so the chart library stays out of
-// the main bundle and only loads on this marketplace page.
-const TradelineAnalytics = lazy(() =>
-  import("@/components/tradelines/TradelineAnalytics").then((m) => ({
-    default: m.TradelineAnalytics,
-  }))
-);
-
-const AnalyticsSkeleton = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-14">
-    <div className="glass-card rounded-2xl p-6 lg:col-span-2 h-[340px] skeleton-shimmer" />
-    <div className="glass-card rounded-2xl p-6 h-[340px] skeleton-shimmer" />
-  </div>
-);
 
 const ExtensiveTradelineMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,41 +53,48 @@ const ExtensiveTradelineMarketplace = () => {
   }, [filteredAndSortedTradelines, currentPage]);
 
   const totalPages = Math.ceil(filteredAndSortedTradelines.length / itemsPerPage);
+  const totalLimit = allTradelines.reduce((sum, tradeline) => sum + tradeline.creditLimit, 0);
+  const startingPrice = Math.min(...allTradelines.map((tradeline) => tradeline.price));
 
   return (
-    <section className="py-16 md:py-20 bg-background min-h-screen">
-      <div className="container mx-auto px-6">
+    <section className="min-h-screen bg-background pb-20 pt-14 md:pt-20">
+      <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
+        <div className="mb-10 border-b border-border pb-9 animate-fade-in md:flex md:items-end md:justify-between md:gap-10">
+          <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-5">
             <Sparkles className="h-4 w-4" />
             Premium Aged Tradelines
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Tradeline Marketplace
-            </span>
+          <h1 className="mb-4 text-4xl font-bold md:text-6xl">
+            Tradeline <span className="text-primary">Inventory</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Browse our extensive inventory of premium aged tradelines from top financial institutions.
-            All tradelines are verified and guaranteed to report within 7-14 business days.
+          <p className="max-w-2xl text-lg text-muted-foreground">
+            Compare verified aged tradelines by bank, limit, age, reporting window, and price.
           </p>
           <div className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-accent" />
             Verified inventory · Bank-grade security
           </div>
+          </div>
+          <div className="mt-8 grid grid-cols-3 gap-6 border-t border-border pt-6 md:mt-0 md:min-w-[420px] md:border-l md:border-t-0 md:pl-8 md:pt-0">
+            <div>
+              <div className="text-xs text-muted-foreground">Available</div>
+              <div className="mt-1 text-xl font-bold text-foreground">{allTradelines.length.toLocaleString()}</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Total Limit</div>
+              <div className="mt-1 text-xl font-bold text-primary">${(totalLimit / 1_000_000).toFixed(1)}M</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">From</div>
+              <div className="mt-1 text-xl font-bold text-accent">${startingPrice}</div>
+            </div>
+          </div>
         </div>
 
-        {/* KPI Overview */}
-        <TradelineStats tradelines={allTradelines} />
-
-        {/* Analytics Widgets */}
-        <Suspense fallback={<AnalyticsSkeleton />}>
-          <TradelineAnalytics tradelines={allTradelines} />
-        </Suspense>
-
         {/* Search and Filters */}
-        <div className="mt-14">
+        <div>
           <TradelineFilters
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
