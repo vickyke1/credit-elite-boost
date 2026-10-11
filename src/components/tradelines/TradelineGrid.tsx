@@ -15,9 +15,20 @@ import { ShoppingCart } from "lucide-react";
 
 interface TradelineGridProps {
   tradelines: Tradeline[];
+  compareIds?: string[];
+  onToggleCompare?: (id: string) => void;
 }
 
-export const TradelineGrid = ({ tradelines }: TradelineGridProps) => {
+export const useAddTradelineToCart = () => {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  return (tradeline: Tradeline) => {
+    addToCart({ id: tradeline.id, type: 'tradeline' as const, name: `${tradeline.bankName} Tradeline ${tradeline.cardId}`, price: tradeline.price, bankName: tradeline.bankName, cardId: tradeline.cardId, creditLimit: tradeline.creditLimit, age: tradeline.age });
+    toast({ title: "Added to Cart!", description: `${tradeline.bankName} tradeline added to your cart` });
+  };
+};
+
+export const TradelineGrid = ({ tradelines, compareIds = [], onToggleCompare }: TradelineGridProps) => {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -42,9 +53,10 @@ export const TradelineGrid = ({ tradelines }: TradelineGridProps) => {
 
   return (
     <div className="animate-fade-in overflow-hidden rounded-lg border border-border bg-card shadow-elevated">
-      <Table className="min-w-[1120px]">
+      <Table className="min-w-[1200px]">
         <TableHeader className="sticky top-0 z-20 bg-secondary">
           <TableRow className="hover:bg-secondary">
+            <TableHead className="w-[80px] font-semibold text-foreground">Compare</TableHead>
             <TableHead className="h-14 min-w-[180px] font-semibold text-foreground">Bank</TableHead>
             <TableHead className="min-w-[100px] font-semibold text-foreground">Card ID</TableHead>
             <TableHead className="min-w-[130px] font-semibold text-foreground">Credit Limit</TableHead>
@@ -63,6 +75,18 @@ export const TradelineGrid = ({ tradelines }: TradelineGridProps) => {
                 key={tradeline.id}
                 className={index % 2 === 0 ? "bg-background/25" : "bg-secondary/30"}
               >
+                <TableCell>
+                  <label className="flex h-11 w-11 cursor-pointer items-center justify-center">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 accent-[hsl(var(--primary))]"
+                      checked={compareIds.includes(tradeline.id)}
+                      disabled={!compareIds.includes(tradeline.id) && compareIds.length >= 4}
+                      onChange={() => onToggleCompare?.(tradeline.id)}
+                      aria-label={`Compare ${tradeline.bankName} ${tradeline.cardId}`}
+                    />
+                  </label>
+                </TableCell>
                 <TableCell className="py-3.5 font-semibold">
                   <Link
                     to={getProductUrl(tradeline)}

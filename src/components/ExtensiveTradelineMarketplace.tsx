@@ -1,7 +1,11 @@
 import { useState, useMemo } from "react";
 import { generateTradelines } from "@/utils/tradelineData";
 import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
-import { TradelineGrid } from "@/components/tradelines/TradelineGrid";
+import { TradelineGrid, useAddTradelineToCart } from "@/components/tradelines/TradelineGrid";
+import { TradelineCompare } from "@/components/tradelines/TradelineCompare";
+import { TradelineAdvisor } from "@/components/tradelines/TradelineAdvisor";
+import { Button } from "@/components/ui/button";
+import { Columns3 } from "lucide-react";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
 import { ShieldCheck, Sparkles } from "lucide-react";
 
@@ -11,6 +15,11 @@ const ExtensiveTradelineMarketplace = () => {
   const [filterBy, setFilterBy] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 24;
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const addTradelineToCart = useAddTradelineToCart();
+  const toggleCompare = (id: string) =>
+    setCompareIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : ids.length >= 4 ? ids : [...ids, id]));
 
   const allTradelines = useMemo(() => generateTradelines(), []);
 
@@ -93,6 +102,8 @@ const ExtensiveTradelineMarketplace = () => {
           </div>
         </div>
 
+        <TradelineAdvisor tradelines={allTradelines} onCompare={(ids) => { setCompareIds(ids); setCompareOpen(true); }} />
+
         {/* Search and Filters */}
         <div>
           <TradelineFilters
@@ -107,7 +118,25 @@ const ExtensiveTradelineMarketplace = () => {
         </div>
 
         {/* Tradeline Product Cards */}
-        <TradelineGrid tradelines={paginatedTradelines} />
+        <TradelineGrid tradelines={paginatedTradelines} compareIds={compareIds} onToggleCompare={toggleCompare} />
+
+        {compareIds.length > 0 && (
+          <div className="sticky bottom-4 z-30 mx-auto mt-4 flex w-fit items-center gap-3 rounded-full border border-primary/40 bg-card px-4 py-2 shadow-elevated">
+            <span className="text-sm">{compareIds.length} of 4 selected</span>
+            <Button variant="ghost" size="sm" className="min-h-11" onClick={() => setCompareIds([])}>Clear</Button>
+            <Button size="sm" className="min-h-11" onClick={() => setCompareOpen(true)}>
+              <Columns3 className="h-4 w-4" /> Compare
+            </Button>
+          </div>
+        )}
+
+        <TradelineCompare
+          open={compareOpen}
+          onOpenChange={setCompareOpen}
+          tradelines={compareIds.map((id) => allTradelines.find((t) => t.id === id)).filter((t): t is NonNullable<typeof t> => Boolean(t))}
+          onRemove={toggleCompare}
+          onAddToCart={addTradelineToCart}
+        />
 
         {/* Pagination */}
         <TradelinePagination
