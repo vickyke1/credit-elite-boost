@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import NotFound from "./NotFound";
-import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
