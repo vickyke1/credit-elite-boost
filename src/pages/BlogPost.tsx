@@ -1,3 +1,4 @@
+import NotFound from "./NotFound";
 import { useParams, Link, Navigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -18,7 +19,7 @@ const BlogPost = () => {
   const post = getBlogPostBySlug(slug);
   
   if (!post) {
-    return <Navigate to="/blog" replace />;
+    return <NotFound />;
   }
 
   // Get related posts (same tags, excluding current post)

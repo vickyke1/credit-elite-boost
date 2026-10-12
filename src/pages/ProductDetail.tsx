@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import NotFound from "./NotFound";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -65,7 +66,7 @@ const ProductDetail = () => {
   }, [slug, cardId]);
 
   if (!tradeline) {
-    return <Navigate to="/tradelines" replace />;
+    return <NotFound />;
   }
 
   const handleAddToCart = () => {
