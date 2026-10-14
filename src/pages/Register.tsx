@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Mail, Shield, User, Phone } from 'lucide-react';
 import { z } from 'zod';
@@ -26,9 +26,9 @@ const registerSchema = z.object({
       'Password must contain uppercase, lowercase, number, and special character'),
   confirmPassword: z.string(),
   acceptTerms: z.boolean().refine(val => val === true, {
-    message: 'You must accept the terms and conditions'
+    message: 'You must accept the Terms of Service and Privacy Policy to continue.'
   }),
-  acceptMarketing: z.boolean().optional(),
+  acceptMarketing: z.boolean().default(false),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -45,12 +45,17 @@ const Register = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     setError,
     watch,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      acceptTerms: false,
+      acceptMarketing: false,
+    },
   });
 
   const password = watch('password');
@@ -341,11 +346,20 @@ const Register = () => {
 
               <div className="space-y-3">
                 <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="acceptTerms"
-                    {...register('acceptTerms')}
-                    disabled={isLoading}
-                    className="mt-0.5"
+                  <Controller
+                    name="acceptTerms"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="acceptTerms"
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        disabled={isLoading}
+                        className="mt-0.5"
+                      />
+                    )}
                   />
                   <div className="grid gap-1.5 leading-none">
                     <Label
@@ -368,11 +382,20 @@ const Register = () => {
                 )}
 
                 <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="acceptMarketing"
-                    {...register('acceptMarketing')}
-                    disabled={isLoading}
-                    className="mt-0.5"
+                  <Controller
+                    name="acceptMarketing"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="acceptMarketing"
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        disabled={isLoading}
+                        className="mt-0.5"
+                      />
+                    )}
                   />
                   <Label
                     htmlFor="acceptMarketing"
