@@ -346,11 +346,20 @@ const Register = () => {
 
               <div className="space-y-3">
                 <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="acceptTerms"
-                    {...register('acceptTerms')}
-                    disabled={isLoading}
-                    className="mt-0.5"
+                  <Controller
+                    name="acceptTerms"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="acceptTerms"
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        disabled={isLoading}
+                        className="mt-0.5"
+                      />
+                    )}
                   />
                   <div className="grid gap-1.5 leading-none">
                     <Label
@@ -373,11 +382,20 @@ const Register = () => {
                 )}
 
                 <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="acceptMarketing"
-                    {...register('acceptMarketing')}
-                    disabled={isLoading}
-                    className="mt-0.5"
+                  <Controller
+                    name="acceptMarketing"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="acceptMarketing"
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        disabled={isLoading}
+                        className="mt-0.5"
+                      />
+                    )}
                   />
                   <Label
                     htmlFor="acceptMarketing"
