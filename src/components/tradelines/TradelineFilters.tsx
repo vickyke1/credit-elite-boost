@@ -31,13 +31,14 @@ export const TradelineFilters = ({
             placeholder="Search by bank or card ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="min-h-12 pl-10 text-base"
+            aria-label="Search by bank or card ID"
           />
         </div>
 
         {/* Sort */}
         <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger>
+          <SelectTrigger className="min-h-12 text-sm">
             <ArrowUpDown className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -51,7 +52,7 @@ export const TradelineFilters = ({
 
         {/* Filter */}
         <Select value={filterBy} onValueChange={setFilterBy}>
-          <SelectTrigger>
+          <SelectTrigger className="min-h-12 text-sm">
             <Filter className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Filter" />
           </SelectTrigger>

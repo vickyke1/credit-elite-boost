@@ -9,6 +9,7 @@ import { SecurityHeaders } from "@/components/SecurityHeaders";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
+import Pricing from "./pages/Pricing";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import ProductDetail from "./pages/ProductDetail";
@@ -55,6 +56,7 @@ const App = () => {
             <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />

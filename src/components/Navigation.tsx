@@ -14,6 +14,7 @@ const navLinks = [
   { to: "/types-of-tradelines", label: "Tradeline Types" },
   { to: "/apartment-approval-guide", label: "Apartment Guide" },
   { to: "/calculator", label: "Calculator" },
+  { to: "/pricing", label: "Pricing" },
   { to: "/cpn-packages", label: "CPN Packages" },
   { to: "/contact", label: "Contact" },
 ];
@@ -61,27 +62,27 @@ const Navigation = () => {
       }`}
       aria-label="Main navigation"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-3 sm:px-6 py-3">
+        <div className="flex items-center justify-between gap-3">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity"
+            className="flex shrink-0 items-center min-h-11 gap-2 text-base sm:text-xl font-bold hover:opacity-90 transition-opacity"
             aria-label="CPN Credit Boost - Home"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
               C
             </span>
-            <span className="bg-gradient-primary bg-clip-text text-transparent">CPN Credit Boost</span>
+            <span className="bg-gradient-primary bg-clip-text text-transparent">CpnCreditBoost<span className="hidden sm:inline">.com</span></span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2 rounded-2xl border border-[hsl(var(--glass-border))] bg-card/40 px-2 py-1.5 backdrop-blur-md">
+          <div className="hidden 2xl:flex min-w-0 items-center gap-0 rounded-lg border border-border bg-card/40 px-1 py-1.5 backdrop-blur-md">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                className={`inline-flex min-h-11 items-center whitespace-nowrap rounded-md px-1.5 py-2 text-xs font-medium transition-all duration-300 ${
                   isActive(link.to)
                     ? "bg-primary/15 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.3),0_0_16px_-4px_hsl(var(--glow-primary)/0.6)]"
                     : "text-foreground/80 hover:text-primary hover:bg-primary/10"
@@ -93,7 +94,7 @@ const Navigation = () => {
           </div>
           
           {/* Desktop Cart and Auth */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden 2xl:flex shrink-0 items-center gap-3">
             <Cart />
             {user ? (
               <div className="flex items-center gap-3">
@@ -124,7 +125,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex shrink-0 items-center gap-2 2xl:hidden">
             <Cart />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -138,7 +139,7 @@ const Navigation = () => {
                   {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent side="right" className="w-[min(340px,100vw)] overflow-y-auto">
                 <SheetTitle className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8">
                   Menu
                 </SheetTitle>
