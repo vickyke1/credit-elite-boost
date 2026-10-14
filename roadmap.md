@@ -11,3 +11,5 @@
 - [x] Audit and fix broken links (sitemap cleaned of nonexistent pages).
 - [x] Side-by-side tradeline comparison view.
 - [x] AI tradeline advisor that recommends inventory matches.
+- [x] Show the brand as "CpnCreditBoost" (no ".com") everywhere it is displayed; keep real cpncreditboost.com URLs.
+- [x] Create the site logo and place the emblem in the header; tab icon derived from it.

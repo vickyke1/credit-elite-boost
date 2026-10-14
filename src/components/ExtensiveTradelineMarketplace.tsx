@@ -73,7 +73,7 @@ const ExtensiveTradelineMarketplace = () => {
           <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-5">
             <Sparkles className="h-4 w-4" />
-            CpnCreditBoost.com
+            CpnCreditBoost
           </div>
           <h1 className="mb-4 text-3xl font-bold md:text-5xl">
             Tradeline <span className="text-primary">Inventory</span>
