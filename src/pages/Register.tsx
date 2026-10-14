@@ -45,12 +45,17 @@ const Register = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     setError,
     watch,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      acceptTerms: false,
+      acceptMarketing: false,
+    },
   });
 
   const password = watch('password');
