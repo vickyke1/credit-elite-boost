@@ -9,7 +9,7 @@ const Hero = () => (
     <div className="container px-4 py-12 sm:px-6 md:py-20">
       <div className="max-w-3xl">
         <p className="mb-4 text-sm font-semibold uppercase text-primary">Credit education · Authorized-user tradelines</p>
-        <h1 id="hero-heading" className="text-3xl font-bold leading-tight sm:text-5xl md:text-6xl">CpnCreditBoost<span className="inline-block text-primary">.com</span></h1>
+        <h1 id="hero-heading" className="text-3xl font-bold leading-tight sm:text-5xl md:text-6xl">CpnCreditBoost</h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground">Clear choices for your credit-building journey.</p>
         <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">Compare account limits, ages, reporting windows, and prices. Explore credit education and legitimate repair guidance using your real identity.</p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">

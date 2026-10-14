@@ -10,7 +10,7 @@ import SEOHead from "@/components/SEOHead";
 
 const Index = () => (
   <div className="min-h-screen bg-background">
-    <SEOHead title="CpnCreditBoost.com | Tradelines & Credit Education" description="Compare authorized-user tradeline limits, ages, reporting windows and prices. Request monthly pricing for credit education and legitimate repair guidance." canonicalUrl="https://cpncreditboost.com" />
+    <SEOHead title="CpnCreditBoost | Tradelines & Credit Education" description="Compare authorized-user tradeline limits, ages, reporting windows and prices. Request monthly pricing for credit education and legitimate repair guidance." canonicalUrl="https://cpncreditboost.com" />
     <a href="#main-content" className="sr-only focus:not-sr-only">Skip to main content</a>
     <Navigation />
     <main id="main-content">

@@ -73,7 +73,7 @@ const Navigation = () => {
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
               C
             </span>
-            <span className="bg-gradient-primary bg-clip-text text-transparent">CpnCreditBoost<span className="hidden sm:inline">.com</span></span>
+            <span className="bg-gradient-primary bg-clip-text text-transparent">CpnCreditBoost</span>
           </Link>
 
           {/* Desktop Menu */}

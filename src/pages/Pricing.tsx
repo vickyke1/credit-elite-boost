@@ -49,12 +49,12 @@ export default function Pricing() {
   }
 
   return <div className="min-h-screen bg-background">
-    <SEOHead title="Monthly Pricing Inquiries | CpnCreditBoost.com" description="Request monthly pricing for credit education, legitimate credit repair guidance, and authorized-user tradelines." canonicalUrl="https://cpncreditboost.com/pricing" />
+    <SEOHead title="Monthly Pricing Inquiries | CpnCreditBoost" description="Request monthly pricing for credit education, legitimate credit repair guidance, and authorized-user tradelines." canonicalUrl="https://cpncreditboost.com/pricing" />
     <a href="#main-content" className="sr-only focus:not-sr-only">Skip to main content</a>
     <Navigation />
     <main id="main-content" className="container px-4 py-10 sm:px-6 md:py-16">
       <header className="max-w-3xl">
-        <p className="mb-3 text-sm font-semibold uppercase text-primary">CpnCreditBoost.com / Pricing</p>
+        <p className="mb-3 text-sm font-semibold uppercase text-primary">CpnCreditBoost / Pricing</p>
         <h1 className="text-3xl font-bold sm:text-5xl">Monthly pricing inquiries</h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">Explore credit-building support using your real identity. Request a written quote before deciding.</p>
       </header>

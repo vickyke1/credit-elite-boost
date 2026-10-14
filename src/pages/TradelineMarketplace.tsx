@@ -7,7 +7,7 @@ import FloatingChat from "@/components/FloatingChat";
 const TradelineMarketplace = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Tradeline Inventory & Prices | CpnCreditBoost.com" description="Compare authorized-user tradelines by bank, USD price, credit limit, age and reporting window." canonicalUrl="https://cpncreditboost.com/tradelines" />
+      <SEOHead title="Tradeline Inventory & Prices | CpnCreditBoost" description="Compare authorized-user tradelines by bank, USD price, credit limit, age and reporting window." canonicalUrl="https://cpncreditboost.com/tradelines" />
       <a href="#main-content" className="sr-only focus:not-sr-only">Skip to main content</a>
       <Navigation />
       <main id="main-content"><ExtensiveTradelineMarketplace /></main>
