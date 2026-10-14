@@ -52,7 +52,7 @@ export const TradelineGrid = ({ tradelines, compareIds = [], onToggleCompare }: 
   };
 
   return (
-    <div className="animate-fade-in overflow-hidden rounded-lg border border-border bg-card shadow-elevated">
+    <div className="animate-fade-in overflow-hidden rounded-lg border border-border bg-card shadow-elevated [&>div:first-child]:max-h-[70vh] [&>div:first-child]:overscroll-contain">
       <Table className="min-w-[1120px] text-base tabular-nums">
         <TableHeader className="sticky top-0 z-20 bg-secondary">
           <TableRow className="hover:bg-secondary">

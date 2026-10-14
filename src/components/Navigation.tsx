@@ -67,7 +67,7 @@ const Navigation = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center min-h-11 min-w-0 gap-2 text-base sm:text-xl font-bold hover:opacity-90 transition-opacity"
+            className="flex shrink-0 items-center min-h-11 gap-2 text-base sm:text-xl font-bold hover:opacity-90 transition-opacity"
             aria-label="CPN Credit Boost - Home"
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
@@ -77,12 +77,12 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden 2xl:flex items-center gap-1 rounded-2xl border border-border bg-card/40 px-2 py-1.5 backdrop-blur-md">
+          <div className="hidden 2xl:flex min-w-0 items-center gap-0 rounded-lg border border-border bg-card/40 px-1 py-1.5 backdrop-blur-md">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-2 py-2 text-sm font-medium transition-all duration-300 ${
+                className={`inline-flex min-h-11 items-center whitespace-nowrap rounded-md px-1.5 py-2 text-xs font-medium transition-all duration-300 ${
                   isActive(link.to)
                     ? "bg-primary/15 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.3),0_0_16px_-4px_hsl(var(--glow-primary)/0.6)]"
                     : "text-foreground/80 hover:text-primary hover:bg-primary/10"
