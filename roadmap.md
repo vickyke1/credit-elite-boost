@@ -1,7 +1,7 @@
 # Roadmap
 
-- [ ] Redesign homepage and tradelines for readable mobile browsing.
-- [ ] Add lawful credit-education pricing inquiries and verify saved leads.
+- [x] Redesign homepage and tradelines for readable mobile browsing.
+- [x] Add lawful credit-education pricing inquiries and verify saved leads.
 - [ ] Display monthly rates — blocked until owner supplies actual rates.
 - [ ] Email each inquiry — blocked until sender domain is verified and private recipient address is supplied.
 

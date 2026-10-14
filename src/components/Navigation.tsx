@@ -63,7 +63,7 @@ const Navigation = () => {
       aria-label="Main navigation"
     >
       <div className="container mx-auto px-3 sm:px-6 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           {/* Logo */}
           <Link
             to="/"
@@ -77,12 +77,12 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden xl:flex items-center gap-1 xl:gap-2 rounded-2xl border border-[hsl(var(--glass-border))] bg-card/40 px-2 py-1.5 backdrop-blur-md">
+          <div className="hidden 2xl:flex items-center gap-1 rounded-2xl border border-border bg-card/40 px-2 py-1.5 backdrop-blur-md">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                className={`inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-2 py-2 text-sm font-medium transition-all duration-300 ${
                   isActive(link.to)
                     ? "bg-primary/15 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.3),0_0_16px_-4px_hsl(var(--glow-primary)/0.6)]"
                     : "text-foreground/80 hover:text-primary hover:bg-primary/10"
@@ -94,7 +94,7 @@ const Navigation = () => {
           </div>
           
           {/* Desktop Cart and Auth */}
-          <div className="hidden xl:flex items-center gap-4">
+          <div className="hidden 2xl:flex shrink-0 items-center gap-3">
             <Cart />
             {user ? (
               <div className="flex items-center gap-3">
@@ -125,7 +125,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className="flex shrink-0 items-center gap-2 2xl:hidden">
             <Cart />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>

@@ -56,8 +56,8 @@ export const TradelineGrid = ({ tradelines, compareIds = [], onToggleCompare }: 
       <Table className="min-w-[1120px] text-base tabular-nums">
         <TableHeader className="sticky top-0 z-20 bg-secondary">
           <TableRow className="hover:bg-secondary">
-            <TableHead className="w-[80px] font-semibold text-foreground">Compare</TableHead>
-            <TableHead className="h-14 min-w-[180px] font-semibold text-foreground">Bank</TableHead>
+            <TableHead className="w-[64px] px-2 font-semibold text-foreground">Compare</TableHead>
+            <TableHead className="h-14 min-w-[140px] font-semibold text-foreground">Bank</TableHead>
             <TableHead className="min-w-[100px] font-semibold text-foreground">Price (USD)</TableHead>
             <TableHead className="min-w-[100px] font-semibold text-foreground">Card ID</TableHead>
             <TableHead className="min-w-[130px] font-semibold text-foreground">Credit Limit</TableHead>
@@ -75,7 +75,7 @@ export const TradelineGrid = ({ tradelines, compareIds = [], onToggleCompare }: 
                 key={tradeline.id}
                 className={index % 2 === 0 ? "bg-background/25" : "bg-secondary/30"}
               >
-                <TableCell>
+                <TableCell className="px-2">
                   <label className="flex h-11 w-11 cursor-pointer items-center justify-center">
                     <input
                       type="checkbox"
