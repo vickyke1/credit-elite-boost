@@ -70,9 +70,13 @@ const Navigation = () => {
             className="flex shrink-0 items-center min-h-11 gap-2 text-base sm:text-xl font-bold hover:opacity-90 transition-opacity"
             aria-label="CPN Credit Boost - Home"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
-              C
-            </span>
+            <img
+              src={logoMark}
+              alt=""
+              width={36}
+              height={36}
+              className="h-9 w-9 shrink-0 rounded-xl shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]"
+            />
             <span className="bg-gradient-primary bg-clip-text text-transparent">CpnCreditBoost</span>
           </Link>
 
