@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import logoMark from "@/assets/logo-mark.png";
 
 const navLinks = [
   { to: "/", label: "Home" },
