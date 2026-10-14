@@ -14,6 +14,7 @@ const navLinks = [
   { to: "/types-of-tradelines", label: "Tradeline Types" },
   { to: "/apartment-approval-guide", label: "Apartment Guide" },
   { to: "/calculator", label: "Calculator" },
+  { to: "/pricing", label: "Pricing" },
   { to: "/cpn-packages", label: "CPN Packages" },
   { to: "/contact", label: "Contact" },
 ];
@@ -61,22 +62,22 @@ const Navigation = () => {
       }`}
       aria-label="Main navigation"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-4">
+      <div className="container mx-auto px-3 sm:px-6 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity"
+            className="flex items-center min-h-11 min-w-0 gap-2 text-base sm:text-xl font-bold hover:opacity-90 transition-opacity"
             aria-label="CPN Credit Boost - Home"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-cta text-accent-foreground font-extrabold shadow-[0_0_18px_-2px_hsl(var(--glow-primary)/0.6)]">
               C
             </span>
-            <span className="bg-gradient-primary bg-clip-text text-transparent">CPN Credit Boost</span>
+            <span className="bg-gradient-primary bg-clip-text text-transparent">CpnCreditBoost<span className="hidden sm:inline">.com</span></span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-2 rounded-2xl border border-[hsl(var(--glass-border))] bg-card/40 px-2 py-1.5 backdrop-blur-md">
+          <div className="hidden xl:flex items-center gap-1 xl:gap-2 rounded-2xl border border-[hsl(var(--glass-border))] bg-card/40 px-2 py-1.5 backdrop-blur-md">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -93,7 +94,7 @@ const Navigation = () => {
           </div>
           
           {/* Desktop Cart and Auth */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden xl:flex items-center gap-4">
             <Cart />
             {user ? (
               <div className="flex items-center gap-3">
@@ -124,7 +125,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             <Cart />
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -138,7 +139,7 @@ const Navigation = () => {
                   {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent side="right" className="w-[min(340px,100vw)] overflow-y-auto">
                 <SheetTitle className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-8">
                   Menu
                 </SheetTitle>
