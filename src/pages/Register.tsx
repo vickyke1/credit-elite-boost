@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Mail, Shield, User, Phone } from 'lucide-react';
 import { z } from 'zod';
@@ -26,9 +26,9 @@ const registerSchema = z.object({
       'Password must contain uppercase, lowercase, number, and special character'),
   confirmPassword: z.string(),
   acceptTerms: z.boolean().refine(val => val === true, {
-    message: 'You must accept the terms and conditions'
+    message: 'You must accept the Terms of Service and Privacy Policy to continue.'
   }),
-  acceptMarketing: z.boolean().optional(),
+  acceptMarketing: z.boolean().default(false),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
