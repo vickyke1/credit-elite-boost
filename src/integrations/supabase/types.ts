@@ -56,6 +56,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_inquiries: {
+        Row: {
+          consent: boolean
+          created_at: string
+          id: string
+          ip_hash: string
+          message: string
+          name: string
+          notification_status: string
+          service: string
+          status: string
+          telegram: string
+        }
+        Insert: {
+          consent: boolean
+          created_at?: string
+          id: string
+          ip_hash: string
+          message: string
+          name: string
+          notification_status?: string
+          service: string
+          status?: string
+          telegram: string
+        }
+        Update: {
+          consent?: boolean
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          message?: string
+          name?: string
+          notification_status?: string
+          service?: string
+          status?: string
+          telegram?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -92,6 +131,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      save_pricing_inquiry: {
+        Args: {
+          p_id: string
+          p_ip_hash: string
+          p_message: string
+          p_name: string
+          p_service: string
+          p_telegram: string
+        }
+        Returns: string
       }
     }
     Enums: {
