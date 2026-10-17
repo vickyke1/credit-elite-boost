@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,11 +18,15 @@ const Login = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     setError,
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      rememberMe: false,
+    },
   });
 
   const onSubmit = async (data: LoginForm) => {
@@ -113,10 +117,19 @@ const Login = () => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="rememberMe"
-                    {...register('rememberMe')}
-                    disabled={isLoading}
+                  <Controller
+                    name="rememberMe"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="rememberMe"
+                        checked={field.value === true}
+                        onCheckedChange={(checked) => field.onChange(checked === true)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        disabled={isLoading}
+                      />
+                    )}
                   />
                   <Label
                     htmlFor="rememberMe"
