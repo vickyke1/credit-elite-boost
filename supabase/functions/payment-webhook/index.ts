@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !key) return json({ error: "Service unavailable" }, 503);
   const admin = createClient(url, key);
-  const { data: order } = await admin.from("orders").select("id,total_usd,provider,provider_invoice_id,telegram,status").eq("id", event.orderId).maybeSingle();
+  const { data: order } = await admin.from("orders").select("id,total_usd,provider,provider_invoice_id,telegram,status,pay_currency").eq("id", event.orderId).maybeSingle();
   if (!order || order.provider !== provider.id) return json({ error: "Unknown order" }, 404);
   if (!event.invoiceId || !order.provider_invoice_id || event.invoiceId !== order.provider_invoice_id) return json({ error: "Invoice mismatch" }, 409);
   if (!event.payCurrency || (order.pay_currency && order.pay_currency !== event.payCurrency)) return json({ error: "Asset or network mismatch" }, 409);
