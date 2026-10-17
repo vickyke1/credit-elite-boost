@@ -3,7 +3,7 @@
 - [x] Redesign homepage and tradelines for readable mobile browsing.
 - [x] Add lawful credit-education pricing inquiries and verify saved leads.
 - [ ] Display monthly rates — blocked until owner supplies actual rates.
-- [ ] Send pricing and education inquiries to the owner's Telegram chat and store incoming replies.
+- [x] Send pricing and education inquiries to the owner's Telegram chat and store incoming replies (two real form alerts delivered; synthetic reply storage verified).
 
 - [x] Redesign the Tradelines inventory as a responsive, compact striped table based on the supplied reference.
 - [x] Preserve search, sorting, filtering, product details, availability, pagination, and cart actions.
