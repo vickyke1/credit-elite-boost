@@ -15,6 +15,13 @@
       "when": 1792270657393,
       "tag": "0001_telegram_inquiry_delivery",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792272739595,
+      "tag": "0002_crypto_checkout",
+      "breakpoints": true
     }
   ]
 }
