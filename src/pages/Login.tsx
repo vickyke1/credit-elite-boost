@@ -24,9 +24,6 @@ const Login = () => {
     setError,
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      rememberMe: false,
-    },
   });
 
   const onSubmit = async (data: LoginForm) => {
