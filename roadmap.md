@@ -16,3 +16,5 @@
 - [x] Fix the sign-in form so the "Remember me" checkbox no longer blocks submission.
 - [x] Crypto checkout foundation (NOWPayments adapter, orders, verified webhooks, Telegram alerts); removed manual payment instructions.
 - [ ] Turn on crypto checkout — blocked on NOWPayments API key + IPN secret and owner approval of products for sale.
+- [x] Verify deployed NOWPayments IPN reachability and strengthen signature, provider reconciliation, and atomic duplicate handling (13 tests passed; unsigned live requests rejected).
+- [ ] Verify actual dashboard IPN format, signed sandbox payment, database duplicate retries and Telegram payment alert — blocked on NOWPayments credentials and an approved test product.

@@ -27,10 +27,14 @@ function safeEqual(a: string, b: string) {
 }
 
 export async function verifyNowPaymentsSignature(rawBody: string, signature: string | null, secret: string): Promise<Record<string, unknown> | null> {
-  if (!signature) return null;
+  if (!signature || !/^[a-fA-F0-9]{128}$/.test(signature)) return null;
   let body: Record<string, unknown>;
-  try { body = JSON.parse(rawBody); } catch { return null; }
-  const expected = await hmacSha512Hex(secret, JSON.stringify(sortKeys(body)));
+  try {
+    const parsed = JSON.parse(rawBody);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    body = parsed;
+  } catch { return null; }
+  const expected = await hmacSha512Hex(secret.trim(), JSON.stringify(sortKeys(body)));
   return safeEqual(signature.toLowerCase(), expected) ? body : null;
 }
 
@@ -38,8 +42,28 @@ async function call(path: string, init: RequestInit = {}) {
   const apiKey = Deno.env.get("NOWPAYMENTS_API_KEY");
   if (!apiKey) throw new Error("NOWPayments is not configured");
   const res = await fetch(`${base()}${path}`, { ...init, headers: { "x-api-key": apiKey, "Content-Type": "application/json" }, signal: AbortSignal.timeout(15000) });
-  if (!res.ok) throw new Error(`NOWPayments [${res.status}]: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok) throw new Error(`NOWPayments request failed [${res.status}]`);
   return res.json();
+}
+
+export async function reconcileNowPayments(body: Record<string, unknown>, enabled: string[]): Promise<Record<string, unknown> | null> {
+  const paymentId = String(body.payment_id ?? "");
+  if (!/^\d+$/.test(paymentId)) return null;
+  const payment = await call(`/payment/${paymentId}`);
+  if (!["waiting", "confirming", "confirmed", "sending", "partially_paid", "finished", "failed", "refunded", "expired"].includes(String(payment.payment_status))) return null;
+  for (const field of ["payment_id", "invoice_id", "order_id", "payment_status", "price_currency", "pay_currency"]) {
+    if (body[field] == null || payment[field] == null || String(body[field]) !== String(payment[field])) return null;
+  }
+  if (!enabled.includes(String(payment.pay_currency))) return null;
+  for (const field of ["price_amount", "pay_amount", "actually_paid"]) {
+    if (body[field] == null || payment[field] == null || !Number.isFinite(Number(body[field])) || Number(body[field]) < 0 || Number(body[field]) !== Number(payment[field])) return null;
+  }
+  if (Number(payment.price_amount) <= 0 || Number(payment.pay_amount) <= 0) return null;
+  // A finished callback alone is not proof that the requested crypto amount arrived.
+  if (payment.payment_status === "finished" && Number(payment.actually_paid) < Number(payment.pay_amount)) {
+    return { ...payment, payment_status: "partially_paid" };
+  }
+  return payment;
 }
 
 export const nowPayments: PaymentProvider = {
@@ -47,7 +71,7 @@ export const nowPayments: PaymentProvider = {
   isConfigured: () => Boolean(Deno.env.get("NOWPAYMENTS_API_KEY") && Deno.env.get("NOWPAYMENTS_IPN_SECRET")),
   async listCurrencies() {
     const data = await call("/merchant/coins");
-    return Array.isArray(data?.selectedCurrencies) ? data.selectedCurrencies : [];
+    return Array.isArray(data?.currencies) ? data.currencies.filter((c: unknown) => typeof c === "string" && /^[a-z0-9]{2,32}$/.test(c)) : [];
   },
   async createInvoice(input) {
     const data = await call("/invoice", {
@@ -66,16 +90,18 @@ export const nowPayments: PaymentProvider = {
     if (!secret) return null;
     const b = await verifyNowPaymentsSignature(rawBody, headers.get("x-nowpayments-sig"), secret);
     if (!b || typeof b.order_id !== "string") return null;
+    const payment = await reconcileNowPayments(b, await this.listCurrencies());
+    if (!payment) return null;
     const num = (v: unknown) => (v === null || v === undefined || v === "" ? null : Number(v));
     return {
       eventKey: `${b.payment_id}:${b.payment_status}`,
-      orderId: b.order_id,
-      invoiceId: b.invoice_id != null ? String(b.invoice_id) : null,
-      providerStatus: String(b.payment_status),
-      priceAmount: Number(b.price_amount),
-      priceCurrency: String(b.price_currency ?? ""),
-      payCurrency: b.pay_currency ? String(b.pay_currency) : null,
-      paidFiat: num(b.actually_paid_at_fiat),
+      orderId: String(payment.order_id),
+      invoiceId: String(payment.invoice_id),
+      providerStatus: String(payment.payment_status),
+      priceAmount: Number(payment.price_amount),
+      priceCurrency: String(payment.price_currency ?? ""),
+      payCurrency: String(payment.pay_currency),
+      paidFiat: num(payment.actually_paid_at_fiat),
     };
   },
 };
