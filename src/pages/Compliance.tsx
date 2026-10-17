@@ -361,7 +361,7 @@ const Compliance = () => {
             </div>
             
             <div className="mt-8 text-sm text-muted-foreground">
-              <p>Compliance Hotline: (555) 123-COMPLY | Email: compliance@cpncreditboost.com</p>
+              <p>Compliance questions: <a className="underline" href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer">Telegram @cpncreditboost</a></p>
             </div>
           </div>
         </section>
