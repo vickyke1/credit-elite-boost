@@ -212,6 +212,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          notification_status: string
           order_id: string | null
           payment_status: string | null
           provider: string
@@ -222,6 +223,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          notification_status?: string
           order_id?: string | null
           payment_status?: string | null
           provider: string
@@ -232,6 +234,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          notification_status?: string
           order_id?: string | null
           payment_status?: string | null
           provider?: string
@@ -358,6 +361,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_verified_payment_event: {
+        Args: {
+          p_currency: string
+          p_event_key: string
+          p_invoice: string
+          p_order: string
+          p_provider: string
+          p_raw: Json
+          p_reason: string
+          p_to: string
+        }
+        Returns: Json
+      }
       claim_inquiry_notification: {
         Args: { p_id: string; p_ip_hash: string }
         Returns: {
@@ -380,6 +396,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      claim_payment_notification: {
+        Args: { p_event_key: string; p_provider: string }
+        Returns: string
       }
       create_checkout_order: {
         Args: {
