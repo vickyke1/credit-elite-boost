@@ -2,8 +2,10 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.3";
 import { z } from "npm:zod@3.23.8";
 import DOMPurify from "npm:isomorphic-dompurify@2.22.0";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { inquiryNotification } from "./telegram-message.ts";
 
-const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
+const cors = corsHeaders;
 const schema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1).max(100),
@@ -42,7 +44,43 @@ serve(async (req) => {
       if (error.message.includes("rate_limit_exceeded")) return reply({ error: "Too many inquiries. Please try again in an hour." }, 429);
       return reply({ error: "We couldn't save your inquiry. Please try again." }, 500);
     }
-    return reply({ success: true, id: data, notificationStatus: "not_configured" });
+    const { data: claimed, error: claimError } = await client.rpc("claim_inquiry_notification", { p_id: values.id, p_ip_hash: ipHash });
+    if (claimError) return reply({ success: true, id: data, notificationStatus: "failed" });
+    const inquiry = claimed?.[0];
+    if (!inquiry) {
+      const { data: existing } = await client.from("pricing_inquiries").select("notification_status").eq("id", values.id).eq("ip_hash", ipHash).maybeSingle();
+      return reply({ success: true, id: data, notificationStatus: existing?.notification_status ?? "failed" });
+    }
+    let notificationStatus = "failed";
+    let messageId: number | null = null;
+    let providerFailure: { status: number; details: string } | undefined;
+    try {
+      const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
+      const telegramKey = Deno.env.get("TELEGRAM_API_KEY");
+      if (!gatewayKey || !telegramKey) throw new Error("Telegram connection is not configured");
+      const response = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+        method: "POST", headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": telegramKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: 7086831521, text: inquiryNotification(inquiry) }),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!response.ok) {
+        const details = await response.text();
+        console.error(`Telegram failed [${response.status}]: ${details}`);
+        providerFailure = { status: response.status, details };
+      } else {
+        const result = await response.json();
+        if (result.ok === true && typeof result.result?.message_id === "number") {
+          messageId = result.result.message_id;
+          notificationStatus = "sent";
+        } else {
+          providerFailure = { status: result.error_code ?? 502, details: result.description ?? "Telegram rejected the notification" };
+          console.error("Telegram rejected notification", providerFailure);
+        }
+      }
+    } catch (error) { console.error("Telegram delivery failed", error instanceof Error ? error.message : "Unknown error"); }
+    const { error: statusError } = await client.from("pricing_inquiries").update({ notification_status: notificationStatus, telegram_message_id: messageId }).eq("id", values.id).eq("ip_hash", ipHash);
+    if (statusError) console.error("Could not persist Telegram delivery status");
+    return reply({ success: true, id: data, notificationStatus, ...(providerFailure ? { notificationError: providerFailure } : {}) });
   } catch {
     return reply({ error: "We couldn't save your inquiry. Please try again." }, 500);
   }

@@ -5,3 +5,4 @@
 
 - Pricing inquiries cover legitimate credit-building services, pass through a validated Edge Function, and use a service-only atomic database RPC for durable IP rate limits and idempotency so anonymous visitors cannot read leads or bypass submission controls.
 - Homepage tradeline previews use the marketplace inventory generator so displayed prices and detail links share the same source.
+- Pricing and education share the pricing-inquiry handler; claim delivery atomically before sending Telegram alerts and persist message IDs for reply linking, so retries do not resend confirmed alerts. Telegram webhook validates the gateway-derived secret and accepts only the configured owner chat; replies are stored, not automatically forwarded to visitors.
