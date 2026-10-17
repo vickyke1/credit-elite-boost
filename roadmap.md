@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Handle unavailable checkout items before invoice creation and verify the live cart flow; preserve product approval restrictions.
+- [x] Handle unavailable checkout items before invoice creation; deployed preflight, live product-to-cart Telegram fallback verified, 18 tests passed; product approval restrictions preserved.
 
 - [x] Redesign homepage and tradelines for readable mobile browsing.
 - [x] Add lawful credit-education pricing inquiries and verify saved leads.
