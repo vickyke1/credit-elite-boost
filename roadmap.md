@@ -14,3 +14,5 @@
 - [x] Show the brand as "CpnCreditBoost" (no ".com") everywhere it is displayed; keep real cpncreditboost.com URLs.
 - [x] Create the site logo and place the emblem in the header; tab icon derived from it.
 - [x] Fix the sign-in form so the "Remember me" checkbox no longer blocks submission.
+- [x] Crypto checkout foundation (NOWPayments adapter, orders, verified webhooks, Telegram alerts); removed manual payment instructions.
+- [ ] Turn on crypto checkout — blocked on NOWPayments API key + IPN secret and owner approval of products for sale.

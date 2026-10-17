@@ -141,7 +141,7 @@ const Privacy = () => {
                   
                   <div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Exercising Your Rights</h3>
-                    <p>To exercise these rights, contact us at privacy@cpncreditboost.com or call (555) 123-PRIVACY. We will respond within 30 days of receiving your request.</p>
+                    <p>To exercise these rights, message us on <a className="underline" href="https://t.me/cpncreditboost" target="_blank" rel="noopener noreferrer">Telegram (@cpncreditboost)</a>. We will respond within 30 days of receiving your request.</p>
                   </div>
                 </div>
               </div>

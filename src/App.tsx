@@ -36,6 +36,7 @@ import Compliance from "./pages/Compliance";
 import TypesOfTradelines from "./pages/TypesOfTradelines";
 import SellTradelines from "./pages/SellTradelines";
 import ApartmentApprovalGuide from "./pages/ApartmentApprovalGuide";
+import OrderStatus from "./pages/OrderStatus";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/order/:id" element={<OrderStatus />} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />

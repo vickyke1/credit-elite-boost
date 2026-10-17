@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      checkout_products: {
+        Row: {
+          category: string
+          compliance_note: string | null
+          compliance_status: string
+          created_at: string
+          inventory: number | null
+          name: string
+          price_usd: number
+          sku: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          compliance_note?: string | null
+          compliance_status?: string
+          created_at?: string
+          inventory?: number | null
+          name: string
+          price_usd: number
+          sku: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          compliance_note?: string | null
+          compliance_status?: string
+          created_at?: string
+          inventory?: number | null
+          name?: string
+          price_usd?: number
+          sku?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -55,6 +91,163 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      order_audit_log: {
+        Row: {
+          created_at: string
+          from_status: string | null
+          id: string
+          order_id: string
+          reason: string
+          to_status: string
+        }
+        Insert: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          order_id: string
+          reason: string
+          to_status: string
+        }
+        Update: {
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          order_id?: string
+          reason?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_audit_log_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          id: string
+          name: string
+          order_id: string
+          price_usd: number
+          sku: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          order_id: string
+          price_usd: number
+          sku: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          order_id?: string
+          price_usd?: number
+          sku?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_sku_fkey"
+            columns: ["sku"]
+            isOneToOne: false
+            referencedRelation: "checkout_products"
+            referencedColumns: ["sku"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string
+          pay_currency: string | null
+          provider: string
+          provider_invoice_id: string | null
+          status: string
+          telegram: string
+          total_usd: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash: string
+          pay_currency?: string | null
+          provider: string
+          provider_invoice_id?: string | null
+          status?: string
+          telegram: string
+          total_usd: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          pay_currency?: string | null
+          provider?: string
+          provider_invoice_id?: string | null
+          status?: string
+          telegram?: string
+          total_usd?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_events: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string | null
+          payment_status: string | null
+          provider: string
+          provider_event_key: string
+          raw: Json
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          payment_status?: string | null
+          provider: string
+          provider_event_key: string
+          raw: Json
+          verified: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          payment_status?: string | null
+          provider?: string
+          provider_event_key?: string
+          raw?: Json
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pricing_inquiries: {
         Row: {
@@ -188,6 +381,16 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      create_checkout_order: {
+        Args: {
+          p_ip_hash: string
+          p_provider: string
+          p_skus: string[]
+          p_telegram: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -208,6 +411,10 @@ export type Database = {
           p_service: string
           p_telegram: string
         }
+        Returns: string
+      }
+      transition_order: {
+        Args: { p_order: string; p_reason: string; p_to: string }
         Returns: string
       }
     }
