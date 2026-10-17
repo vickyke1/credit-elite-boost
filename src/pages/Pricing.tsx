@@ -26,10 +26,11 @@ export default function Pricing() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState("");
   const [id, setId] = useState(() => crypto.randomUUID());
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submit(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
     if (loading) return;
     setError("");
     const clean = (value: string) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
@@ -44,6 +45,7 @@ export default function Pricing() {
         throw new Error(detail ?? "Your inquiry wasn't saved. Please try again.");
       }
       setSaved(true);
+      setNotificationStatus(data.notificationStatus ?? "failed");
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Your inquiry wasn't saved. Please try again."); }
     finally { setLoading(false); }
   }
@@ -77,6 +79,9 @@ export default function Pricing() {
           <CheckCircle2 className="mb-4 h-9 w-9 text-accent" />
           <h3 className="text-2xl font-bold">Your inquiry has been saved</h3>
           <p className="mt-3 text-muted-foreground">You can also reach CpnCreditBoost directly on Telegram.</p>
+          <p className="mt-3 text-muted-foreground">{notificationStatus === "sent" ? "Your inquiry has been delivered to our Telegram chat." : notificationStatus === "sending" ? "Your inquiry is saved. Telegram delivery is in progress." : "Your inquiry is saved, but the Telegram alert could not be delivered."}</p>
+          {notificationStatus !== "sent" && <Button variant="outline" disabled={loading} className="mt-4 min-h-11" onClick={() => submit()}>{loading ? "Retrying…" : "Retry Telegram delivery"}</Button>}
+          {saved && error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
           <Button variant="outline" className="mt-6 min-h-11" onClick={() => { setSaved(false); setName(""); setTelegram(""); setMessage(""); setConsent(false); setId(crypto.randomUUID()); }}>Send another inquiry</Button>
         </div> : <form onSubmit={submit} className="space-y-5">
           <div className="space-y-2"><Label htmlFor="inquiry-name">Name</Label><Input id="inquiry-name" autoComplete="name" maxLength={100} required value={name} onChange={e => setName(e.target.value)} className="min-h-12 text-base" /></div>
