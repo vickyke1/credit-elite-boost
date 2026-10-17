@@ -24,6 +24,28 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   const [error, setError] = useState<string | null>(null);
   const [coins, setCoins] = useState<string[] | null>(null);
   const [configured, setConfigured] = useState<boolean | null>(null);
+  const [available, setAvailable] = useState<boolean | null>(null);
+  const [checking, setChecking] = useState(false);
+  const cartKey = JSON.stringify(items.map((item) => item.id));
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    setChecking(true);
+    setAvailable(null);
+    setError(null);
+    supabase.functions.invoke("order-status", { body: { skus: JSON.parse(cartKey) } })
+      .then(({ data, error: checkError }) => {
+        if (cancelled) return;
+        setAvailable(!checkError && data?.available === true);
+        setChecking(false);
+      }).catch(() => {
+        if (cancelled) return;
+        setAvailable(false);
+        setChecking(false);
+      });
+    return () => { cancelled = true; };
+  }, [isOpen, cartKey]);
 
   useEffect(() => {
     if (!isOpen || configured !== null) return;
@@ -34,6 +56,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
   }, [isOpen, configured]);
 
   const startCheckout = async () => {
+    if (available !== true || checking || busy) return;
     setError(null);
     if (!telegramPattern.test(telegram.trim())) {
       setError("Enter your Telegram username so we can reach you about the order.");
@@ -65,9 +88,11 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        {configured === false ? (
+        {checking || available === null ? (
+          <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" />Checking checkout availability…</p>
+        ) : configured === false || available === false ? (
           <div className="surface-elevated rounded-lg p-4 space-y-3">
-            <p className="text-sm text-muted-foreground">Online crypto checkout opens soon. Message us on Telegram to place this order.</p>
+            <p className="text-sm text-muted-foreground">{available === false ? "Online checkout is unavailable for one or more items in your cart. Contact us on Telegram about availability." : "Online crypto checkout opens soon. Contact us on Telegram about availability."}</p>
             <Button asChild className="w-full min-h-11"><a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"><Send className="w-4 h-4 mr-2" />Message us on Telegram</a></Button>
           </div>
         ) : (
@@ -85,7 +110,7 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               <Input id="checkout-telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="@username" autoComplete="off" />
             </div>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-            <Button onClick={startCheckout} disabled={busy || configured === null || items.length === 0} className="w-full min-h-11 bg-gradient-cta glow-accent">
+            <Button onClick={startCheckout} disabled={busy || configured === null || available !== true || items.length === 0} className="w-full min-h-11 bg-gradient-cta glow-accent">
               {busy ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating secure invoice…</> : "Continue to crypto payment"}
             </Button>
             <p className="flex items-start gap-2 text-xs text-muted-foreground">

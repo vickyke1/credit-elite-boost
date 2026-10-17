@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Handle unavailable checkout items before invoice creation and verify the live cart flow; preserve product approval restrictions.
+
 - [x] Redesign homepage and tradelines for readable mobile browsing.
 - [x] Add lawful credit-education pricing inquiries and verify saved leads.
 - [ ] Display monthly rates — blocked until owner supplies actual rates.
@@ -15,6 +17,6 @@
 - [x] Create the site logo and place the emblem in the header; tab icon derived from it.
 - [x] Fix the sign-in form so the "Remember me" checkbox no longer blocks submission.
 - [x] Crypto checkout foundation (NOWPayments adapter, orders, verified webhooks, Telegram alerts); removed manual payment instructions.
-- [ ] Turn on crypto checkout — blocked on NOWPayments API key + IPN secret and owner approval of products for sale.
+- [ ] Turn on crypto checkout — blocked on merchant coin availability and owner approval of products for sale (credentials saved).
 - [x] Verify deployed NOWPayments IPN reachability and strengthen signature, provider reconciliation, and atomic duplicate handling (13 tests passed; unsigned live requests rejected).
-- [ ] Verify actual dashboard IPN format, signed sandbox payment, database duplicate retries and Telegram payment alert — blocked on NOWPayments credentials and an approved test product.
+- [ ] Verify actual dashboard IPN format, signed sandbox payment, database duplicate retries and Telegram payment alert — blocked on merchant coin availability and an approved test product.
