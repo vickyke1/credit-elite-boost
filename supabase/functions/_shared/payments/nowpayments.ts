@@ -27,9 +27,13 @@ function safeEqual(a: string, b: string) {
 }
 
 export async function verifyNowPaymentsSignature(rawBody: string, signature: string | null, secret: string): Promise<Record<string, unknown> | null> {
-  if (!signature) return null;
+  if (!signature || !/^[a-fA-F0-9]{128}$/.test(signature)) return null;
   let body: Record<string, unknown>;
-  try { body = JSON.parse(rawBody); } catch { return null; }
+  try {
+    const parsed = JSON.parse(rawBody);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    body = parsed;
+  } catch { return null; }
   const expected = await hmacSha512Hex(secret, JSON.stringify(sortKeys(body)));
   return safeEqual(signature.toLowerCase(), expected) ? body : null;
 }
@@ -38,7 +42,7 @@ async function call(path: string, init: RequestInit = {}) {
   const apiKey = Deno.env.get("NOWPAYMENTS_API_KEY");
   if (!apiKey) throw new Error("NOWPayments is not configured");
   const res = await fetch(`${base()}${path}`, { ...init, headers: { "x-api-key": apiKey, "Content-Type": "application/json" }, signal: AbortSignal.timeout(15000) });
-  if (!res.ok) throw new Error(`NOWPayments [${res.status}]: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok) throw new Error(`NOWPayments request failed [${res.status}]`);
   return res.json();
 }
 

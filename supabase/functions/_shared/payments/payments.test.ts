@@ -14,6 +14,21 @@ Deno.test("expired and failed are explicit", () => {
   assertEquals(decideStatus(ev({ providerStatus: "failed" }), 100).status, "failed");
 });
 Deno.test("waiting/confirming do not change status", () => assertEquals(decideStatus(ev({ providerStatus: "confirming" }), 100).status, null));
+Deno.test("non-finite invoice amounts never change status", () => {
+  assertEquals(decideStatus(ev({ priceAmount: NaN }), 100).status, null);
+  assertEquals(decideStatus(ev({ priceAmount: Infinity }), 100).status, null);
+});
+Deno.test("finished payment below invoice amount is not paid", () => assertEquals(decideStatus(ev({ paidFiat: 50 }), 100).status, "underpaid"));
+Deno.test("negative or non-finite paid amounts are rejected", () => {
+  assertEquals(decideStatus(ev({ paidFiat: -1 }), 100).status, null);
+  assertEquals(decideStatus(ev({ paidFiat: NaN }), 100).status, null);
+});
+Deno.test("signed non-object payloads are rejected", async () => {
+  for (const raw of ["null", "[]", "42"]) {
+    const signature = await hmacSha512Hex("test-only-secret", raw);
+    assertEquals(await verifyNowPaymentsSignature(raw, signature, "test-only-secret"), null);
+  }
+});
 
 Deno.test("valid NOWPayments signature verifies, tampered body fails", async () => {
   const body = { payment_status: "finished", order_id: "o", price_amount: 100 };
