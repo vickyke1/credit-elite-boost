@@ -57,93 +57,73 @@ const TradelineCard = ({
 
   return (
     <article
-      className={`flex flex-col overflow-hidden rounded-lg border bg-card shadow-elevated transition-colors ${
-        isCompared ? "border-primary/60" : "border-border"
-      }`}
+      className={`grid grid-cols-[96px_1fr] items-center gap-x-4 gap-y-3 rounded-lg border bg-card px-3 py-3 transition-colors sm:grid-cols-[128px_1fr] lg:grid-cols-[128px_minmax(0,1.4fr)_repeat(3,minmax(0,1fr))_auto] ${
+        isCompared ? "border-primary/60 bg-primary/5" : "border-border"
+      } ${isSoldOut ? "opacity-70" : ""}`}
     >
-      {/* Replica bank card visual */}
-      <div className={`relative bg-secondary/60 px-5 pb-1 pt-5 ${isSoldOut ? "opacity-60" : ""}`}>
-        <BankCardMockup bankName={tradeline.bankName} lastFour={tradeline.cardId.slice(-4)} />
+      <div className="relative">
+        <BankCardMockup bankName={tradeline.bankName} lastFour={tradeline.cardId.slice(-4)} className="!pb-1" />
         {isSoldOut && (
-          <span className="absolute right-4 top-4 rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
+          <span className="absolute left-1 top-1 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold text-destructive-foreground">
             Sold Out
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        {/* Bank identity */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="truncate text-lg font-semibold leading-tight">
-              <Link to={getProductUrl(tradeline)} className="transition-colors hover:text-primary">
-                {tradeline.bankName}
-              </Link>
-            </h3>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">{tradeline.cardName} · Card {tradeline.cardId}</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleCompare}
-            disabled={!isCompared && compareFull}
-            aria-pressed={isCompared}
-            aria-label={`Compare ${tradeline.bankName} ${tradeline.cardId}`}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border transition-colors ${
-              isCompared
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-border text-muted-foreground hover:border-primary/50 hover:text-primary"
-            } disabled:cursor-not-allowed disabled:opacity-40`}
-          >
-            <Columns3 className="h-4 w-4" />
-          </button>
-        </div>
+      <div className="min-w-0">
+        <h3 className="truncate font-semibold leading-tight">
+          <Link to={getProductUrl(tradeline)} className="transition-colors hover:text-primary">
+            {tradeline.bankName}
+          </Link>
+        </h3>
+        <p className="truncate text-xs text-muted-foreground">Card {tradeline.cardId} · Buy by {tradeline.purchaseDeadline}</p>
+        <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent" />
+          <span className="truncate">Reports {tradeline.firstReportingPeriod}</span>
+        </p>
+      </div>
 
-        {/* Key numbers */}
-        <dl className="my-4 grid grid-cols-2 gap-x-4 gap-y-3">
-          <div>
-            <dt className="text-xs text-muted-foreground">Credit limit</dt>
-            <dd className="mt-0.5 text-lg font-bold text-primary tabular-nums">${tradeline.creditLimit.toLocaleString()}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">Account age</dt>
-            <dd className="mt-0.5 text-lg font-semibold tabular-nums">{tradeline.age}</dd>
-          </div>
-          <div className="col-span-2">
-            <dt className="text-xs text-muted-foreground">1st reporting period</dt>
-            <dd className="mt-0.5 text-sm font-medium">{tradeline.firstReportingPeriod}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">Price</dt>
-            <dd className="mt-0.5 text-xl font-bold tabular-nums">
-              ${tradeline.price.toLocaleString()}
-              <span className="ml-1 text-xs font-normal text-muted-foreground">USD</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">Purchase by</dt>
-            <dd className="mt-0.5 text-sm font-medium text-muted-foreground">{tradeline.purchaseDeadline}</dd>
-          </div>
-        </dl>
-
-        <div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-          {tradeline.reportingPeriod} · No late payments · ≤15% utilization
+      <dl className="col-span-2 grid grid-cols-3 gap-2 lg:col-span-3">
+        <div>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Limit</dt>
+          <dd className="font-bold tabular-nums text-primary">${tradeline.creditLimit.toLocaleString()}</dd>
         </div>
-
-        {/* Actions */}
-        <div className="mt-auto flex items-center gap-2 border-t border-border pt-4">
-          <Button
-            className="min-h-11 flex-1 rounded-md bg-warning text-primary-foreground hover:bg-warning/90"
-            disabled={isSoldOut}
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {isSoldOut ? "Sold Out" : "Add to Cart"}
-          </Button>
-          <Button asChild variant="outline" className="min-h-11">
-            <Link to={getProductUrl(tradeline)}>Details</Link>
-          </Button>
+        <div>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Age</dt>
+          <dd className="font-semibold tabular-nums">{tradeline.age}</dd>
         </div>
+        <div>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Price</dt>
+          <dd className="text-lg font-bold tabular-nums">${tradeline.price.toLocaleString()}</dd>
+        </div>
+      </dl>
+
+      <div className="col-span-2 flex items-center gap-2 lg:col-span-1">
+        <Button
+          className="min-h-11 flex-1 rounded-md bg-warning text-primary-foreground hover:bg-warning/90 lg:flex-none"
+          disabled={isSoldOut}
+          onClick={handleAddToCart}
+        >
+          <ShoppingCart className="h-4 w-4" />
+          {isSoldOut ? "Sold Out" : "Add"}
+        </Button>
+        <button
+          type="button"
+          onClick={handleCompare}
+          disabled={!isCompared && compareFull}
+          aria-pressed={isCompared}
+          aria-label={`Compare ${tradeline.bankName} ${tradeline.cardId}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border transition-colors ${
+            isCompared
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border text-muted-foreground hover:border-primary/50 hover:text-primary"
+          } disabled:cursor-not-allowed disabled:opacity-40`}
+        >
+          <Columns3 className="h-4 w-4" />
+        </button>
+        <Button asChild variant="outline" className="min-h-11">
+          <Link to={getProductUrl(tradeline)}>Details</Link>
+        </Button>
       </div>
     </article>
   );
@@ -151,7 +131,7 @@ const TradelineCard = ({
 
 export const TradelineGrid = ({ tradelines, compareIds = [], onToggleCompare }: TradelineGridProps) => {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="flex flex-col gap-2">
       {tradelines.map((tradeline) => (
         <TradelineCard
           key={tradeline.id}
