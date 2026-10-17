@@ -64,10 +64,12 @@ export type Database = {
           ip_hash: string
           message: string
           name: string
+          notification_attempt_at: string | null
           notification_status: string
           service: string
           status: string
           telegram: string
+          telegram_message_id: number | null
         }
         Insert: {
           consent: boolean
@@ -76,10 +78,12 @@ export type Database = {
           ip_hash: string
           message: string
           name: string
+          notification_attempt_at?: string | null
           notification_status?: string
           service: string
           status?: string
           telegram: string
+          telegram_message_id?: number | null
         }
         Update: {
           consent?: boolean
@@ -88,12 +92,52 @@ export type Database = {
           ip_hash?: string
           message?: string
           name?: string
+          notification_attempt_at?: string | null
           notification_status?: string
           service?: string
           status?: string
           telegram?: string
+          telegram_message_id?: number | null
         }
         Relationships: []
+      }
+      telegram_messages: {
+        Row: {
+          chat_id: number
+          created_at: string
+          inquiry_id: string | null
+          raw_update: Json
+          text: string | null
+          update_id: number
+          user_id: number | null
+        }
+        Insert: {
+          chat_id: number
+          created_at?: string
+          inquiry_id?: string | null
+          raw_update: Json
+          text?: string | null
+          update_id: number
+          user_id?: number | null
+        }
+        Update: {
+          chat_id?: number
+          created_at?: string
+          inquiry_id?: string | null
+          raw_update?: Json
+          text?: string | null
+          update_id?: number
+          user_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_messages_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_inquiries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -121,6 +165,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_inquiry_notification: {
+        Args: { p_id: string; p_ip_hash: string }
+        Returns: {
+          consent: boolean
+          created_at: string
+          id: string
+          ip_hash: string
+          message: string
+          name: string
+          notification_attempt_at: string | null
+          notification_status: string
+          service: string
+          status: string
+          telegram: string
+          telegram_message_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "pricing_inquiries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
