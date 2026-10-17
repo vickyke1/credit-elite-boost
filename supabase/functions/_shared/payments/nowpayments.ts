@@ -50,6 +50,7 @@ export async function reconcileNowPayments(body: Record<string, unknown>, enable
   const paymentId = String(body.payment_id ?? "");
   if (!/^\d+$/.test(paymentId)) return null;
   const payment = await call(`/payment/${paymentId}`);
+  if (!["waiting", "confirming", "confirmed", "sending", "partially_paid", "finished", "failed", "refunded", "expired"].includes(String(payment.payment_status))) return null;
   for (const field of ["payment_id", "invoice_id", "order_id", "payment_status", "price_currency", "pay_currency"]) {
     if (body[field] == null || payment[field] == null || String(body[field]) !== String(payment[field])) return null;
   }
