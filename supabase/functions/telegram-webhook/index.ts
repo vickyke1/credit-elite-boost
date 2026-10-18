@@ -166,17 +166,27 @@ Deno.serve(async req => {
       return reply({ ok: true });
     }
 
-    // Public command: "/shop" or "/start" lists approved products as buy buttons.
+    // Public command: "/shop" or "/start" lists approved products as buy buttons, with photos when set.
     const command = (message.text ?? "").trim().toLowerCase();
     if (command.startsWith("/shop") || command.startsWith("/start")) {
-      const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
-      if ((products ?? []).length > 0) {
-        const keyboard = (products ?? []).map((p) => [{ text: `$${p.price_usd} — ${p.name} (${p.inventory} left)`, callback_data: `buy:${p.sku}` }]);
-        await sendTelegram(
-          message.chat.id,
-          "CpnCreditBoost — live inventory.\n\nTap a package below to start your order. You'll get a secure crypto payment link right here in chat, and your order confirms automatically once payment is verified.",
-          { inline_keyboard: keyboard },
-        );
+      const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory,image_url").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
+      const list = products ?? [];
+      if (list.length > 0) {
+        const withPhoto = list.filter((p) => p.image_url);
+        const withoutPhoto = list.filter((p) => !p.image_url);
+        await sendTelegram(message.chat.id, "CpnCreditBoost — live inventory.\n\nTap a package to start your order. Pay with crypto (auto-confirmed) or Zelle/Venmo, right here in chat.");
+        for (const p of withPhoto) {
+          await sendPhoto(
+            message.chat.id,
+            p.image_url,
+            `$${p.price_usd} — ${p.name}\n${p.inventory} available`,
+            { inline_keyboard: [[{ text: "Buy this package", callback_data: `buy:${p.sku}` }]] },
+          );
+        }
+        if (withoutPhoto.length > 0) {
+          const keyboard = withoutPhoto.map((p) => [{ text: `$${p.price_usd} — ${p.name} (${p.inventory} left)`, callback_data: `buy:${p.sku}` }]);
+          await sendTelegram(message.chat.id, "More packages:", { inline_keyboard: keyboard });
+        }
       } else {
         await sendTelegram(message.chat.id, "Our inventory is being restocked. Message @cpncreditboost for availability.");
       }
