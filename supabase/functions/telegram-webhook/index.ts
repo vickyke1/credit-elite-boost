@@ -45,6 +45,24 @@ Deno.serve(async req => {
     }
     const { error } = await client.from("telegram_messages").upsert({ update_id: update.update_id, chat_id: message.chat.id, user_id: message.from?.id ?? null, text: message.text ?? message.caption ?? null, inquiry_id: inquiryId, raw_update: value }, { onConflict: "update_id" });
     if (error) return reply({ error: "Could not save reply" }, 500);
+
+    // Owner command: "/orders" lists recent orders with status, amount and buyer.
+    if ((message.text ?? "").trim().toLowerCase().startsWith("/orders")) {
+      const { data: orders } = await client.from("orders").select("id,status,total_usd,telegram,created_at,fulfillment_status").order("created_at", { ascending: false }).limit(10);
+      const lines = (orders ?? []).map((o) =>
+        `${o.status.toUpperCase()} $${o.total_usd} — @${o.telegram} — ${o.fulfillment_status} — ${o.id.slice(0, 8)}`
+      );
+      const text = lines.length > 0 ? `Recent orders (newest first):\n${lines.join("\n")}` : "No orders yet.";
+      const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
+      if (gatewayKey) {
+        await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: ownerChat, text }),
+          signal: AbortSignal.timeout(10000),
+        });
+      }
+    }
     return reply({ ok: true });
   } catch { return reply({ error: "Could not process update" }, 500); }
 });
