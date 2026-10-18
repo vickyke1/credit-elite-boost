@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3.23.8";
+import { refreshChannelInventoryPost } from "./channel_post.ts";
 
 const ownerChat = 7086831521;
 const messageSchema = z.object({
@@ -79,6 +80,14 @@ Deno.serve(async req => {
       await sendTelegram(ownerChat, text);
     }
 
+    // Owner command: "/postshop" publishes/refreshes the pinned inventory post in the channel.
+    if (command.startsWith("/postshop")) {
+      const result = await refreshChannelInventoryPost(client);
+      await sendTelegram(ownerChat, result.ok
+        ? "Channel inventory post is up to date and pinned in @cpncreditboost."
+        : `Could not update the channel post: ${result.error}\n\nMake sure this bot is an administrator of the channel with permission to post and pin messages.`);
+    }
+
     // Owner command: "/add SKU | Name | price | inventory" adds an approved product to the shop.
     if (command.startsWith("/add ")) {
       const parts = (message.text ?? "").trim().slice(5).split("|").map((s) => s.trim());
@@ -95,6 +104,7 @@ Deno.serve(async req => {
         await sendTelegram(ownerChat, error
           ? `Could not save product: ${error.message}`
           : `Product saved: ${sku} — ${name} — $${price} — ${inv} in stock. It now appears in /shop.`);
+        if (!error) await refreshChannelInventoryPost(client);
       }
     }
     return reply({ ok: true });
