@@ -130,9 +130,50 @@ const Admin = () => {
         <Tabs defaultValue="orders">
           <TabsList className="mb-6">
             <TabsTrigger value="orders" className="min-h-11"><Package className="w-4 h-4 mr-2" />Orders ({orders.length})</TabsTrigger>
+            <TabsTrigger value="products" className="min-h-11"><Store className="w-4 h-4 mr-2" />Products ({products.length})</TabsTrigger>
             <TabsTrigger value="inquiries" className="min-h-11"><Inbox className="w-4 h-4 mr-2" />Inquiries ({inquiries.length})</TabsTrigger>
             <TabsTrigger value="messages" className="min-h-11"><MessageSquare className="w-4 h-4 mr-2" />Telegram ({messages.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="products">
+            <form
+              className="surface-elevated rounded-lg p-4 mb-4 grid gap-3 sm:grid-cols-[120px_1fr_120px_100px_auto]"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const priceUsd = Number(newProduct.priceUsd);
+                const inventory = Number(newProduct.inventory);
+                if (!newProduct.sku.trim() || !newProduct.name.trim() || !Number.isFinite(priceUsd) || priceUsd <= 0 || !Number.isInteger(inventory) || inventory < 0) {
+                  toast({ title: "Check the product details", description: "SKU, name, a positive price and a whole-number stock count are required.", variant: "destructive" });
+                  return;
+                }
+                const ok = await adminAction({ action: "upsert_product", sku: newProduct.sku.trim(), name: newProduct.name.trim(), priceUsd, inventory }, "new-product");
+                if (ok) {
+                  toast({ title: "Product saved", description: `${newProduct.sku.trim()} now appears in the Telegram /shop list.` });
+                  setNewProduct({ sku: "", name: "", priceUsd: "", inventory: "1" });
+                }
+              }}
+            >
+              <Input placeholder="SKU (e.g. TL0030)" value={newProduct.sku} onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })} className="min-h-11" aria-label="Product SKU" />
+              <Input placeholder="Name (e.g. Chase Sapphire $50,000 limit, 12y age)" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} className="min-h-11" aria-label="Product name" />
+              <Input placeholder="Price USD" type="number" min="1" step="0.01" value={newProduct.priceUsd} onChange={(e) => setNewProduct({ ...newProduct, priceUsd: e.target.value })} className="min-h-11" aria-label="Price in USD" />
+              <Input placeholder="Stock" type="number" min="0" step="1" value={newProduct.inventory} onChange={(e) => setNewProduct({ ...newProduct, inventory: e.target.value })} className="min-h-11" aria-label="Stock count" />
+              <Button type="submit" className="min-h-11" disabled={busy === "new-product"}>Add product</Button>
+            </form>
+            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : products.length === 0 ? <p className="text-muted-foreground">No products yet.</p> : (
+              <div className="space-y-3">
+                {products.map((p) => (
+                  <div key={p.sku} className="surface-elevated rounded-lg p-4 flex flex-wrap items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">{p.name}</p>
+                      <p className="text-sm text-muted-foreground">{p.sku} · {p.inventory ?? 0} in stock</p>
+                    </div>
+                    <span className="font-semibold">${p.price_usd}</span>
+                    <Badge variant={p.compliance_status === "approved" ? "default" : "secondary"}>{p.compliance_status}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="orders">
             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : orders.length === 0 ? <p className="text-muted-foreground">No orders yet.</p> : (
