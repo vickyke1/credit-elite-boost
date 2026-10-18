@@ -58,6 +58,8 @@ const Admin = () => {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [inquiries, setInquiries] = useState<InquiryRow[]>([]);
   const [messages, setMessages] = useState<TelegramRow[]>([]);
+  const [products, setProducts] = useState<ProductRow[]>([]);
+  const [newProduct, setNewProduct] = useState({ sku: "", name: "", priceUsd: "", inventory: "1" });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -70,14 +72,16 @@ const Admin = () => {
 
   const load = async () => {
     setLoading(true);
-    const [o, i, m] = await Promise.all([
+    const [o, i, m, p] = await Promise.all([
       supabase.from("orders").select("id,telegram,status,total_usd,provider,pay_currency,fulfillment_status,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("pricing_inquiries").select("id,name,telegram,service,message,status,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("telegram_messages").select("update_id,text,inquiry_id,created_at").order("created_at", { ascending: false }).limit(50),
+      supabase.from("checkout_products").select("sku,name,price_usd,inventory,compliance_status").order("created_at", { ascending: false }).limit(100),
     ]);
     setOrders((o.data ?? []) as OrderRow[]);
     setInquiries((i.data ?? []) as InquiryRow[]);
     setMessages((m.data ?? []) as TelegramRow[]);
+    setProducts((p.data ?? []) as ProductRow[]);
     setLoading(false);
   };
 
