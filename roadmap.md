@@ -23,3 +23,4 @@
 - [ ] Set payout wallet and enable USDT/BTC in NOWPayments — blocked: requires owner's NOWPayments dashboard access (not API-settable with current key).
 - [ ] Run one real crypto purchase end to end — blocked: requires sending real crypto to a live invoice.
 - [ ] Wire Zelle/Venmo fiat checkout with owner-confirmed payment — blocked on owner's real Zelle/Venmo handles (user skipped providing them).
+- [ ] Telegram bot orders dashboard: owner texts the bot and gets recent orders with status, amount, buyer username.
