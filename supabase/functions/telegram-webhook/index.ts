@@ -224,21 +224,14 @@ Deno.serve(async req => {
     const confirmMatch = (message.text ?? "").trim().match(/^\/(confirm|reject)\s+([0-9a-f]{8})$/i);
     if (confirmMatch) {
       const [, action, prefix] = confirmMatch;
-      const { data: order } = await client.from("orders").select("id,status,total_usd,telegram").ilike("id::text", `${prefix}%`).maybeSingle();
+      const { data: candidates } = await client.from("orders").select("id,status,total_usd,telegram").eq("status", "review").order("created_at", { ascending: false }).limit(50);
+      const order = (candidates ?? []).find((o) => String(o.id).startsWith(prefix.toLowerCase()));
       if (!order) {
-        await sendTelegram(ownerChat, `No order found starting with ${prefix}.`);
-      } else if (order.status !== "review") {
-        await sendTelegram(ownerChat, `Order ${prefix} is ${order.status}, not awaiting review.`);
+        await sendTelegram(ownerChat, `No order awaiting review found starting with ${prefix}.`);
       } else {
         const to = action.toLowerCase() === "confirm" ? "paid" : "failed";
         await client.rpc("transition_order", { p_order: order.id, p_to: to, p_reason: `owner ${action}ed fiat payment via bot` });
-        await sendTelegram(ownerChat, `Order ${prefix} marked ${to}.`);
-        await sendTelegram(
-          order.telegram === "cpncreditboost" ? ownerChat : ownerChat,
-          action.toLowerCase() === "confirm"
-            ? `Buyer @${order.telegram}: order ${prefix} ($${order.total_usd}) is confirmed paid.`
-            : `Buyer @${order.telegram}: order ${prefix} was rejected.`,
-        );
+        await sendTelegram(ownerChat, `Order ${prefix} (@${order.telegram}, $${order.total_usd}) marked ${to}.${to === "failed" ? " Stock returned." : ""}`);
       }
     }
 
