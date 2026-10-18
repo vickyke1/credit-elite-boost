@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, ShieldAlert, Package, MessageSquare, Inbox } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, ShieldAlert, Package, MessageSquare, Inbox, Store } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderRow {
@@ -36,6 +37,14 @@ interface TelegramRow {
   text: string | null;
   inquiry_id: string | null;
   created_at: string;
+}
+
+interface ProductRow {
+  sku: string;
+  name: string;
+  price_usd: number;
+  inventory: number | null;
+  compliance_status: string;
 }
 
 const statusColor = (status: string) =>
