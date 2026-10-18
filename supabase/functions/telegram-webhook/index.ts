@@ -11,7 +11,13 @@ const messageSchema = z.object({
   caption: z.string().max(4096).optional(),
   reply_to_message: z.object({ message_id: z.number().int() }).optional(),
 }).passthrough();
-const updateSchema = z.object({ update_id: z.number().int().nonnegative(), message: messageSchema.optional(), edited_message: messageSchema.optional() }).passthrough();
+const callbackSchema = z.object({
+  id: z.string(),
+  from: z.object({ id: z.number().int(), username: z.string().max(64).optional() }),
+  message: z.object({ chat: z.object({ id: z.number().int() }) }).optional(),
+  data: z.string().max(128).optional(),
+}).passthrough();
+const updateSchema = z.object({ update_id: z.number().int().nonnegative(), message: messageSchema.optional(), edited_message: messageSchema.optional(), callback_query: callbackSchema.optional() }).passthrough();
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
 Deno.serve(async req => {
@@ -36,28 +42,81 @@ Deno.serve(async req => {
     if (!parsed.success) return reply({ error: "Invalid update" }, 400);
     const update = parsed.data;
     const message = update.message ?? update.edited_message;
-    if (!message) return reply({ ok: true, ignored: true });
+    if (!message && !update.callback_query) return reply({ ok: true, ignored: true });
     const client = createClient(url, key);
     const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
-    const sendTelegram = async (chatId: number, text: string) => {
+    const sendTelegram = async (chatId: number, text: string, replyMarkup?: unknown) => {
       if (!gatewayKey) return;
       await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
         method: "POST",
         headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+        body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
+        signal: AbortSignal.timeout(10000),
+      });
+    };
+    const answerCallback = async (id: string, text?: string) => {
+      if (!gatewayKey) return;
+      await fetch("https://connector-gateway.lovable.dev/telegram/answerCallbackQuery", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: id, ...(text ? { text } : {}) }),
         signal: AbortSignal.timeout(10000),
       });
     };
 
-    // Public command: "/shop" or "/start" lists approved products with buy links.
+    // Button tap: "buy:<sku>" creates the order and returns a secure payment link.
+    const callback = update.callback_query;
+    if (callback) {
+      const data = callback.data ?? "";
+      const chatId = callback.message?.chat.id ?? callback.from.id;
+      if (!data.startsWith("buy:")) {
+        await answerCallback(callback.id);
+        return reply({ ok: true });
+      }
+      const sku = data.slice(4).trim();
+      const username = callback.from.username;
+      if (!username) {
+        await answerCallback(callback.id, "Set a Telegram username first (Settings → Username), then tap again.");
+        return reply({ ok: true });
+      }
+      await answerCallback(callback.id, "Creating your order…");
+      try {
+        const res = await fetch(`${url}/functions/v1/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skus: [sku], telegram: username }),
+          signal: AbortSignal.timeout(20000),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.paymentUrl) {
+          await sendTelegram(
+            chatId,
+            `Your order is ready.\n\nOrder: ${String(body.orderId).slice(0, 8)}\nTap below to pay securely with crypto. Your order is confirmed automatically once the payment is verified.`,
+            { inline_keyboard: [[{ text: "Pay securely", url: body.paymentUrl }], [{ text: "Check order status", url: `https://cpncreditboost.com/order/${body.orderId}` }]] },
+          );
+        } else {
+          await sendTelegram(chatId, body.error ?? "We couldn't start checkout for that item. Please try again or message @cpncreditboost.");
+        }
+      } catch {
+        await sendTelegram(chatId, "Checkout is temporarily unavailable. Please try again shortly.");
+      }
+      return reply({ ok: true });
+    }
+
+    // Public command: "/shop" or "/start" lists approved products as buy buttons.
     const command = (message.text ?? "").trim().toLowerCase();
     if (command.startsWith("/shop") || command.startsWith("/start")) {
       const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
-      const lines = (products ?? []).map((p) => `$${p.price_usd} — ${p.name}\nhttps://cpncreditboost.com/tradelines`);
-      const text = lines.length > 0
-        ? `CpnCreditBoost inventory (${lines.length} available):\n\n${lines.join("\n\n")}\n\nTap a link to view details and check out securely with crypto.`
-        : "Our inventory is being restocked. Message @cpncreditboost for availability.";
-      await sendTelegram(message.chat.id, text);
+      if ((products ?? []).length > 0) {
+        const keyboard = (products ?? []).map((p) => [{ text: `$${p.price_usd} — ${p.name} (${p.inventory} left)`, callback_data: `buy:${p.sku}` }]);
+        await sendTelegram(
+          message.chat.id,
+          "CpnCreditBoost — live inventory.\n\nTap a package below to start your order. You'll get a secure crypto payment link right here in chat, and your order confirms automatically once payment is verified.",
+          { inline_keyboard: keyboard },
+        );
+      } else {
+        await sendTelegram(message.chat.id, "Our inventory is being restocked. Message @cpncreditboost for availability.");
+      }
     }
 
     if (message.chat.id !== ownerChat) return reply({ ok: true, ignored: true });
