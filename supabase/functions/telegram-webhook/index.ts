@@ -103,15 +103,20 @@ Deno.serve(async req => {
       return reply({ ok: true });
     }
 
-    // Public command: "/shop" or "/start" lists approved products with buy links.
+    // Public command: "/shop" or "/start" lists approved products as buy buttons.
     const command = (message.text ?? "").trim().toLowerCase();
     if (command.startsWith("/shop") || command.startsWith("/start")) {
       const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
-      const lines = (products ?? []).map((p) => `$${p.price_usd} — ${p.name}\nhttps://cpncreditboost.com/tradelines`);
-      const text = lines.length > 0
-        ? `CpnCreditBoost inventory (${lines.length} available):\n\n${lines.join("\n\n")}\n\nTap a link to view details and check out securely with crypto.`
-        : "Our inventory is being restocked. Message @cpncreditboost for availability.";
-      await sendTelegram(message.chat.id, text);
+      if ((products ?? []).length > 0) {
+        const keyboard = (products ?? []).map((p) => [{ text: `$${p.price_usd} — ${p.name} (${p.inventory} left)`, callback_data: `buy:${p.sku}` }]);
+        await sendTelegram(
+          message.chat.id,
+          "CpnCreditBoost — live inventory.\n\nTap a package below to start your order. You'll get a secure crypto payment link right here in chat, and your order confirms automatically once payment is verified.",
+          { inline_keyboard: keyboard },
+        );
+      } else {
+        await sendTelegram(message.chat.id, "Our inventory is being restocked. Message @cpncreditboost for availability.");
+      }
     }
 
     if (message.chat.id !== ownerChat) return reply({ ok: true, ignored: true });
