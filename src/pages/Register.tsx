@@ -13,6 +13,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { emailSchema, phoneSchema, nameSchema, sanitizeInput, globalRateLimiter } from '@/lib/security';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import TurnstileWidget from '@/components/auth/TurnstileWidget';
+import TelegramLoginButton from '@/components/auth/TelegramLoginButton';
 
 const registerSchema = z.object({
   firstName: nameSchema,
@@ -40,6 +42,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -92,10 +95,29 @@ const Register = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      setError('root', {
+        message: 'Please complete the security check before creating your account.'
+      });
+      return;
+    }
+
     globalRateLimiter.recordAttempt(clientId);
     setIsLoading(true);
 
     try {
+      // Verify the captcha server-side before creating the account
+      const { data: captchaResult, error: captchaError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken },
+      });
+      if (captchaError || !captchaResult?.verified) {
+        setError('root', {
+          message: 'Security check failed. Please complete it again and retry.'
+        });
+        setTurnstileToken(null);
+        return;
+      }
+
       // Sanitize inputs
       const sanitizedData = {
         firstName: sanitizeInput(data.firstName),
@@ -414,14 +436,18 @@ const Register = () => {
                 </Alert>
               )}
 
+              <TurnstileWidget onVerify={setTurnstileToken} />
+
               <Button
                 type="submit"
                 className="w-full bg-gradient-primary hover:opacity-90"
-                disabled={isLoading}
+                disabled={isLoading || !turnstileToken}
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
+
+            <TelegramLoginButton />
 
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">

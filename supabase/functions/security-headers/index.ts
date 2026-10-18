@@ -20,12 +20,12 @@ serve((req) => {
       // Enhanced Content Security Policy with nonce
       'Content-Security-Policy': [
         "default-src 'self'",
-        `script-src 'self' 'nonce-${nonce}' https://www.youtube.com https://youtube.com`,
+        `script-src 'self' 'nonce-${nonce}' 'unsafe-inline' https://www.youtube.com https://youtube.com https://challenges.cloudflare.com https://telegram.org`,
         `style-src 'self' 'nonce-${nonce}' 'unsafe-inline'`,
         "img-src 'self' data: https: blob:",
         "font-src 'self' data:",
-        "connect-src 'self' https://*.supabase.co https://*.supabase.com",
-        "frame-src 'self' https://www.youtube.com https://youtube.com",
+        "connect-src 'self' https://*.supabase.co https://*.supabase.com https://challenges.cloudflare.com",
+        "frame-src 'self' https://www.youtube.com https://youtube.com https://challenges.cloudflare.com https://oauth.telegram.org",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
