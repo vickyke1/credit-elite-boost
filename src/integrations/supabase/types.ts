@@ -306,6 +306,24 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_channel_post: {
+        Row: {
+          id: boolean
+          message_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          message_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          message_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       telegram_messages: {
         Row: {
           chat_id: number
