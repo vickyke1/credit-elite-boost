@@ -78,6 +78,25 @@ Deno.serve(async req => {
       const text = lines.length > 0 ? `Recent orders (newest first):\n${lines.join("\n")}` : "No orders yet.";
       await sendTelegram(ownerChat, text);
     }
+
+    // Owner command: "/add SKU | Name | price | inventory" adds an approved product to the shop.
+    if (command.startsWith("/add ")) {
+      const parts = (message.text ?? "").trim().slice(5).split("|").map((s) => s.trim());
+      const [sku, name, priceStr, invStr] = parts;
+      const price = Number(priceStr);
+      const inv = Number(invStr ?? "1");
+      if (parts.length < 3 || !sku || !name || !Number.isFinite(price) || price <= 0 || !Number.isInteger(inv) || inv < 0) {
+        await sendTelegram(ownerChat, "Usage: /add SKU | Name | price | inventory\nExample: /add TL0030 | Chase Sapphire $50,000 limit, 12y age | 850 | 5");
+      } else {
+        const { error } = await client.from("checkout_products").upsert(
+          { sku, name, category: "tradeline", price_usd: price, inventory: inv, compliance_status: "approved", updated_at: new Date().toISOString() },
+          { onConflict: "sku" },
+        );
+        await sendTelegram(ownerChat, error
+          ? `Could not save product: ${error.message}`
+          : `Product saved: ${sku} — ${name} — $${price} — ${inv} in stock. It now appears in /shop.`);
+      }
+    }
     return reply({ ok: true });
   } catch { return reply({ error: "Could not process update" }, 500); }
 });

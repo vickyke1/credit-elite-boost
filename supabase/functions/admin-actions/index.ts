@@ -10,6 +10,7 @@ const schema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("transition_order"), orderId: z.string().regex(uuid), to: z.enum(["paid", "failed"]), reason: z.string().trim().min(1).max(200) }),
   z.object({ action: z.literal("fulfill_order"), orderId: z.string().regex(uuid), note: z.string().trim().min(1).max(2000) }),
   z.object({ action: z.literal("update_inquiry"), inquiryId: z.string().regex(uuid), status: z.enum(["new", "read", "replied", "archived"]) }),
+  z.object({ action: z.literal("upsert_product"), sku: z.string().trim().min(1).max(40), name: z.string().trim().min(1).max(200), priceUsd: z.number().positive().max(1000000), inventory: z.number().int().min(0).max(10000) }),
 ]);
 
 Deno.serve(async (req) => {
