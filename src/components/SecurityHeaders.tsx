@@ -13,12 +13,12 @@ export const SecurityHeaders = () => {
     
     const fallbackCSP = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.youtube.com",
+      "script-src 'self' 'unsafe-inline' https://www.youtube.com https://challenges.cloudflare.com https://telegram.org",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co https://*.supabase.com",
-      "frame-src 'self' https://www.youtube.com",
+      "connect-src 'self' https://*.supabase.co https://*.supabase.com https://challenges.cloudflare.com",
+      "frame-src 'self' https://www.youtube.com https://challenges.cloudflare.com https://oauth.telegram.org",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
