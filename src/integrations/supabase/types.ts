@@ -20,6 +20,7 @@ export type Database = {
           compliance_note: string | null
           compliance_status: string
           created_at: string
+          image_url: string | null
           inventory: number | null
           name: string
           price_usd: number
@@ -31,6 +32,7 @@ export type Database = {
           compliance_note?: string | null
           compliance_status?: string
           created_at?: string
+          image_url?: string | null
           inventory?: number | null
           name: string
           price_usd: number
@@ -42,6 +44,7 @@ export type Database = {
           compliance_note?: string | null
           compliance_status?: string
           created_at?: string
+          image_url?: string | null
           inventory?: number | null
           name?: string
           price_usd?: number
