@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Loader2, ShieldAlert, Package, MessageSquare, Inbox, Store } from "lucide-react";
+import { Loader2, ShieldAlert, Package, MessageSquare, Inbox, Store, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderRow {
@@ -50,6 +50,29 @@ interface ProductRow {
 const statusColor = (status: string) =>
   status === "paid" || status === "overpaid" ? "default" :
   status === "failed" || status === "expired" ? "destructive" : "secondary";
+
+interface BuyerSummary {
+  telegram: string;
+  orders: OrderRow[];
+  totalSpent: number;
+  paidCount: number;
+  lastOrderAt: string;
+}
+
+const buildBuyers = (orders: OrderRow[]): BuyerSummary[] => {
+  const map = new Map<string, OrderRow[]>();
+  for (const o of orders) {
+    const key = o.telegram.toLowerCase();
+    map.set(key, [...(map.get(key) ?? []), o]);
+  }
+  return [...map.entries()].map(([telegram, list]) => ({
+    telegram,
+    orders: list,
+    totalSpent: list.filter((o) => o.status === "paid" || o.status === "overpaid").reduce((s, o) => s + Number(o.total_usd), 0),
+    paidCount: list.filter((o) => o.status === "paid" || o.status === "overpaid").length,
+    lastOrderAt: list[0]?.created_at ?? "",
+  })).sort((a, b) => b.totalSpent - a.totalSpent);
+};
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
@@ -130,6 +153,7 @@ const Admin = () => {
         <Tabs defaultValue="orders">
           <TabsList className="mb-6">
             <TabsTrigger value="orders" className="min-h-11"><Package className="w-4 h-4 mr-2" />Orders ({orders.length})</TabsTrigger>
+            <TabsTrigger value="buyers" className="min-h-11"><Users className="w-4 h-4 mr-2" />Buyers ({buildBuyers(orders).length})</TabsTrigger>
             <TabsTrigger value="products" className="min-h-11"><Store className="w-4 h-4 mr-2" />Products ({products.length})</TabsTrigger>
             <TabsTrigger value="inquiries" className="min-h-11"><Inbox className="w-4 h-4 mr-2" />Inquiries ({inquiries.length})</TabsTrigger>
             <TabsTrigger value="messages" className="min-h-11"><MessageSquare className="w-4 h-4 mr-2" />Telegram ({messages.length})</TabsTrigger>
@@ -189,6 +213,39 @@ const Admin = () => {
                     <Badge variant="outline">{order.fulfillment_status}</Badge>
                     <Button asChild size="sm" className="min-h-11">
                       <Link to={`/admin/orders/${order.id}`}>Manage</Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="buyers">
+            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : buildBuyers(orders).length === 0 ? <p className="text-muted-foreground">No buyers yet.</p> : (
+              <div className="space-y-3">
+                {buildBuyers(orders).map((buyer) => (
+                  <div key={buyer.telegram} className="surface-elevated rounded-lg p-4 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-medium">@{buyer.telegram}</p>
+                      <Badge variant="default">${buyer.totalSpent.toLocaleString()} paid</Badge>
+                      <Badge variant="secondary">{buyer.paidCount}/{buyer.orders.length} orders paid</Badge>
+                      <span className="text-xs text-muted-foreground ml-auto">Last order {new Date(buyer.lastOrderAt).toLocaleString()}</span>
+                    </div>
+                    <div className="space-y-1">
+                      {buyer.orders.map((o) => (
+                        <div key={o.id} className="flex flex-wrap items-center gap-2 text-sm">
+                          <span className="font-mono text-xs text-muted-foreground">{o.id.slice(0, 8)}</span>
+                          <span>${o.total_usd}</span>
+                          <Badge variant={statusColor(o.status)}>{o.status}</Badge>
+                          <Badge variant="outline">{o.fulfillment_status}</Badge>
+                          <Button asChild size="sm" variant="ghost" className="min-h-11">
+                            <Link to={`/admin/orders/${o.id}`}>Manage</Link>
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <Button asChild size="sm" className="min-h-11">
+                      <a href={`https://t.me/${buyer.telegram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer">Open Telegram chat</a>
                     </Button>
                   </div>
                 ))}

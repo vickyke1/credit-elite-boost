@@ -26,3 +26,9 @@
 - [x] Telegram bot orders dashboard: /orders command replies with recent orders (status, amount, buyer); verified live.
 - [x] Secure admin panel at /admin listing orders, inquiries and Telegram messages with status actions; admin-only via server check.
 - [x] Fulfillment page at /admin/orders/:id: mark paid, save delivery note, mark fulfilled, pre-filled Telegram message to buyer.
+
+## New tasks (19:16)
+- [ ] Signup with captcha + Telegram signup option
+- [ ] Buyer dashboard tab in admin panel (Telegram buyers + purchase history)
+- [ ] Product photos in /shop and channel post (/setphoto command)
+- [ ] Fiat Zelle/Venmo payment buttons in bot (needs ZELLE_HANDLE / VENMO_HANDLE secrets)
