@@ -95,6 +95,13 @@ const Register = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      setError('root', {
+        message: 'Please complete the security check before creating your account.'
+      });
+      return;
+    }
+
     globalRateLimiter.recordAttempt(clientId);
     setIsLoading(true);
 
