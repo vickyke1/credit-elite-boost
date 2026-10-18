@@ -309,6 +309,36 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          identifier: string
+          ip_address: string | null
+          key: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: never
+          identifier: string
+          ip_address?: string | null
+          key: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: never
+          identifier?: string
+          ip_address?: string | null
+          key?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       telegram_channel_post: {
         Row: {
           id: boolean
