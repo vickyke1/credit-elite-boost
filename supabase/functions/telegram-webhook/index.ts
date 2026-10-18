@@ -76,15 +76,7 @@ Deno.serve(async req => {
         `${o.status.toUpperCase()} $${o.total_usd} — @${o.telegram} — ${o.fulfillment_status} — ${o.id.slice(0, 8)}`
       );
       const text = lines.length > 0 ? `Recent orders (newest first):\n${lines.join("\n")}` : "No orders yet.";
-      const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
-      if (gatewayKey) {
-        await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: ownerChat, text }),
-          signal: AbortSignal.timeout(10000),
-        });
-      }
+      await sendTelegram(ownerChat, text);
     }
     return reply({ ok: true });
   } catch { return reply({ error: "Could not process update" }, 500); }
