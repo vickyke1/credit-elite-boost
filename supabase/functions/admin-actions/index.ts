@@ -52,6 +52,15 @@ Deno.serve(async (req) => {
     return reply({ ok: true });
   }
 
+  if (body.action === "upsert_product") {
+    const { error } = await admin.from("checkout_products").upsert(
+      { sku: body.sku, name: body.name, category: "tradeline", price_usd: body.priceUsd, inventory: body.inventory, compliance_status: "approved", updated_at: new Date().toISOString() },
+      { onConflict: "sku" },
+    );
+    if (error) return reply({ error: "Could not save the product" }, 500);
+    return reply({ ok: true });
+  }
+
   const { error } = await admin.from("pricing_inquiries").update({ status: body.status }).eq("id", body.inquiryId);
   if (error) return reply({ error: "Could not update the inquiry" }, 500);
   return reply({ ok: true });
