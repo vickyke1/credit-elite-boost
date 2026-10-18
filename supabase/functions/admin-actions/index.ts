@@ -10,6 +10,7 @@ const schema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("transition_order"), orderId: z.string().regex(uuid), to: z.enum(["paid", "failed"]), reason: z.string().trim().min(1).max(200) }),
   z.object({ action: z.literal("fulfill_order"), orderId: z.string().regex(uuid), note: z.string().trim().min(1).max(2000) }),
   z.object({ action: z.literal("update_inquiry"), inquiryId: z.string().regex(uuid), status: z.enum(["new", "read", "replied", "archived"]) }),
+  z.object({ action: z.literal("upsert_product"), sku: z.string().trim().min(1).max(40), name: z.string().trim().min(1).max(200), priceUsd: z.number().positive().max(1000000), inventory: z.number().int().min(0).max(10000) }),
 ]);
 
 Deno.serve(async (req) => {
@@ -48,6 +49,15 @@ Deno.serve(async (req) => {
     const { error } = await admin.from("orders").update({ fulfillment_status: "fulfilled", fulfillment_note: body.note, fulfilled_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", body.orderId);
     if (error) return reply({ error: "Could not mark the order fulfilled" }, 500);
     await sendOwnerAlert(`Order fulfilled\nOrder: ${order.id}\nBuyer Telegram: @${order.telegram}\nNote: ${body.note}`);
+    return reply({ ok: true });
+  }
+
+  if (body.action === "upsert_product") {
+    const { error } = await admin.from("checkout_products").upsert(
+      { sku: body.sku, name: body.name, category: "tradeline", price_usd: body.priceUsd, inventory: body.inventory, compliance_status: "approved", updated_at: new Date().toISOString() },
+      { onConflict: "sku" },
+    );
+    if (error) return reply({ error: "Could not save the product" }, 500);
     return reply({ ok: true });
   }
 
