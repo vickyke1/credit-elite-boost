@@ -35,8 +35,31 @@ Deno.serve(async req => {
     if (!parsed.success) return reply({ error: "Invalid update" }, 400);
     const update = parsed.data;
     const message = update.message ?? update.edited_message;
-    if (!message || message.chat.id !== ownerChat) return reply({ ok: true, ignored: true });
+    if (!message) return reply({ ok: true, ignored: true });
     const client = createClient(url, key);
+    const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
+    const sendTelegram = async (chatId: number, text: string) => {
+      if (!gatewayKey) return;
+      await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+        signal: AbortSignal.timeout(10000),
+      });
+    };
+
+    // Public command: "/shop" or "/start" lists approved products with buy links.
+    const command = (message.text ?? "").trim().toLowerCase();
+    if (command.startsWith("/shop") || command.startsWith("/start")) {
+      const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
+      const lines = (products ?? []).map((p) => `$${p.price_usd} — ${p.name}\nhttps://cpncreditboost.com/tradelines`);
+      const text = lines.length > 0
+        ? `CpnCreditBoost inventory (${lines.length} available):\n\n${lines.join("\n\n")}\n\nTap a link to view details and check out securely with crypto.`
+        : "Our inventory is being restocked. Message @cpncreditboost for availability.";
+      await sendTelegram(message.chat.id, text);
+    }
+
+    if (message.chat.id !== ownerChat) return reply({ ok: true, ignored: true });
     let inquiryId: string | null = null;
     if (message.reply_to_message) {
       const { data, error } = await client.from("pricing_inquiries").select("id").eq("telegram_message_id", message.reply_to_message.message_id).maybeSingle();
