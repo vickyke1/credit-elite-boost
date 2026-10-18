@@ -64,42 +64,105 @@ Deno.serve(async req => {
       });
     };
 
-    // Button tap: "buy:<sku>" creates the order and returns a secure payment link.
+    const sendPhoto = async (chatId: number, photo: string, caption: string, replyMarkup?: unknown) => {
+      if (!gatewayKey) return;
+      await fetch("https://connector-gateway.lovable.dev/telegram/sendPhoto", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, photo, caption, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
+        signal: AbortSignal.timeout(15000),
+      });
+    };
+
+    // Button taps: buy:<sku> (choose method), crypto:<sku>, fiat:<sku>, fiatsent:<orderId>.
     const callback = update.callback_query;
     if (callback) {
       const data = callback.data ?? "";
       const chatId = callback.message?.chat.id ?? callback.from.id;
-      if (!data.startsWith("buy:")) {
-        await answerCallback(callback.id);
-        return reply({ ok: true });
-      }
-      const sku = data.slice(4).trim();
+      const [action, arg] = data.split(":");
       const username = callback.from.username;
-      if (!username) {
-        await answerCallback(callback.id, "Set a Telegram username first (Settings → Username), then tap again.");
+
+      if (action === "buy" && arg) {
+        await answerCallback(callback.id);
+        await sendTelegram(chatId, "How would you like to pay?", {
+          inline_keyboard: [
+            [{ text: "Pay with crypto (auto-confirmed)", callback_data: `crypto:${arg}` }],
+            [{ text: "Pay with Zelle / Venmo", callback_data: `fiat:${arg}` }],
+          ],
+        });
         return reply({ ok: true });
       }
-      await answerCallback(callback.id, "Creating your order…");
-      try {
-        const res = await fetch(`${url}/functions/v1/create-order`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ skus: [sku], telegram: username }),
-          signal: AbortSignal.timeout(20000),
-        });
-        const body = await res.json().catch(() => ({}));
-        if (res.ok && body.paymentUrl) {
-          await sendTelegram(
-            chatId,
-            `Your order is ready.\n\nOrder: ${String(body.orderId).slice(0, 8)}\nTap below to pay securely with crypto. Your order is confirmed automatically once the payment is verified.`,
-            { inline_keyboard: [[{ text: "Pay securely", url: body.paymentUrl }], [{ text: "Check order status", url: `https://cpncreditboost.com/order/${body.orderId}` }]] },
-          );
-        } else {
-          await sendTelegram(chatId, body.error ?? "We couldn't start checkout for that item. Please try again or message @cpncreditboost.");
+
+      if ((action === "crypto" || action === "fiat") && arg) {
+        if (!username) {
+          await answerCallback(callback.id, "Set a Telegram username first (Settings → Username), then tap again.");
+          return reply({ ok: true });
         }
-      } catch {
-        await sendTelegram(chatId, "Checkout is temporarily unavailable. Please try again shortly.");
+        if (action === "crypto") {
+          await answerCallback(callback.id, "Creating your order…");
+          try {
+            const res = await fetch(`${url}/functions/v1/create-order`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ skus: [arg], telegram: username }),
+              signal: AbortSignal.timeout(20000),
+            });
+            const body = await res.json().catch(() => ({}));
+            if (res.ok && body.paymentUrl) {
+              await sendTelegram(
+                chatId,
+                `Your order is ready.\n\nOrder: ${String(body.orderId).slice(0, 8)}\nTap below to pay securely with crypto. Your order is confirmed automatically once the payment is verified.`,
+                { inline_keyboard: [[{ text: "Pay securely", url: body.paymentUrl }], [{ text: "Check order status", url: `https://cpncreditboost.com/order/${body.orderId}` }]] },
+              );
+            } else {
+              await sendTelegram(chatId, body.error ?? "We couldn't start checkout for that item. Please try again or message @cpncreditboost.");
+            }
+          } catch {
+            await sendTelegram(chatId, "Checkout is temporarily unavailable. Please try again shortly.");
+          }
+          return reply({ ok: true });
+        }
+        // Fiat: create a manual order and show the Zelle/Venmo handles.
+        await answerCallback(callback.id, "Reserving your order…");
+        const zelle = Deno.env.get("ZELLE_HANDLE");
+        const venmo = Deno.env.get("VENMO_HANDLE");
+        if (!zelle && !venmo) {
+          await sendTelegram(chatId, "Zelle/Venmo checkout isn't set up yet. Please pay with crypto or message @cpncreditboost.");
+          return reply({ ok: true });
+        }
+        const ipHash = `tg:${callback.from.id}`;
+        const { data: orderId, error: orderErr } = await client.rpc("create_checkout_order", {
+          p_skus: [arg], p_telegram: username, p_user_id: null, p_ip_hash: ipHash, p_provider: "manual",
+        });
+        if (orderErr || !orderId) {
+          const msg = String(orderErr?.message ?? "");
+          await sendTelegram(chatId, msg.includes("sold_out") ? "That item just sold out." : msg.includes("rate_limit") ? "Too many attempts — please try again later." : "We couldn't start your order. Please try again or message @cpncreditboost.");
+          return reply({ ok: true });
+        }
+        const { data: order } = await client.from("orders").select("total_usd").eq("id", orderId).single();
+        const handles = [zelle ? `Zelle: ${zelle}` : null, venmo ? `Venmo: ${venmo}` : null].filter(Boolean).join("\n");
+        await sendTelegram(
+          chatId,
+          `Your order is reserved.\n\nOrder: ${String(orderId).slice(0, 8)}\nAmount: $${Number(order?.total_usd ?? 0).toLocaleString("en-US")}\n\nSend the exact amount to:\n${handles}\n\nInclude your order number in the payment note, then tap "I've sent it" below. We confirm your order as soon as the payment arrives.`,
+          { inline_keyboard: [[{ text: "I've sent it", callback_data: `fiatsent:${orderId}` }], [{ text: "Check order status", url: `https://cpncreditboost.com/order/${orderId}` }]] },
+        );
+        return reply({ ok: true });
       }
+
+      if (action === "fiatsent" && arg) {
+        const { data: order } = await client.from("orders").select("id,status,total_usd,telegram").eq("id", arg).maybeSingle();
+        if (!order || order.status !== "pending") {
+          await answerCallback(callback.id, "This order is no longer awaiting payment.");
+          return reply({ ok: true });
+        }
+        await client.rpc("transition_order", { p_order: order.id, p_to: "review", p_reason: "buyer marked fiat payment as sent" });
+        await answerCallback(callback.id, "Thanks! We'll confirm as soon as your payment arrives.");
+        await sendTelegram(chatId, "Thanks — your payment is being reviewed. You'll get a message here as soon as it's confirmed.");
+        await sendTelegram(ownerChat, `Fiat payment to review:\nOrder ${order.id.slice(0, 8)} — $${order.total_usd} — @${order.telegram}\n\nConfirm with: /confirm ${order.id.slice(0, 8)}\nReject with: /reject ${order.id.slice(0, 8)}`);
+        return reply({ ok: true });
+      }
+
+      await answerCallback(callback.id);
       return reply({ ok: true });
     }
 
