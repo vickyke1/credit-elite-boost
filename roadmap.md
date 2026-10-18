@@ -24,3 +24,4 @@
 - [ ] Run one real crypto purchase end to end — blocked: requires sending real crypto to a live invoice.
 - [ ] Wire Zelle/Venmo fiat checkout with owner-confirmed payment — blocked on owner's real Zelle/Venmo handles (user skipped providing them).
 - [ ] Telegram bot orders dashboard: owner texts the bot and gets recent orders with status, amount, buyer username.
+- [ ] Secure admin panel listing orders, inquiries and Telegram messages with approval/fulfillment actions.
