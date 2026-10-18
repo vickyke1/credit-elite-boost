@@ -42,7 +42,7 @@ Deno.serve(async req => {
     if (!parsed.success) return reply({ error: "Invalid update" }, 400);
     const update = parsed.data;
     const message = update.message ?? update.edited_message;
-    if (!message) return reply({ ok: true, ignored: true });
+    if (!message && !update.callback_query) return reply({ ok: true, ignored: true });
     const client = createClient(url, key);
     const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
     const sendTelegram = async (chatId: number, text: string, replyMarkup?: unknown) => {
