@@ -106,6 +106,18 @@ const Register = () => {
     setIsLoading(true);
 
     try {
+      // Verify the captcha server-side before creating the account
+      const { data: captchaResult, error: captchaError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken },
+      });
+      if (captchaError || !captchaResult?.verified) {
+        setError('root', {
+          message: 'Security check failed. Please complete it again and retry.'
+        });
+        setTurnstileToken(null);
+        return;
+      }
+
       // Sanitize inputs
       const sanitizedData = {
         firstName: sanitizeInput(data.firstName),
