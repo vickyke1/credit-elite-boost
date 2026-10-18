@@ -23,6 +23,6 @@
 - [ ] Set payout wallet and enable USDT/BTC in NOWPayments — blocked: requires owner's NOWPayments dashboard access (not API-settable with current key).
 - [ ] Run one real crypto purchase end to end — blocked: requires sending real crypto to a live invoice.
 - [ ] Wire Zelle/Venmo fiat checkout with owner-confirmed payment — blocked on owner's real Zelle/Venmo handles (user skipped providing them).
-- [ ] Telegram bot orders dashboard: owner texts the bot and gets recent orders with status, amount, buyer username.
-- [ ] Secure admin panel listing orders, inquiries and Telegram messages with approval/fulfillment actions.
-- [ ] Fulfillment page: confirm paid order, send tradeline details to buyer, linked from order row.
+- [x] Telegram bot orders dashboard: /orders command replies with recent orders (status, amount, buyer); verified live.
+- [x] Secure admin panel at /admin listing orders, inquiries and Telegram messages with status actions; admin-only via server check.
+- [x] Fulfillment page at /admin/orders/:id: mark paid, save delivery note, mark fulfilled, pre-filled Telegram message to buyer.
