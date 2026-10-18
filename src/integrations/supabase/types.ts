@@ -169,6 +169,9 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          fulfilled_at: string | null
+          fulfillment_note: string | null
+          fulfillment_status: string
           id: string
           ip_hash: string
           pay_currency: string | null
@@ -182,6 +185,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          fulfilled_at?: string | null
+          fulfillment_note?: string | null
+          fulfillment_status?: string
           id?: string
           ip_hash: string
           pay_currency?: string | null
@@ -195,6 +201,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          fulfilled_at?: string | null
+          fulfillment_note?: string | null
+          fulfillment_status?: string
           id?: string
           ip_hash?: string
           pay_currency?: string | null
