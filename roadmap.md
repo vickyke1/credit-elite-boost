@@ -20,3 +20,6 @@
 - [ ] Turn on crypto checkout — blocked on merchant coin availability and owner approval of products for sale (credentials saved).
 - [x] Verify deployed NOWPayments IPN reachability and strengthen signature, provider reconciliation, and atomic duplicate handling (13 tests passed; unsigned live requests rejected).
 - [ ] Verify actual dashboard IPN format, signed sandbox payment, database duplicate retries and Telegram payment alert — blocked on merchant coin availability and an approved test product.
+- [ ] Set payout wallet and enable USDT/BTC in NOWPayments — blocked: requires owner's NOWPayments dashboard access (not API-settable with current key).
+- [ ] Run one real crypto purchase end to end — blocked: requires sending real crypto to a live invoice.
+- [ ] Wire Zelle/Venmo fiat checkout with owner-confirmed payment — blocked on owner's real Zelle/Venmo handles (user skipped providing them).
