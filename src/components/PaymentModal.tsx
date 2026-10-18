@@ -109,6 +109,19 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               <Label htmlFor="checkout-telegram">Your Telegram username</Label>
               <Input id="checkout-telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="@username" autoComplete="off" />
             </div>
+            <div className="space-y-1.5">
+              <p className="text-sm font-medium">How to pay</p>
+              <div className="overflow-hidden rounded-lg border border-border aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/Ba-LJhEd2Ko"
+                  title="How to make a deposit — payment tutorial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+            </div>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <Button onClick={startCheckout} disabled={busy || configured === null || available !== true || items.length === 0} className="w-full min-h-11 bg-gradient-cta glow-accent">
               {busy ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating secure invoice…</> : "Continue to crypto payment"}
