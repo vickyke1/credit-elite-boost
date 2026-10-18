@@ -436,14 +436,18 @@ const Register = () => {
                 </Alert>
               )}
 
+              <TurnstileWidget onVerify={setTurnstileToken} />
+
               <Button
                 type="submit"
                 className="w-full bg-gradient-primary hover:opacity-90"
-                disabled={isLoading}
+                disabled={isLoading || !turnstileToken}
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
+
+            <TelegramLoginButton />
 
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
