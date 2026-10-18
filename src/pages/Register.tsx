@@ -13,6 +13,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { emailSchema, phoneSchema, nameSchema, sanitizeInput, globalRateLimiter } from '@/lib/security';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import TurnstileWidget from '@/components/auth/TurnstileWidget';
+import TelegramLoginButton from '@/components/auth/TelegramLoginButton';
 
 const registerSchema = z.object({
   firstName: nameSchema,
@@ -40,6 +42,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
