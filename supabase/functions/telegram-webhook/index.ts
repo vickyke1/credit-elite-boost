@@ -220,6 +220,56 @@ Deno.serve(async req => {
         : `Could not update the channel post: ${result.error}\n\nMake sure this bot is an administrator of the channel with permission to post and pin messages.`);
     }
 
+    // Owner command: "/confirm <orderId8>" marks a reviewed fiat order paid; "/reject <orderId8>" cancels it and restocks.
+    const confirmMatch = (message.text ?? "").trim().match(/^\/(confirm|reject)\s+([0-9a-f]{8})$/i);
+    if (confirmMatch) {
+      const [, action, prefix] = confirmMatch;
+      const { data: order } = await client.from("orders").select("id,status,total_usd,telegram").ilike("id::text", `${prefix}%`).maybeSingle();
+      if (!order) {
+        await sendTelegram(ownerChat, `No order found starting with ${prefix}.`);
+      } else if (order.status !== "review") {
+        await sendTelegram(ownerChat, `Order ${prefix} is ${order.status}, not awaiting review.`);
+      } else {
+        const to = action.toLowerCase() === "confirm" ? "paid" : "failed";
+        await client.rpc("transition_order", { p_order: order.id, p_to: to, p_reason: `owner ${action}ed fiat payment via bot` });
+        await sendTelegram(ownerChat, `Order ${prefix} marked ${to}.`);
+        await sendTelegram(
+          order.telegram === "cpncreditboost" ? ownerChat : ownerChat,
+          action.toLowerCase() === "confirm"
+            ? `Buyer @${order.telegram}: order ${prefix} ($${order.total_usd}) is confirmed paid.`
+            : `Buyer @${order.telegram}: order ${prefix} was rejected.`,
+        );
+      }
+    }
+
+    // Owner command: "/setphoto SKU | https://image-url" sets a product photo and posts it to the channel.
+    if (command.startsWith("/setphoto ")) {
+      const parts = (message.text ?? "").trim().slice(10).split("|").map((s) => s.trim());
+      const [sku, imageUrl] = parts;
+      if (!sku || !imageUrl || !/^https:\/\//i.test(imageUrl)) {
+        await sendTelegram(ownerChat, "Usage: /setphoto SKU | https://image-url.jpg");
+      } else {
+        const { data: product, error: photoErr } = await client
+          .from("checkout_products")
+          .update({ image_url: imageUrl, updated_at: new Date().toISOString() })
+          .eq("sku", sku)
+          .select("sku,name,price_usd,inventory")
+          .maybeSingle();
+        if (photoErr || !product) {
+          await sendTelegram(ownerChat, `Could not set photo: ${photoErr?.message ?? "product not found"}`);
+        } else {
+          await sendTelegram(ownerChat, `Photo set for ${sku}. It now shows in /shop.`);
+          await sendPhoto(
+            "@cpncreditboost",
+            imageUrl,
+            `$${product.price_usd} — ${product.name}\n${product.inventory ?? 0} available\n\nOrder here: https://t.me/Cpn_creditboost_Bot`,
+            { inline_keyboard: [[{ text: "View all packages", url: "https://cpncreditboost.com/tradelines" }]] },
+          );
+          await refreshChannelInventoryPost(client);
+        }
+      }
+    }
+
     // Owner command: "/add SKU | Name | price | inventory" adds an approved product to the shop.
     if (command.startsWith("/add ")) {
       const parts = (message.text ?? "").trim().slice(5).split("|").map((s) => s.trim());
