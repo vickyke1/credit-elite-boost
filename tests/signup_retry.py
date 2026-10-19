@@ -64,7 +64,7 @@ async def check_retry(browser, failure):
     await page.locator('#acceptTerms').click()
     button = page.get_by_role('button', name='Create Account', exact=True)
     await button.click()
-    await page.wait_for_function('window.testCaptchaResets === 1')
+    await page.wait_for_function('() => window.testCaptchaResets === 1')
     assert await button.is_disabled(), f'{failure}: consumed token still accepted'
     for field, value in values.items():
         assert await page.locator(f'#{field}').input_value() == value
