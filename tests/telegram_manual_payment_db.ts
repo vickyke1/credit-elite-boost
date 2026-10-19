@@ -39,7 +39,10 @@ try {
     throw rollback;
   });
 } catch (error) {
-  if (error !== rollback) throw new Error("Manual payment database regression failed");
+  if (error !== rollback) {
+    console.log('Failure category:', error instanceof assert.AssertionError ? 'assertion' : typeof error === 'object' && error !== null && 'code' in error ? String(error.code) : 'connection/runtime');
+    throw new Error("Manual payment database regression failed");
+  }
 } finally {
   await sql.end();
 }
