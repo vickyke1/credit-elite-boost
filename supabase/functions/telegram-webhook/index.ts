@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3.23.8";
 import { refreshChannelInventoryPost } from "./channel_post.ts";
+import { cashAppLink, transitionManualPayment } from "./manual-payments.ts";
 
 const ownerChat = 7086831521;
 const messageSchema = z.object({
@@ -45,14 +46,15 @@ Deno.serve(async req => {
     if (!message && !update.callback_query) return reply({ ok: true, ignored: true });
     const client = createClient(url, key);
     const gatewayKey = Deno.env.get("LOVABLE_API_KEY");
-    const sendTelegram = async (chatId: number, text: string, replyMarkup?: unknown) => {
-      if (!gatewayKey) return;
-      await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+    const sendTelegram = async (chatId: number | string, text: string, replyMarkup?: unknown) => {
+      if (!gatewayKey) throw new Error("Telegram unavailable");
+      const response = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
         method: "POST",
         headers: { Authorization: `Bearer ${gatewayKey}`, "X-Connection-Api-Key": apiKey, "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
         signal: AbortSignal.timeout(10000),
       });
+      if (!response.ok) throw new Error("Telegram delivery failed");
     };
     const answerCallback = async (id: string, text?: string) => {
       if (!gatewayKey) return;
@@ -64,7 +66,7 @@ Deno.serve(async req => {
       });
     };
 
-    const sendPhoto = async (chatId: number, photo: string, caption: string, replyMarkup?: unknown) => {
+    const sendPhoto = async (chatId: number | string, photo: string, caption: string, replyMarkup?: unknown) => {
       if (!gatewayKey) return;
       await fetch("https://connector-gateway.lovable.dev/telegram/sendPhoto", {
         method: "POST",
@@ -81,19 +83,24 @@ Deno.serve(async req => {
       const chatId = callback.message?.chat.id ?? callback.from.id;
       const [action, arg] = data.split(":");
       const username = callback.from.username;
+      if (chatId !== callback.from.id) {
+        await answerCallback(callback.id, "Open a private chat with this bot to purchase.");
+        return reply({ ok: true });
+      }
 
       if (action === "buy" && arg) {
         await answerCallback(callback.id);
         await sendTelegram(chatId, "How would you like to pay?", {
           inline_keyboard: [
             [{ text: "Pay with crypto (auto-confirmed)", callback_data: `crypto:${arg}` }],
+            [{ text: "Pay with Cash App (owner reviewed)", callback_data: `cashapp:${arg}` }],
             [{ text: "Pay with Zelle / Venmo", callback_data: `fiat:${arg}` }],
           ],
         });
         return reply({ ok: true });
       }
 
-      if ((action === "crypto" || action === "fiat") && arg) {
+      if ((action === "crypto" || action === "fiat" || action === "cashapp") && arg) {
         if (!username) {
           await answerCallback(callback.id, "Set a Telegram username first (Settings → Username), then tap again.");
           return reply({ ok: true });
@@ -126,39 +133,45 @@ Deno.serve(async req => {
         await answerCallback(callback.id, "Reserving your order…");
         const zelle = Deno.env.get("ZELLE_HANDLE");
         const venmo = Deno.env.get("VENMO_HANDLE");
-        if (!zelle && !venmo) {
-          await sendTelegram(chatId, "Zelle/Venmo checkout isn't set up yet. Please pay with crypto or message @cpncreditboost.");
+        const cashUrl = cashAppLink(Deno.env.get("CASH_APP_CASHTAG"));
+        if ((action === "cashapp" && !cashUrl) || (action === "fiat" && !zelle && !venmo)) {
+          await sendTelegram(chatId, `${action === "cashapp" ? "Cash App" : "Zelle/Venmo"} checkout isn't set up yet. Please pay with crypto or message @cpncreditboost.`);
           return reply({ ok: true });
         }
         const ipHash = `tg:${callback.from.id}`;
         const { data: orderId, error: orderErr } = await client.rpc("create_checkout_order", {
-          p_skus: [arg], p_telegram: username, p_user_id: null, p_ip_hash: ipHash, p_provider: "manual",
+          p_skus: [arg], p_telegram: username, p_user_id: null, p_ip_hash: ipHash, p_provider: action === "cashapp" ? "cashapp_manual" : "manual",
         });
         if (orderErr || !orderId) {
           const msg = String(orderErr?.message ?? "");
           await sendTelegram(chatId, msg.includes("sold_out") ? "That item just sold out." : msg.includes("rate_limit") ? "Too many attempts — please try again later." : "We couldn't start your order. Please try again or message @cpncreditboost.");
           return reply({ ok: true });
         }
-        const { data: order } = await client.from("orders").select("total_usd").eq("id", orderId).single();
+        const { data: order, error: readError } = await client.from("orders").select("total_usd").eq("id", orderId).single();
+        if (readError || !order || Number(order.total_usd) <= 0) throw new Error("Could not read order total");
         const handles = [zelle ? `Zelle: ${zelle}` : null, venmo ? `Venmo: ${venmo}` : null].filter(Boolean).join("\n");
         await sendTelegram(
           chatId,
-          `Your order is reserved.\n\nOrder: ${String(orderId).slice(0, 8)}\nAmount: $${Number(order?.total_usd ?? 0).toLocaleString("en-US")}\n\nSend the exact amount to:\n${handles}\n\nInclude your order number in the payment note, then tap "I've sent it" below. We confirm your order as soon as the payment arrives.`,
-          { inline_keyboard: [[{ text: "I've sent it", callback_data: `fiatsent:${orderId}` }], [{ text: "Check order status", url: `https://cpncreditboost.com/order/${orderId}` }]] },
+          `Your order is reserved.\n\nOrder: ${String(orderId).slice(0, 8)}\nAmount: $${Number(order.total_usd).toFixed(2)} USD\n\n${action === "cashapp" ? "Open Cash App below and enter the exact amount shown above. This is a cash payment, not a Bitcoin transfer." : `Send the exact amount to:\n${handles}`}\n\nInclude your order number in the payment note, then tap "I've sent it" below. This only requests review; the owner must verify receipt before your order is marked paid.`,
+          { inline_keyboard: [...(action === "cashapp" && cashUrl ? [[{ text: "Open Cash App", url: cashUrl }]] : []), [{ text: "I've sent it", callback_data: `fiatsent:${orderId}` }], [{ text: "Check order status", url: `https://credit-elite-boost.lovable.app/order/${orderId}` }]] },
         );
         return reply({ ok: true });
       }
 
       if (action === "fiatsent" && arg) {
-        const { data: order } = await client.from("orders").select("id,status,total_usd,telegram").eq("id", arg).maybeSingle();
-        if (!order || order.status !== "pending") {
+        const { data: order } = await client.from("orders").select("id,status,total_usd,telegram,provider,ip_hash").eq("id", arg).maybeSingle();
+        if (!order || order.ip_hash !== `tg:${callback.from.id}` || !["manual", "cashapp_manual"].includes(order.provider)) {
+          await answerCallback(callback.id, "This manual order isn't yours.");
+          return reply({ ok: true });
+        }
+        const transition = await transitionManualPayment((name, args) => client.rpc(name, args), order.id, callback.from.id, "review");
+        if (!transition.changed) {
           await answerCallback(callback.id, "This order is no longer awaiting payment.");
           return reply({ ok: true });
         }
-        await client.rpc("transition_order", { p_order: order.id, p_to: "review", p_reason: "buyer marked fiat payment as sent" });
         await answerCallback(callback.id, "Thanks! We'll confirm as soon as your payment arrives.");
         await sendTelegram(chatId, "Thanks — your payment is being reviewed. You'll get a message here as soon as it's confirmed.");
-        await sendTelegram(ownerChat, `Fiat payment to review:\nOrder ${order.id.slice(0, 8)} — $${order.total_usd} — @${order.telegram}\n\nConfirm with: /confirm ${order.id.slice(0, 8)}\nReject with: /reject ${order.id.slice(0, 8)}`);
+        await sendTelegram(ownerChat, `${order.provider === "cashapp_manual" ? "Cash App" : "Fiat"} payment to review (not verified):\nOrder ${order.id} — $${order.total_usd} — @${order.telegram}\n\nVerify receipt in your payment account first.\nConfirm with: /confirm ${order.id}\nReject with: /reject ${order.id}`);
         return reply({ ok: true });
       }
 
@@ -167,6 +180,7 @@ Deno.serve(async req => {
     }
 
     // Public command: "/shop" or "/start" lists approved products as buy buttons, with photos when set.
+    if (!message) return reply({ ok: true, ignored: true });
     const command = (message.text ?? "").trim().toLowerCase();
     if (command.startsWith("/shop") || command.startsWith("/start")) {
       const { data: products } = await client.from("checkout_products").select("sku,name,price_usd,inventory,image_url").eq("compliance_status", "approved").gt("inventory", 0).order("price_usd", { ascending: true }).limit(20);
@@ -174,7 +188,7 @@ Deno.serve(async req => {
       if (list.length > 0) {
         const withPhoto = list.filter((p) => p.image_url);
         const withoutPhoto = list.filter((p) => !p.image_url);
-        await sendTelegram(message.chat.id, "CpnCreditBoost — live inventory.\n\nTap a package to start your order. Pay with crypto (auto-confirmed) or Zelle/Venmo, right here in chat.");
+        await sendTelegram(message.chat.id, "CpnCreditBoost — live inventory.\n\nTap a package to start your order. Crypto payments are verified automatically; Cash App and Zelle/Venmo require owner review when configured.");
         for (const p of withPhoto) {
           await sendPhoto(
             message.chat.id,
@@ -192,7 +206,7 @@ Deno.serve(async req => {
       }
     }
 
-    if (message.chat.id !== ownerChat) return reply({ ok: true, ignored: true });
+    if (message.chat.id !== ownerChat || message.from?.id !== ownerChat) return reply({ ok: true, ignored: true });
     let inquiryId: string | null = null;
     if (message.reply_to_message) {
       const { data, error } = await client.from("pricing_inquiries").select("id").eq("telegram_message_id", message.reply_to_message.message_id).maybeSingle();
@@ -221,17 +235,21 @@ Deno.serve(async req => {
     }
 
     // Owner command: "/confirm <orderId8>" marks a reviewed fiat order paid; "/reject <orderId8>" cancels it and restocks.
-    const confirmMatch = (message.text ?? "").trim().match(/^\/(confirm|reject)\s+([0-9a-f]{8})$/i);
+    const confirmMatch = (message.text ?? "").trim().match(/^\/(confirm|reject)\s+([0-9a-f]{8}(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?)$/i);
     if (confirmMatch) {
       const [, action, prefix] = confirmMatch;
-      const { data: candidates } = await client.from("orders").select("id,status,total_usd,telegram").eq("status", "review").order("created_at", { ascending: false }).limit(50);
-      const order = (candidates ?? []).find((o) => String(o.id).startsWith(prefix.toLowerCase()));
+      const { data: candidates, error: lookupError } = await client.from("orders").select("id,status,total_usd,telegram,ip_hash").eq("status", "review").in("provider", ["manual", "cashapp_manual"]).gte("id", prefix.length === 8 ? `${prefix}-0000-0000-0000-000000000000` : prefix).lte("id", prefix.length === 8 ? `${prefix}-ffff-ffff-ffff-ffffffffffff` : prefix).limit(2);
+      if (lookupError) throw new Error("Order lookup failed");
+      const order = candidates?.length === 1 ? candidates[0] : null;
       if (!order) {
-        await sendTelegram(ownerChat, `No order awaiting review found starting with ${prefix}.`);
+        await sendTelegram(ownerChat, `No unique manual order awaiting review found for ${prefix}. Use the full order ID from the alert.`);
       } else {
         const to = action.toLowerCase() === "confirm" ? "paid" : "failed";
-        await client.rpc("transition_order", { p_order: order.id, p_to: to, p_reason: `owner ${action}ed fiat payment via bot` });
-        await sendTelegram(ownerChat, `Order ${prefix} (@${order.telegram}, $${order.total_usd}) marked ${to}.${to === "failed" ? " Stock returned." : ""}`);
+        const transition = await transitionManualPayment((name, args) => client.rpc(name, args), order.id, message.from.id, to);
+        await sendTelegram(ownerChat, transition.changed ? `Order ${prefix} (@${order.telegram}, $${order.total_usd}) marked ${transition.status}.${to === "failed" ? " Stock returned." : ""}` : `Order ${prefix} was already processed; no change made.`);
+        if (transition.changed && /^tg:[0-9]+$/.test(order.ip_hash)) {
+          await sendTelegram(Number(order.ip_hash.slice(3)), `Order ${order.id.slice(0, 8)}: ${to === "paid" ? "your payment has been confirmed by the owner." : "your payment was not confirmed. Please message @cpncreditboost for help."}`);
+        }
       }
     }
 

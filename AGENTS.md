@@ -1,5 +1,7 @@
 # Project Architecture Rules
 
+- Telegram manual payments use validated Cashtag links and a service-only row-locking transition RPC bound to numeric Telegram buyer IDs; only the verified owner may confirm receipt, so buyer taps and duplicate callbacks cannot mark payments paid.
+
 - Telegram account lookup must exhaust paginated auth results and fail on lookup errors before creating an account, so returning users are not treated as new users.
 - Signup consumes and resets Turnstile after each server submission; regression checks use mocked external services to exercise retry behavior without creating accounts or bypassing production verification.
 
