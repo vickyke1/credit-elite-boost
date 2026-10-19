@@ -57,6 +57,13 @@
       "when": 1792351319831,
       "tag": "0007_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792430081236,
+      "tag": "0008_telegram_manual_payment_confirmation",
+      "breakpoints": true
     }
   ]
 }

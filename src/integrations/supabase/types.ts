@@ -497,6 +497,10 @@ export type Database = {
         Args: { p_order: string; p_reason: string; p_to: string }
         Returns: string
       }
+      transition_telegram_manual_order: {
+        Args: { p_actor: string; p_order: string; p_to: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
