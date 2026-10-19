@@ -43,6 +43,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [captchaResetVersion, setCaptchaResetVersion] = useState(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -114,7 +115,6 @@ const Register = () => {
         setError('root', {
           message: 'Security check failed. Please complete it again and retry.'
         });
-        setTurnstileToken(null);
         return;
       }
 
@@ -171,6 +171,9 @@ const Register = () => {
         message: 'Registration failed. Please try again or contact support if the problem persists.'
       });
     } finally {
+      // Verification consumes the token even if account creation subsequently fails.
+      setTurnstileToken(null);
+      setCaptchaResetVersion((version) => version + 1);
       setIsLoading(false);
     }
   };
@@ -436,7 +439,7 @@ const Register = () => {
                 </Alert>
               )}
 
-              <TurnstileWidget onVerify={setTurnstileToken} />
+              <TurnstileWidget onVerify={setTurnstileToken} resetVersion={captchaResetVersion} />
 
               <Button
                 type="submit"

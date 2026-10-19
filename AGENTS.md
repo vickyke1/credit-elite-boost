@@ -1,5 +1,8 @@
 # Project Architecture Rules
 
+- Telegram account lookup must exhaust paginated auth results and fail on lookup errors before creating an account, so returning users are not treated as new users.
+- Signup consumes and resets Turnstile after each server submission; regression checks use mocked external services to exercise retry behavior without creating accounts or bypassing production verification.
+
 - Render the Tradelines marketplace inventory as a compact row list where every row shows the replica bank-card mockup (real bank logo with embossed fallback); shoppers compare via the side-by-side comparison view rather than a table.
 - AI tradeline recommendations run in the `recommend-tradelines` backend function, which only returns ids from the inventory the client sends, because the inventory is generated client-side and the AI key must stay server-side.
 

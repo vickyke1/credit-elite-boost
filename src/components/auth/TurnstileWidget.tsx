@@ -12,12 +12,19 @@ declare global {
 
 interface TurnstileWidgetProps {
   onVerify: (token: string | null) => void;
+  resetVersion?: number;
 }
 
-const TurnstileWidget = ({ onVerify }: TurnstileWidgetProps) => {
+const TurnstileWidget = ({ onVerify, resetVersion = 0 }: TurnstileWidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    if (widgetIdRef.current !== null) {
+      window.turnstile?.reset(widgetIdRef.current);
+    }
+  }, [resetVersion]);
 
   useEffect(() => {
     let cancelled = false;

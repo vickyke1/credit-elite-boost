@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Fix returning Telegram sign-in beyond the first account page and test pagination.
+- [ ] Reset signup captcha after failed submissions and verify retry without losing form values.
+
 - [x] Handle unavailable checkout items before invoice creation; deployed preflight, live product-to-cart Telegram fallback verified, 18 tests passed; product approval restrictions preserved.
 
 - [x] Redesign homepage and tradelines for readable mobile browsing.
