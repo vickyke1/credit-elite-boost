@@ -1,6 +1,8 @@
 # Roadmap
 
-- [ ] Add Cash App Telegram shop links and secure owner confirmation; activation blocked until owner supplies business $Cashtag (secure form declined).
+- [x] Implement and deploy Cash App Telegram shop choice, validated Cashtag links, buyer review request and owner-only confirmation; 23 unit/regression tests passed and unsigned deployed webhook rejected with 401.
+- [ ] Activate and test Cash App purchase in Telegram — blocked: owner declined business $Cashtag form; no real cash payment tested.
+- [ ] Run rollback-only manual-payment database regression — blocked: available connection lacks required privileges (42501); migration deployed, not transaction-tested.
 
 - [x] Fix returning Telegram sign-in beyond the first account page; deployed and passed four pagination/error regression tests.
 - [x] Reset signup captcha after failed submissions; three mocked browser flows retained values and retried successfully without refresh.
