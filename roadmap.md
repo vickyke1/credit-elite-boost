@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Add Cash App Telegram shop links and secure owner confirmation; activation blocked until owner supplies business $Cashtag (secure form declined).
+
 - [x] Fix returning Telegram sign-in beyond the first account page; deployed and passed four pagination/error regression tests.
 - [x] Reset signup captcha after failed submissions; three mocked browser flows retained values and retried successfully without refresh.
 
