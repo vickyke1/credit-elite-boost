@@ -29,12 +29,15 @@ const PaymentTutorial = () => (
         <iframe
           className="h-full w-full"
           src="https://www.youtube.com/embed/fDjDH_WAvYI?start=4&rel=0"
-          title="Cash App and Venmo payment tutorial"
+          title="Cash App Bitcoin payment tutorial"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
         />
       </div>
+      <p className="mt-3 text-sm text-muted-foreground">
+        The supplied video covers buying and sending Bitcoin with Cash App. For Venmo instructions, confirm the payment details privately on Telegram.
+      </p>
       <div className="mt-4 flex flex-wrap gap-3">
         <Button asChild variant="outline">
           <a href="https://www.youtube.com/watch?v=fDjDH_WAvYI&t=4s" target="_blank" rel="noopener noreferrer">
