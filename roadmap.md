@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Connect Buyers to new paid-order Telegram chats and editable follow-up drafts; verify without changing payment records.
+- [x] Connect Buyers to new paid-order Telegram chats and editable follow-up drafts; four regression tests and simulated browser flow passed without changing payment records.
+- [ ] Verify buyer follow-up with an actual confirmed payment as an administrator — blocked: current requesting account lacks admin access; no real payment executed.
 
 - [x] Restore checkout payment/tutorial tabs, owner-supplied BTC instructions, and private Cash App/Zelle/Venmo contact options without bypassing verified crypto checkout or product eligibility.
 - [x] Verify signed-out tradeline browsing, cart, and checkout access.
