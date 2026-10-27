@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add public Cash App/Venmo YouTube tutorial and shop private-payment note linking to @Cpn_creditboost; preserve payment verification.
+
 - [x] Implement and deploy Cash App Telegram shop choice, validated Cashtag links, buyer review request and owner-only confirmation; 23 unit/regression tests passed and unsigned deployed webhook rejected with 401.
 - [ ] Activate and test Cash App purchase in Telegram — blocked: owner declined business $Cashtag form; no real cash payment tested.
 - [ ] Run rollback-only manual-payment database regression — blocked: available connection lacks required privileges (42501); migration deployed, not transaction-tested.

@@ -5,6 +5,8 @@ import { TradelineGrid, useAddTradelineToCart } from "@/components/tradelines/Tr
 import { TradelineCompare } from "@/components/tradelines/TradelineCompare";
 import { TradelineAdvisor } from "@/components/tradelines/TradelineAdvisor";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { MessageCircle, PlayCircle } from "lucide-react";
 import { Columns3 } from "lucide-react";
 import { TradelinePagination } from "@/components/tradelines/TradelinePagination";
 import { ShieldCheck, Sparkles } from "lucide-react";
@@ -101,6 +103,20 @@ const ExtensiveTradelineMarketplace = () => {
             </div>
           </div>
         </div>
+
+        <aside className="mb-6 flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between" aria-label="Private payment arrangements">
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Prefer Cash App or Venmo? Arrange payment privately with <span className="font-semibold text-foreground">@Cpn_creditboost</span> on Telegram. Confirm the recipient and amount before sending; payments require receipt verification.
+          </p>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Button asChild variant="outline">
+              <Link to="/payment-tutorial"><PlayCircle aria-hidden="true" /> Payment guide</Link>
+            </Button>
+            <Button asChild>
+              <a href="https://t.me/Cpn_creditboost" target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden="true" /> Private payment</a>
+            </Button>
+          </div>
+        </aside>
 
         <TradelineAdvisor tradelines={allTradelines} onCompare={(ids) => { setCompareIds(ids); setCompareOpen(true); }} />
 
