@@ -1,5 +1,7 @@
 # Project Architecture Rules
 
+- Payment education lives on a public tutorial route linked from the shop; embedded video and Telegram contact never change order or payment status.
+
 - Telegram manual payments use validated Cashtag links and a service-only row-locking transition RPC bound to numeric Telegram buyer IDs; only the verified owner may confirm receipt, so buyer taps and duplicate callbacks cannot mark payments paid.
 
 - Telegram account lookup must exhaust paginated auth results and fail on lookup errors before creating an account, so returning users are not treated as new users.

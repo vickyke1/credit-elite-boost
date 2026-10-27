@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import Pricing from "./pages/Pricing";
+import PaymentTutorial from "./pages/PaymentTutorial";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import ProductDetail from "./pages/ProductDetail";
@@ -61,6 +62,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/payment-tutorial" element={<PaymentTutorial />} />
               <Route path="/order/:id" element={<OrderStatus />} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/admin/orders/:id" element={<ProtectedRoute><AdminFulfillment /></ProtectedRoute>} />
