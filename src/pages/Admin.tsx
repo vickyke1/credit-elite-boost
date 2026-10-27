@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Loader2, ShieldAlert, Package, MessageSquare, Inbox, Store, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import BuyerFollowUp from "@/components/BuyerFollowUp";
+import { followUpDraft, telegramChatUrl, takeNewPaidOrders } from "@/lib/buyerTelegram";
 
 interface OrderRow {
   id: string;
@@ -62,7 +64,7 @@ interface BuyerSummary {
 const buildBuyers = (orders: OrderRow[]): BuyerSummary[] => {
   const map = new Map<string, OrderRow[]>();
   for (const o of orders) {
-    const key = o.telegram.toLowerCase();
+    const key = o.telegram.trim().replace(/^@/, "").toLowerCase();
     map.set(key, [...(map.get(key) ?? []), o]);
   }
   return [...map.entries()].map(([telegram, list]) => ({
@@ -85,6 +87,11 @@ const Admin = () => {
   const [newProduct, setNewProduct] = useState({ sku: "", name: "", priceUsd: "", inventory: "1" });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("orders");
+  const [newPayments, setNewPayments] = useState<OrderRow[]>([]);
+  const [autoChat, setAutoChat] = useState(false);
+  const chatWindow = useRef<Window | null>(null);
+  const autoChatRef = useRef(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -109,6 +116,74 @@ const Admin = () => {
   };
 
   useEffect(() => { if (isAdmin) load(); }, [isAdmin]);
+
+  useEffect(() => {
+    if (!isAdmin || !user) return;
+    let disposed = false;
+    let checking = false;
+    const since = new Date().toISOString();
+    const seen = new Set<string>();
+    const checkPayments = async () => {
+      if (checking) return;
+      checking = true;
+      try {
+        // Polling also works when orders are not in a Realtime publication.
+        const { data, error } = await supabase.from("orders")
+          .select("id,telegram,status,total_usd,provider,pay_currency,fulfillment_status,created_at")
+          .in("status", ["paid", "overpaid"]).gte("updated_at", since).order("updated_at", { ascending: true });
+        if (disposed || error) return;
+        const confirmed = takeNewPaidOrders((data ?? []) as OrderRow[], seen) as OrderRow[];
+        if (!confirmed.length) return;
+        setNewPayments((previous) => [...previous, ...confirmed]);
+        setActiveTab("buyers");
+        setOrders((previous) => {
+          const merged = new Map(previous.map((order) => [order.id, order]));
+          for (const order of confirmed) merged.set(order.id, order);
+          return [...merged.values()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+        });
+        const latest = confirmed[confirmed.length - 1];
+        const url = latest ? telegramChatUrl(latest.telegram, followUpDraft(latest)) : null;
+        if (autoChatRef.current && url) {
+          const target = chatWindow.current;
+          if (target && !target.closed) {
+            try { target.location.href = url; } catch {
+              autoChatRef.current = false;
+              setAutoChat(false);
+              toast({ title: "Buyer payment confirmed", description: "Open the buyer’s Telegram chat below." });
+            }
+          } else {
+            autoChatRef.current = false;
+            setAutoChat(false);
+            toast({ title: "Telegram tab closed", description: "Open the buyer’s Telegram chat below." });
+          }
+        } else {
+          toast({ title: "Buyer payment confirmed", description: "A new paid order is ready for follow-up." });
+        }
+      } finally { checking = false; }
+    };
+    const timer = window.setInterval(() => { void checkPayments(); }, 10000);
+    return () => { disposed = true; window.clearInterval(timer); autoChatRef.current = false; };
+  }, [isAdmin, user?.id, toast]);
+
+  const toggleAutoChat = () => {
+    if (autoChat) {
+      autoChatRef.current = false;
+      setAutoChat(false);
+      return;
+    }
+    // Open synchronously on the owner's click, not on an asynchronous payment event.
+    const target = window.open("about:blank", "buyer-telegram-follow-up");
+    if (!target) {
+      toast({ title: "Telegram tab blocked", description: "Allow pop-ups for this site, or use Open Telegram chat.", variant: "destructive" });
+      return;
+    }
+    target.opener = null;
+    target.document.title = "CpnCreditBoost — Awaiting confirmed payment";
+    target.document.body.textContent = "Awaiting a confirmed CpnCreditBoost payment.";
+    chatWindow.current = target;
+    autoChatRef.current = true;
+    setAutoChat(true);
+  };
 
   const adminAction = async (body: Record<string, unknown>, busyKey: string) => {
     setBusy(busyKey);
@@ -150,7 +225,7 @@ const Admin = () => {
       <Navigation />
       <main className="container mx-auto px-4 py-10 max-w-6xl">
         <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
-        <Tabs defaultValue="orders">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="orders" className="min-h-11"><Package className="w-4 h-4 mr-2" />Orders ({orders.length})</TabsTrigger>
             <TabsTrigger value="buyers" className="min-h-11"><Users className="w-4 h-4 mr-2" />Buyers ({buildBuyers(orders).length})</TabsTrigger>
@@ -221,6 +296,23 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="buyers">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <h2 className="text-lg font-semibold">Buyer follow-up</h2>
+              <Button variant={autoChat ? "secondary" : "outline"} className="min-h-11" aria-pressed={autoChat} onClick={toggleAutoChat}>
+                <MessageSquare className="w-4 h-4 mr-2" />{autoChat ? "Stop automatic chats" : "Enable automatic Telegram chats"}
+              </Button>
+            </div>
+            {newPayments.length > 0 && <section aria-label="New confirmed payments" aria-live="polite" className="mb-4 border-l-4 border-primary pl-4 space-y-3">
+              <h3 className="font-semibold">New confirmed payments</h3>
+              {newPayments.map((order) => {
+                const url = telegramChatUrl(order.telegram, followUpDraft(order));
+                return <div key={order.id} className="flex flex-wrap items-center gap-3 text-sm">
+                  <span>@{order.telegram.replace(/^@/, "")} · ${order.total_usd} · {order.id.slice(0, 8)}</span>
+                  {url && <Button asChild variant="outline" size="sm" className="min-h-11"><a href={url} target="_blank" rel="noopener noreferrer">Open buyer chat</a></Button>}
+                  <Button variant="ghost" size="sm" className="min-h-11" onClick={() => setNewPayments((previous) => previous.filter((payment) => payment.id !== order.id))}>Dismiss</Button>
+                </div>;
+              })}
+            </section>}
             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : buildBuyers(orders).length === 0 ? <p className="text-muted-foreground">No buyers yet.</p> : (
               <div className="space-y-3">
                 {buildBuyers(orders).map((buyer) => (
@@ -244,9 +336,7 @@ const Admin = () => {
                         </div>
                       ))}
                     </div>
-                    <Button asChild size="sm" className="min-h-11">
-                      <a href={`https://t.me/${buyer.telegram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer">Open Telegram chat</a>
-                    </Button>
+                    {buyer.orders[0] && <BuyerFollowUp key={`${buyer.telegram}-${buyer.orders[0].status}`} order={buyer.orders[0]} />}
                   </div>
                 ))}
               </div>
