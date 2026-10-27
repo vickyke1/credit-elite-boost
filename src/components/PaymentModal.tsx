@@ -7,6 +7,8 @@ import { Loader2, ShieldCheck, Send } from "lucide-react";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ManualPaymentOptions } from "@/components/ManualPaymentOptions";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -14,7 +16,7 @@ interface PaymentModalProps {
   total: number;
 }
 
-const TELEGRAM_URL = "https://t.me/cpncreditboost";
+const TELEGRAM_URL = "https://t.me/Cpn_creditboost";
 const telegramPattern = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
 
 export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
@@ -84,10 +86,17 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
         <DialogHeader>
           <DialogTitle>Checkout — ${total}</DialogTitle>
           <DialogDescription>
-            Pay with crypto on a secure payment page. The final price is checked on our server, and your order is only confirmed after the payment is verified.
+            Guest checkout is available for approved, in-stock items. Pay through a verified crypto invoice or arrange payment privately on Telegram. Orders are confirmed only after receipt is verified.
           </DialogDescription>
         </DialogHeader>
 
+        <Tabs defaultValue="payment" className="min-w-0">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="payment" className="min-h-11">Payment options</TabsTrigger>
+            <TabsTrigger value="tutorial" className="min-h-11">Payment tutorial</TabsTrigger>
+          </TabsList>
+          <TabsContent value="payment" className="space-y-5 pt-3">
+        <h3 className="font-semibold text-primary">Verified crypto checkout</h3>
         {checking || available === null ? (
           <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" />Checking checkout availability…</p>
         ) : configured === false || available === false ? (
@@ -109,19 +118,6 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
               <Label htmlFor="checkout-telegram">Your Telegram username</Label>
               <Input id="checkout-telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="@username" autoComplete="off" />
             </div>
-            <div className="space-y-1.5">
-              <p className="text-sm font-medium">How to pay</p>
-              <div className="overflow-hidden rounded-lg border border-border aspect-video">
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/Ba-LJhEd2Ko"
-                  title="How to make a deposit — payment tutorial"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-            </div>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <Button onClick={startCheckout} disabled={busy || configured === null || available !== true || items.length === 0} className="w-full min-h-11 bg-gradient-cta glow-accent">
               {busy ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating secure invoice…</> : "Continue to crypto payment"}
@@ -132,6 +128,17 @@ export const PaymentModal = ({ isOpen, onClose, total }: PaymentModalProps) => {
             </p>
           </div>
         )}
+          <ManualPaymentOptions />
+          </TabsContent>
+          <TabsContent value="tutorial" className="space-y-4 pt-3">
+            <h3 className="font-semibold">Cash App Bitcoin payment guide</h3>
+            <div className="aspect-video overflow-hidden rounded-lg border border-border bg-muted">
+              <iframe className="h-full w-full" src="https://www.youtube.com/embed/fDjDH_WAvYI?start=4&rel=0" title="Cash App Bitcoin payment tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+            </div>
+            <p className="text-sm text-muted-foreground">This video covers buying and sending Bitcoin with Cash App, not Venmo. Confirm your order, recipient, and amount privately before paying.</p>
+            <Button asChild variant="outline" className="w-full"><a href="https://www.youtube.com/watch?v=fDjDH_WAvYI&t=4s" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></Button>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

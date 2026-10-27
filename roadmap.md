@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Restore checkout payment/tutorial tabs, owner-supplied BTC instructions, and private Cash App/Zelle/Venmo contact options without bypassing verified crypto checkout or product eligibility.
+- [x] Verify signed-out tradeline browsing, cart, and checkout access.
+
 - [x] Add public Cash App/Venmo YouTube tutorial and shop private-payment note linking to @Cpn_creditboost; preserve payment verification.
 
 - [x] Implement and deploy Cash App Telegram shop choice, validated Cashtag links, buyer review request and owner-only confirmation; 23 unit/regression tests passed and unsigned deployed webhook rejected with 401.
