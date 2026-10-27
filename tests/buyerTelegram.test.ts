@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { telegramChatUrl, takeNewPaidOrders } from "./buyerTelegram";
+import { telegramChatUrl, takeNewPaidOrders } from "../src/lib/buyerTelegram";
 
 test("follow-up opens the specific buyer with an encoded draft", () => {
   assert.equal(telegramChatUrl("@buyer_name", "Hello & thanks!"), "https://t.me/buyer_name?text=Hello%20%26%20thanks!");

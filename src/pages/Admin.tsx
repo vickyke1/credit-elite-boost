@@ -123,10 +123,18 @@ const Admin = () => {
     let checking = false;
     const since = new Date().toISOString();
     const seen = new Set<string>();
+    let initialized = false;
     const checkPayments = async () => {
       if (checking) return;
       checking = true;
       try {
+        if (!initialized) {
+          const { data: existing, error: baselineError } = await supabase.from("orders").select("id").in("status", ["paid", "overpaid"]);
+          if (disposed || baselineError) return;
+          for (const order of existing ?? []) seen.add(order.id);
+          initialized = true;
+          return;
+        }
         // Polling also works when orders are not in a Realtime publication.
         const { data, error } = await supabase.from("orders")
           .select("id,telegram,status,total_usd,provider,pay_currency,fulfillment_status,created_at")
@@ -161,6 +169,7 @@ const Admin = () => {
         }
       } finally { checking = false; }
     };
+    void checkPayments();
     const timer = window.setInterval(() => { void checkPayments(); }, 10000);
     return () => { disposed = true; window.clearInterval(timer); autoChatRef.current = false; };
   }, [isAdmin, user?.id, toast]);
