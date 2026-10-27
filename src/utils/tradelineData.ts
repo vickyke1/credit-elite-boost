@@ -63,7 +63,7 @@ const formatDate = (date: Date) =>
 const formatShortDate = (date: Date) =>
   date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-const TOTAL_TRADELINES = 1500;
+const TOTAL_TRADELINES = 2500;
 
 let cachedTradelines: Tradeline[] | null = null;
 
