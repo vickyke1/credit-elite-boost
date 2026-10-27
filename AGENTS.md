@@ -1,5 +1,7 @@
 # Project Architecture Rules
 
+- Admin buyer follow-up polls server-authorized confirmed orders while the panel is open, deduplicates by order ID, and navigates only an owner-preopened Telegram tab; drafts require sending in Telegram and never change payment status.
+
 - Payment education lives on a public tutorial route linked from the shop; embedded video and Telegram contact never change order or payment status.
 
 - Telegram manual payments use validated Cashtag links and a service-only row-locking transition RPC bound to numeric Telegram buyer IDs; only the verified owner may confirm receipt, so buyer taps and duplicate callbacks cannot mark payments paid.
