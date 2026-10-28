@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Add admin-only purchase deadline selection, preview, bulk extensions and audit history; synchronize inventory views.
+- [ ] Verify persistence and authorization without changing customer inventory during tests.
+
 - [x] Connect Buyers to new paid-order Telegram chats and editable follow-up drafts; four regression tests and simulated browser flow passed without changing payment records.
 - [ ] Verify buyer follow-up with an actual confirmed payment as an administrator — blocked: current requesting account lacks admin access; no real payment executed.
 
