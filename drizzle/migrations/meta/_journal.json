@@ -64,6 +64,13 @@
       "when": 1792430081236,
       "tag": "0008_telegram_manual_payment_confirmation",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793220101045,
+      "tag": "0009_persistent_tradeline_purchase_deadlines",
+      "breakpoints": true
     }
   ]
 }

@@ -9,10 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import {
-  getTradelineBySlug,
-  getTradelineByCardId,
-} from "@/utils/tradelineData";
+import { useTradelineInventory } from "@/hooks/useTradelineInventory";
+import { isDeadlineExpired } from "@/lib/purchaseDeadlines";
 import { BankCardMockup } from "@/components/BankCardMockup";
 import {
   ChevronLeft,
@@ -53,17 +51,18 @@ const ProductDetail = () => {
   const cardId = searchParams.get("card_id") ?? undefined;
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { inventory, isPending, error } = useTradelineInventory();
 
   const tradeline = useMemo(() => {
     if (slug) {
-      const bySlug = getTradelineBySlug(slug);
+      const bySlug = inventory.find(item => item.slug === slug);
       if (bySlug) return bySlug;
     }
     if (cardId) {
-      return getTradelineByCardId(cardId);
+      return inventory.find(item => item.cardId === cardId);
     }
     return undefined;
-  }, [slug, cardId]);
+  }, [slug, cardId, inventory]);
 
   if (!tradeline) {
     return <NotFound />;
@@ -86,7 +85,8 @@ const ProductDetail = () => {
     });
   };
 
-  const isSoldOut = tradeline.status === "sold-out";
+  const isExpired = isDeadlineExpired(tradeline.purchaseDeadline);
+  const isSoldOut = tradeline.status === "sold-out" || isExpired || isPending || Boolean(error);
   const title = `$${tradeline.creditLimit.toLocaleString()} Seasoned ${tradeline.bankName} Tradeline ${tradeline.cardId}`;
 
   const productSchema = {
@@ -154,19 +154,19 @@ const ProductDetail = () => {
             <div>
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <Badge variant="secondary">{tradeline.bankName}</Badge>
-                {tradeline.status === "available" && (
+                {tradeline.status === "available" && !isSoldOut && (
                   <Badge variant="success" className="gap-1.5">
                     <span className="status-dot h-1.5 w-1.5 rounded-full bg-current" />
                     Available ({tradeline.availability})
                   </Badge>
                 )}
-                {tradeline.status === "limited" && (
+                {tradeline.status === "limited" && !isSoldOut && (
                   <Badge variant="warning" className="gap-1.5">
                     <span className="status-dot h-1.5 w-1.5 rounded-full bg-current" />
                     Limited ({tradeline.availability})
                   </Badge>
                 )}
-                {isSoldOut && <Badge variant="destructive">Sold Out</Badge>}
+                {isSoldOut && <Badge variant="destructive">{isPending ? "Loading deadlines" : error ? "Deadline unavailable" : isExpired ? "Deadline expired" : "Sold Out"}</Badge>}
               </div>
 
               <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
@@ -189,7 +189,7 @@ const ProductDetail = () => {
                 }`}
               >
                 <ShoppingCart className="h-5 w-5" />
-                {isSoldOut ? "Sold Out" : "Add to Cart"}
+                {isSoldOut ? isExpired ? "Deadline expired" : "Unavailable" : "Add to Cart"}
               </Button>
 
               {/* Spec grid */}

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { generateTradelines } from "@/utils/tradelineData";
+import { useTradelineInventory } from "@/hooks/useTradelineInventory";
+import { isDeadlineExpired } from "@/lib/purchaseDeadlines";
 import { TradelineFilters } from "@/components/tradelines/TradelineFilters";
 import { TradelineGrid, useAddTradelineToCart } from "@/components/tradelines/TradelineGrid";
 import { TradelineCompare } from "@/components/tradelines/TradelineCompare";
@@ -23,7 +24,7 @@ const ExtensiveTradelineMarketplace = () => {
   const toggleCompare = (id: string) =>
     setCompareIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : ids.length >= 4 ? ids : [...ids, id]));
 
-  const allTradelines = useMemo(() => generateTradelines(), []);
+  const { inventory: allTradelines, isPending, error } = useTradelineInventory();
 
   const filteredAndSortedTradelines = useMemo(() => {
     const filtered = allTradelines.filter(tradeline => {
@@ -31,8 +32,10 @@ const ExtensiveTradelineMarketplace = () => {
                            tradeline.cardId.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesFilter = filterBy === "all" || 
-                           (filterBy === "available" && tradeline.status === "available") ||
-                           (filterBy === "limited" && tradeline.status === "limited") ||
+                           (filterBy === "available" && tradeline.status === "available" && !isDeadlineExpired(tradeline.purchaseDeadline)) ||
+                           (filterBy === "limited" && tradeline.status === "limited" && !isDeadlineExpired(tradeline.purchaseDeadline)) ||
+                           (filterBy === "expired" && isDeadlineExpired(tradeline.purchaseDeadline)) ||
+                           (filterBy === "upcoming" && !isDeadlineExpired(tradeline.purchaseDeadline)) ||
                            (filterBy === "high-limit" && tradeline.creditLimit >= 25000) ||
                            (filterBy === "aged" && tradeline.ageInYears >= 8);
       
@@ -91,7 +94,7 @@ const ExtensiveTradelineMarketplace = () => {
           <div className="mt-8 grid grid-cols-3 gap-3 border-t border-border pt-6 md:mt-0 md:min-w-[420px] md:border-l md:border-t-0 md:pl-8 md:pt-0">
             <div>
               <div className="text-xs text-muted-foreground">Available</div>
-              <div className="mt-1 text-xl font-bold text-foreground">{allTradelines.filter(t => t.status !== "sold-out").length.toLocaleString()}</div>
+              <div className="mt-1 text-xl font-bold text-foreground">{allTradelines.filter(t => t.status !== "sold-out" && !isDeadlineExpired(t.purchaseDeadline)).length.toLocaleString()}</div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground">Total Limit</div>
@@ -134,7 +137,7 @@ const ExtensiveTradelineMarketplace = () => {
         </div>
 
         {/* Tradeline Product Cards */}
-        <TradelineGrid tradelines={paginatedTradelines} compareIds={compareIds} onToggleCompare={toggleCompare} />
+        {isPending ? <p role="status" className="text-muted-foreground">Loading purchase deadlines…</p> : error ? <p role="alert" className="text-destructive">Could not load current deadlines. Please refresh before ordering.</p> : <TradelineGrid tradelines={paginatedTradelines} compareIds={compareIds} onToggleCompare={toggleCompare} />}
 
         {compareIds.length > 0 && (
           <div className="sticky bottom-4 z-30 mx-auto mt-4 flex max-w-full flex-wrap items-center justify-center gap-2 rounded-lg border border-primary/40 bg-card px-4 py-2 shadow-elevated">

@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tradeline, getProductUrl } from "@/utils/tradelineData";
 import { BankCardMockup } from "@/components/BankCardMockup";
 import { Columns3, ShoppingCart, ShieldCheck } from "lucide-react";
+import { isDeadlineExpired } from "@/lib/purchaseDeadlines";
 
 interface TradelineGridProps {
   tradelines: Tradeline[];
@@ -16,6 +17,7 @@ export const useAddTradelineToCart = () => {
   const { addToCart } = useCart();
   const { toast } = useToast();
   return (tradeline: Tradeline) => {
+    if (isDeadlineExpired(tradeline.purchaseDeadline) || tradeline.status === "sold-out") return;
     addToCart({ id: tradeline.id, type: 'tradeline' as const, name: `${tradeline.bankName} Tradeline ${tradeline.cardId}`, price: tradeline.price, bankName: tradeline.bankName, cardId: tradeline.cardId, creditLimit: tradeline.creditLimit, age: tradeline.age });
     toast({ title: "Added to Cart!", description: `${tradeline.bankName} tradeline added to your cart` });
   };
@@ -34,7 +36,8 @@ const TradelineCard = ({
 }) => {
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const isSoldOut = tradeline.status === "sold-out";
+  const isExpired = isDeadlineExpired(tradeline.purchaseDeadline);
+  const isSoldOut = tradeline.status === "sold-out" || isExpired;
 
   const handleAddToCart = () => {
     addToCart({
@@ -65,7 +68,7 @@ const TradelineCard = ({
         <BankCardMockup bankName={tradeline.bankName} lastFour={tradeline.cardId.slice(-4)} className="!pb-1" />
         {isSoldOut && (
           <span className="absolute left-1 top-1 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold text-destructive-foreground">
-            Sold Out
+            {isExpired ? "Expired" : "Sold Out"}
           </span>
         )}
       </div>
@@ -105,7 +108,7 @@ const TradelineCard = ({
           onClick={handleAddToCart}
         >
           <ShoppingCart className="h-4 w-4" />
-          {isSoldOut ? "Sold Out" : "Add"}
+          {isSoldOut ? isExpired ? "Expired" : "Sold Out" : "Add"}
         </Button>
         <button
           type="button"

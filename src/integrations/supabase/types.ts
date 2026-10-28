@@ -395,6 +395,56 @@ export type Database = {
           },
         ]
       }
+      tradeline_deadline_audit: {
+        Row: {
+          administrator: string
+          id: string
+          listing_id: string
+          new_deadline: string
+          previous_deadline: string
+          updated_at: string
+        }
+        Insert: {
+          administrator: string
+          id?: string
+          listing_id: string
+          new_deadline: string
+          previous_deadline: string
+          updated_at?: string
+        }
+        Update: {
+          administrator?: string
+          id?: string
+          listing_id?: string
+          new_deadline?: string
+          previous_deadline?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tradeline_deadline_audit_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "tradeline_purchase_deadlines"
+            referencedColumns: ["listing_id"]
+          },
+        ]
+      }
+      tradeline_purchase_deadlines: {
+        Row: {
+          listing_id: string
+          purchase_deadline: string
+        }
+        Insert: {
+          listing_id: string
+          purchase_deadline: string
+        }
+        Update: {
+          listing_id?: string
+          purchase_deadline?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -471,6 +521,7 @@ export type Database = {
         }
         Returns: string
       }
+      extend_purchase_deadlines: { Args: { p_changes: Json }; Returns: Json }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
