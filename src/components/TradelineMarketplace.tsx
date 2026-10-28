@@ -2,11 +2,14 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { BankCardMockup } from "@/components/BankCardMockup";
-import { generateTradelines, getProductUrl } from "@/utils/tradelineData";
+import { getProductUrl } from "@/utils/tradelineData";
+import { useTradelineInventory } from "@/hooks/useTradelineInventory";
+import { isDeadlineExpired } from "@/lib/purchaseDeadlines";
 import { ArrowRight } from "lucide-react";
 
 const TradelineMarketplace = () => {
-  const tradelines = useMemo(() => generateTradelines().filter(t => t.status !== "sold-out").sort((a, b) => a.price - b.price).slice(0, 3), []);
+  const { inventory } = useTradelineInventory();
+  const tradelines = useMemo(() => inventory.filter(t => t.status !== "sold-out" && !isDeadlineExpired(t.purchaseDeadline)).sort((a, b) => a.price - b.price).slice(0, 3), [inventory]);
   return <section id="tradelines" className="bg-surface-elevated py-10 md:py-16">
     <div className="container px-4 sm:px-6">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-sm font-semibold text-primary">THE INVENTORY</p><h2 className="text-2xl font-bold sm:text-3xl">Explore aged tradelines</h2><p className="mt-3 text-sm text-muted-foreground">USD prices per tradeline · One-time purchase, not a monthly rate</p></div><Button asChild variant="ghost" className="min-h-11"><Link to="/tradelines">View all <ArrowRight className="h-4 w-4" /></Link></Button></div>

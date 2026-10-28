@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, ShieldAlert, Package, MessageSquare, Inbox, Store, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import BuyerFollowUp from "@/components/BuyerFollowUp";
+import PurchaseDeadlineManager from "@/components/admin/PurchaseDeadlineManager";
 import { followUpDraft, telegramChatUrl, takeNewPaidOrders } from "@/lib/buyerTelegram";
 
 interface OrderRow {
@@ -235,14 +236,16 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-10 max-w-6xl">
         <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex h-auto flex-wrap justify-start">
             <TabsTrigger value="orders" className="min-h-11"><Package className="w-4 h-4 mr-2" />Orders ({orders.length})</TabsTrigger>
             <TabsTrigger value="buyers" className="min-h-11"><Users className="w-4 h-4 mr-2" />Buyers ({buildBuyers(orders).length})</TabsTrigger>
             <TabsTrigger value="products" className="min-h-11"><Store className="w-4 h-4 mr-2" />Products ({products.length})</TabsTrigger>
+            <TabsTrigger value="deadlines" className="min-h-11">Purchase Deadlines</TabsTrigger>
             <TabsTrigger value="inquiries" className="min-h-11"><Inbox className="w-4 h-4 mr-2" />Inquiries ({inquiries.length})</TabsTrigger>
             <TabsTrigger value="messages" className="min-h-11"><MessageSquare className="w-4 h-4 mr-2" />Telegram ({messages.length})</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="deadlines"><PurchaseDeadlineManager /></TabsContent>
           <TabsContent value="products">
             <form
               className="surface-elevated rounded-lg p-4 mb-4 grid gap-3 sm:grid-cols-[120px_1fr_120px_100px_auto]"

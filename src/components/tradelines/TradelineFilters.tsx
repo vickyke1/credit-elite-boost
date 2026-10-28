@@ -58,6 +58,8 @@ export const TradelineFilters = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Tradelines</SelectItem>
+            <SelectItem value="expired">Expired Deadlines</SelectItem>
+            <SelectItem value="upcoming">Upcoming Deadlines</SelectItem>
             <SelectItem value="available">Available Only</SelectItem>
             <SelectItem value="limited">Limited Availability</SelectItem>
             <SelectItem value="high-limit">High Limit ($25K+)</SelectItem>
