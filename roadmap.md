@@ -1,7 +1,8 @@
 # Roadmap
 
-- [ ] Add admin-only purchase deadline selection, preview, bulk extensions and audit history; synchronize inventory views.
-- [ ] Verify persistence and authorization without changing customer inventory during tests.
+- [x] Add admin-only purchase deadline selection, preview, bulk extensions and audit history; synchronize inventory views; seven date/inventory tests and simulated preview/cancel checks passed.
+- [x] Save and read back all 2,500 deadlines; verified shop/detail views and live non-admin update rejection (403), with no product data changes.
+- [ ] Verify an actual administrator bulk update and audit readback — blocked: requesting account has no admin role; no real deadline extension performed. Changes to the frontend have not been deployed to cpntradelines.store.
 
 - [x] Connect Buyers to new paid-order Telegram chats and editable follow-up drafts; four regression tests and simulated browser flow passed without changing payment records.
 - [ ] Verify buyer follow-up with an actual confirmed payment as an administrator — blocked: current requesting account lacks admin access; no real payment executed.
