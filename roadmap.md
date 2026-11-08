@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Create pre-made authorized-user tradeline bundles from existing listings, link from the shop, and verify totals and guest cart selection without changing product approval.
+- [x] Create three pre-made authorized-user tradeline bundles from existing listings, linked from the shop; three automated checks and desktop/mobile guest cart selection passed without changing product approval.
 
 - [x] Add admin-only purchase deadline selection, preview, bulk extensions and audit history; synchronize inventory views; seven date/inventory tests and simulated preview/cancel checks passed.
 - [x] Save and read back all 2,500 deadlines; verified shop/detail views and live non-admin update rejection (403), with no product data changes.
