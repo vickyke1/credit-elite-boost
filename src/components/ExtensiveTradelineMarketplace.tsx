@@ -113,6 +113,9 @@ const ExtensiveTradelineMarketplace = () => {
           </p>
           <div className="flex shrink-0 flex-wrap gap-2">
             <Button asChild variant="outline">
+              <Link to="/tradeline-bundles"><Columns3 aria-hidden="true" /> Ready-made bundles</Link>
+            </Button>
+            <Button asChild variant="outline">
               <Link to="/payment-tutorial"><PlayCircle aria-hidden="true" /> Payment guide</Link>
             </Button>
             <Button asChild>

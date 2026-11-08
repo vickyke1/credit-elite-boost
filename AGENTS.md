@@ -1,5 +1,7 @@
 # Project Architecture Rules
 
+- Authorized-user bundles compose existing inventory listings through the shared deadline query and sum their individual prices; cart additions retain each listing ID, so checkout approval and stock validation cannot be bypassed by a synthetic package SKU.
+
 - Purchase deadlines are date-only records keyed by existing generated listing IDs, loaded through a paginated shared query; admin-only row-locking RPC updates only deadlines with optimistic concurrency and atomic audit entries, preserving product and reporting data.
 
 - Admin buyer follow-up polls server-authorized confirmed orders while the panel is open, deduplicates by order ID, and navigates only an owner-preopened Telegram tab; drafts require sending in Telegram and never change payment status.

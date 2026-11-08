@@ -11,6 +11,7 @@ import { useCSRF } from "@/hooks/useCSRF";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import Pricing from "./pages/Pricing";
 import PaymentTutorial from "./pages/PaymentTutorial";
+import TradelineBundles from "./pages/TradelineBundles";
 import Index from "./pages/Index";
 import TradelineMarketplace from "./pages/TradelineMarketplace";
 import ProductDetail from "./pages/ProductDetail";
@@ -67,6 +68,7 @@ const App = () => {
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/admin/orders/:id" element={<ProtectedRoute><AdminFulfillment /></ProtectedRoute>} />
               <Route path="/tradelines" element={<TradelineMarketplace />} />
+              <Route path="/tradeline-bundles" element={<TradelineBundles />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
               <Route path="/calculator" element={<TradelineCalculatorPage />} />
               <Route path="/blog" element={<Blog />} />
