@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Create pre-made authorized-user tradeline bundles from existing listings, link from the shop, and verify totals and guest cart selection without changing product approval.
+
 - [x] Add admin-only purchase deadline selection, preview, bulk extensions and audit history; synchronize inventory views; seven date/inventory tests and simulated preview/cancel checks passed.
 - [x] Save and read back all 2,500 deadlines; verified shop/detail views and live non-admin update rejection (403), with no product data changes.
 - [ ] Verify an actual administrator bulk update and audit readback — blocked: requesting account has no admin role; no real deadline extension performed. Changes to the frontend have not been deployed to cpntradelines.store.
